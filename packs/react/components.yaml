@@ -1,0 +1,130 @@
+id: react.function-component
+description: React function components (PascalCase function declarations)
+when:
+  language: javascript
+match:
+  query: |
+    (function_declaration
+      name: (identifier) @name
+      body: (statement_block) @body
+    ) @fn
+  where:
+    name: { regex: "^[A-Z][A-Za-z0-9_]*$" }
+emit:
+  - node:
+      label: Component
+      id: "comp-{file}-{name}"
+      properties:
+        framework: react
+        kind: function
+        name: "{name}"
+
+---
+
+id: react.class-component
+description: React class components (extends React.Component or Component)
+when:
+  language: javascript
+match:
+  query: |
+    (class_declaration
+      name: (identifier) @name
+      (class_heritage [(member_expression) (identifier)] @parent)
+    ) @cls
+  where:
+    parent: { regex: "(React\\.Component|^Component$|React\\.PureComponent|^PureComponent$)" }
+emit:
+  - node:
+      label: Component
+      id: "comp-{file}-{name}"
+      properties:
+        framework: react
+        kind: class
+        name: "{name}"
+        extends: "{parent}"
+
+---
+
+id: react.fetch-call
+description: "Browser fetch with options object (method captured)"
+when:
+  language: javascript
+match:
+  query: |
+    (call_expression
+      function: (identifier) @fn
+      arguments: (arguments
+        .
+        (string) @path_raw
+        .
+        (object
+          (pair
+            key: (property_identifier) @method_key
+            value: (string) @method_raw
+          )
+        )?
+      )
+    ) @call
+  where:
+    fn: { eq: fetch }
+    method_key: { eq: method }
+emit:
+  - node:
+      label: HttpCall
+      id: "call-{file}-{path_raw|unquote}-{method_raw?|unquote|default:GET}"
+      properties:
+        framework: react
+        client: fetch
+        http_method: "{method_raw?|unquote|upper|default:GET}"
+        path: "{path_raw|unquote}"
+
+---
+
+id: react.fetch-call-default
+description: "Browser fetch with single URL argument (default GET)"
+when:
+  language: javascript
+match:
+  query: |
+    (call_expression
+      function: (identifier) @fn
+      arguments: (arguments . (string) @path_raw .)
+    ) @call
+  where:
+    fn: { eq: fetch }
+emit:
+  - node:
+      label: HttpCall
+      id: "call-{file}-{path_raw|unquote}-GET"
+      properties:
+        framework: react
+        client: fetch
+        http_method: GET
+        path: "{path_raw|unquote}"
+
+---
+
+id: react.axios-call
+description: "axios verb method calls"
+when:
+  language: javascript
+match:
+  query: |
+    (call_expression
+      function: (member_expression
+        object: (identifier) @lib
+        property: (property_identifier) @verb)
+      arguments: (arguments . (string) @path_raw)
+    ) @call
+  where:
+    lib: { eq: axios }
+    verb: { in: [get, post, put, delete, patch] }
+emit:
+  - node:
+      label: HttpCall
+      id: "call-{file}-{path_raw|unquote}-{verb}"
+      properties:
+        framework: react
+        client: axios
+        http_method: "{verb|upper}"
+        path: "{path_raw|unquote}"

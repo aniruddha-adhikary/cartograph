@@ -1,0 +1,88 @@
+{
+  "nodes": [
+    {
+      "id": "69a6b55047d2fe44",
+      "label": "Endpoint",
+      "properties": {
+        "file": "src/main/java/com/example/UserController.java",
+        "line": 17,
+        "line_end": 20,
+        "confidence": "high",
+        "framework": "spring",
+        "http_method": "POST",
+        "path": "",
+        "handler_name": "createUser",
+        "base_path_ref": "c2fc44511eb6b302",
+        "provenance": {
+          "pack": "spring",
+          "rule_id": "spring.rest-controller.endpoint-marker"
+        },
+        "absolute_path": "/api/users"
+      }
+    },
+    {
+      "id": "b9e6e111132b283a",
+      "label": "Endpoint",
+      "properties": {
+        "file": "src/main/java/com/example/UserController.java",
+        "line": 12,
+        "line_end": 15,
+        "confidence": "high",
+        "framework": "spring",
+        "http_method": "GET",
+        "path": "/{id}",
+        "handler_name": "getUser",
+        "base_path_ref": "c2fc44511eb6b302",
+        "provenance": {
+          "pack": "spring",
+          "rule_id": "spring.rest-controller.endpoint-with-path"
+        },
+        "absolute_path": "/api/users/{id}"
+      }
+    },
+    {
+      "id": "c2fc44511eb6b302",
+      "label": "Service",
+      "properties": {
+        "file": "src/main/java/com/example/UserController.java",
+        "line": 8,
+        "line_end": 21,
+        "confidence": "high",
+        "kind": "rest-controller",
+        "framework": "spring",
+        "name": "UserController",
+        "base_path": "/api/users",
+        "provenance": {
+          "pack": "spring",
+          "rule_id": "spring.rest-controller"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "type": "HANDLES",
+      "from_id": "c2fc44511eb6b302",
+      "to_id": "69a6b55047d2fe44",
+      "properties": {
+        "confidence": "high",
+        "provenance": {
+          "pack": "spring",
+          "rule_id": "spring.rest-controller.endpoint-marker"
+        }
+      }
+    },
+    {
+      "type": "HANDLES",
+      "from_id": "c2fc44511eb6b302",
+      "to_id": "b9e6e111132b283a",
+      "properties": {
+        "confidence": "high",
+        "provenance": {
+          "pack": "spring",
+          "rule_id": "spring.rest-controller.endpoint-with-path"
+        }
+      }
+    }
+  ]
+}

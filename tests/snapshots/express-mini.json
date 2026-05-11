@@ -1,0 +1,98 @@
+{
+  "nodes": [
+    {
+      "id": "0cd705b3c8ed6c08",
+      "label": "RouterMount",
+      "properties": {
+        "file": "server.js",
+        "line": 11,
+        "line_end": 11,
+        "confidence": "high",
+        "framework": "express",
+        "mount_path": "/api/v2",
+        "child_router": "usersRouter",
+        "provenance": {
+          "pack": "express",
+          "rule_id": "express.router-mount"
+        }
+      }
+    },
+    {
+      "id": "7a30db736ffca759",
+      "label": "Endpoint",
+      "properties": {
+        "file": "server.js",
+        "line": 5,
+        "line_end": 5,
+        "confidence": "high",
+        "framework": "express",
+        "http_method": "GET",
+        "path": "/list",
+        "mounted_on": "usersRouter",
+        "provenance": {
+          "pack": "express",
+          "rule_id": "express.endpoint"
+        },
+        "absolute_path": "/list"
+      }
+    },
+    {
+      "id": "8a7c5491209e497b",
+      "label": "Endpoint",
+      "properties": {
+        "file": "server.js",
+        "line": 7,
+        "line_end": 7,
+        "confidence": "high",
+        "framework": "express",
+        "http_method": "GET",
+        "path": "/api/users",
+        "mounted_on": "app",
+        "provenance": {
+          "pack": "express",
+          "rule_id": "express.endpoint"
+        },
+        "absolute_path": "/api/users"
+      }
+    },
+    {
+      "id": "ae7d64360e3b22d3",
+      "label": "Endpoint",
+      "properties": {
+        "file": "server.js",
+        "line": 8,
+        "line_end": 8,
+        "confidence": "high",
+        "framework": "express",
+        "http_method": "POST",
+        "path": "/api/users",
+        "mounted_on": "app",
+        "provenance": {
+          "pack": "express",
+          "rule_id": "express.endpoint"
+        },
+        "absolute_path": "/api/users"
+      }
+    },
+    {
+      "id": "b2a4045c70b7ff8d",
+      "label": "Endpoint",
+      "properties": {
+        "file": "server.js",
+        "line": 9,
+        "line_end": 9,
+        "confidence": "high",
+        "framework": "express",
+        "http_method": "DELETE",
+        "path": "/api/users/:id",
+        "mounted_on": "app",
+        "provenance": {
+          "pack": "express",
+          "rule_id": "express.endpoint"
+        },
+        "absolute_path": "/api/users/:id"
+      }
+    }
+  ],
+  "edges": []
+}

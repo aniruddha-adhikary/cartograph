@@ -1,0 +1,85 @@
+id: spring.rest-controller
+description: Spring REST controllers (@RestController / @Controller)
+when:
+  language: java
+  imports_any:
+    - org.springframework
+match:
+  query: |
+    (class_declaration
+      (modifiers
+        (marker_annotation name: (identifier) @rc_ann)
+        (annotation
+          name: (identifier) @rm_ann
+          arguments: (annotation_argument_list (string_literal) @base_path_raw))?
+      )
+      name: (identifier) @class_name
+    ) @class
+  where:
+    rc_ann: { in: [RestController, Controller] }
+emit:
+  - node:
+      label: Service
+      id: "svc-{file}-{class_name}"
+      properties:
+        kind: rest-controller
+        framework: spring
+        name: "{class_name}"
+        base_path: "{base_path_raw?|unquote}"
+sub_rules:
+  - id: spring.rest-controller.endpoint-with-path
+    description: Method with @GetMapping("/path") style annotation
+    match:
+      query: |
+        (method_declaration
+          (modifiers
+            (annotation
+              name: (identifier) @verb_ann
+              arguments: (annotation_argument_list (string_literal) @path_raw))
+          )
+          name: (identifier) @method_name
+        ) @method
+      where:
+        verb_ann:
+          in: [GetMapping, PostMapping, PutMapping, DeleteMapping, PatchMapping, RequestMapping]
+    emit:
+      - node:
+          label: Endpoint
+          id: "ep-{file}-{parent.class_name}-{method_name}-{path_raw|unquote}"
+          properties:
+            framework: spring
+            http_method: "{verb_ann|strip_suffix:Mapping|upper}"
+            path: "{path_raw|unquote}"
+            handler_name: "{method_name}"
+            base_path_ref: "{parent.this.id}"
+      - edge:
+          type: HANDLES
+          from: "{parent.this.id}"
+          to: "{this.id}"
+  - id: spring.rest-controller.endpoint-marker
+    description: Method with @GetMapping (no path argument, default "/")
+    match:
+      query: |
+        (method_declaration
+          (modifiers
+            (marker_annotation name: (identifier) @verb_ann)
+          )
+          name: (identifier) @method_name
+        ) @method
+      where:
+        verb_ann:
+          in: [GetMapping, PostMapping, PutMapping, DeleteMapping, PatchMapping, RequestMapping]
+    emit:
+      - node:
+          label: Endpoint
+          id: "ep-{file}-{parent.class_name}-{method_name}-marker"
+          properties:
+            framework: spring
+            http_method: "{verb_ann|strip_suffix:Mapping|upper}"
+            path: ""
+            handler_name: "{method_name}"
+            base_path_ref: "{parent.this.id}"
+      - edge:
+          type: HANDLES
+          from: "{parent.this.id}"
+          to: "{this.id}"

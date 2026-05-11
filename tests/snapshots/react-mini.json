@@ -1,0 +1,75 @@
+{
+  "nodes": [
+    {
+      "id": "2753ca00631892f4",
+      "label": "HttpCall",
+      "properties": {
+        "file": "UserList.jsx",
+        "line": 8,
+        "line_end": 8,
+        "confidence": "high",
+        "framework": "react",
+        "client": "fetch",
+        "http_method": "GET",
+        "path": "/api/users",
+        "provenance": {
+          "pack": "react",
+          "rule_id": "react.fetch-call-default"
+        }
+      }
+    },
+    {
+      "id": "4da8bd2b5f599061",
+      "label": "Component",
+      "properties": {
+        "file": "UserList.jsx",
+        "line": 12,
+        "line_end": 16,
+        "confidence": "high",
+        "framework": "react",
+        "kind": "class",
+        "name": "App",
+        "extends": "React.Component",
+        "provenance": {
+          "pack": "react",
+          "rule_id": "react.class-component"
+        }
+      }
+    },
+    {
+      "id": "4f6a80649af739e9",
+      "label": "Component",
+      "properties": {
+        "file": "UserList.jsx",
+        "line": 3,
+        "line_end": 5,
+        "confidence": "high",
+        "framework": "react",
+        "kind": "function",
+        "name": "UserCard",
+        "provenance": {
+          "pack": "react",
+          "rule_id": "react.function-component"
+        }
+      }
+    },
+    {
+      "id": "634b9481ec41c53f",
+      "label": "Component",
+      "properties": {
+        "file": "UserList.jsx",
+        "line": 7,
+        "line_end": 10,
+        "confidence": "high",
+        "framework": "react",
+        "kind": "function",
+        "name": "UserList",
+        "provenance": {
+          "pack": "react",
+          "rule_id": "react.function-component"
+        }
+      }
+    }
+  ],
+  "edges": []
+}

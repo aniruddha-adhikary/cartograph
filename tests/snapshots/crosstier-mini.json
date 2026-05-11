@@ -1,0 +1,123 @@
+{
+  "nodes": [
+    {
+      "id": "0d322cf52f93b8ad",
+      "label": "Endpoint",
+      "properties": {
+        "file": "backend/server.js",
+        "line": 5,
+        "line_end": 5,
+        "confidence": "high",
+        "framework": "express",
+        "http_method": "POST",
+        "path": "/api/users",
+        "mounted_on": "app",
+        "provenance": {
+          "pack": "express",
+          "rule_id": "express.endpoint"
+        },
+        "absolute_path": "/api/users"
+      }
+    },
+    {
+      "id": "1d98833d2cae7bff",
+      "label": "HttpCall",
+      "properties": {
+        "file": "frontend/UserList.jsx",
+        "line": 4,
+        "line_end": 4,
+        "confidence": "high",
+        "framework": "react",
+        "client": "fetch",
+        "http_method": "GET",
+        "path": "/api/users",
+        "provenance": {
+          "pack": "react",
+          "rule_id": "react.fetch-call-default"
+        }
+      }
+    },
+    {
+      "id": "727fccb9caa000bf",
+      "label": "HttpCall",
+      "properties": {
+        "file": "frontend/UserList.jsx",
+        "line": 5,
+        "line_end": 5,
+        "confidence": "high",
+        "framework": "react",
+        "client": "fetch",
+        "http_method": "POST",
+        "path": "/api/users",
+        "provenance": {
+          "pack": "react",
+          "rule_id": "react.fetch-call"
+        }
+      }
+    },
+    {
+      "id": "afe430413c43d56c",
+      "label": "Endpoint",
+      "properties": {
+        "file": "backend/server.js",
+        "line": 4,
+        "line_end": 4,
+        "confidence": "high",
+        "framework": "express",
+        "http_method": "GET",
+        "path": "/api/users",
+        "mounted_on": "app",
+        "provenance": {
+          "pack": "express",
+          "rule_id": "express.endpoint"
+        },
+        "absolute_path": "/api/users"
+      }
+    },
+    {
+      "id": "c4fdb247f2de40f9",
+      "label": "Component",
+      "properties": {
+        "file": "frontend/UserList.jsx",
+        "line": 3,
+        "line_end": 7,
+        "confidence": "high",
+        "framework": "react",
+        "kind": "function",
+        "name": "UserList",
+        "provenance": {
+          "pack": "react",
+          "rule_id": "react.function-component"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "type": "CROSSES_TIER",
+      "from_id": "1d98833d2cae7bff",
+      "to_id": "afe430413c43d56c",
+      "properties": {
+        "confidence": "high",
+        "matched_method": "GET",
+        "matched_path": "/api/users",
+        "provenance": {
+          "linker": "http_cross_tier"
+        }
+      }
+    },
+    {
+      "type": "CROSSES_TIER",
+      "from_id": "727fccb9caa000bf",
+      "to_id": "0d322cf52f93b8ad",
+      "properties": {
+        "confidence": "high",
+        "matched_method": "POST",
+        "matched_path": "/api/users",
+        "provenance": {
+          "linker": "http_cross_tier"
+        }
+      }
+    }
+  ]
+}

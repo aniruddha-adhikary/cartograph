@@ -1,0 +1,49 @@
+id: express.endpoint
+description: Express verb routes (app.get/post/put/delete/patch)
+when:
+  language: javascript
+match:
+  query: |
+    (call_expression
+      function: (member_expression
+        object: (identifier) @router_obj
+        property: (property_identifier) @verb)
+      arguments: (arguments . (string) @path_raw)
+    ) @call
+  where:
+    verb: { in: [get, post, put, delete, patch] }
+    router_obj: { regex: "^([a-z][A-Za-z0-9_]*[Rr]outer|app|router|api|server)$" }
+emit:
+  - node:
+      label: Endpoint
+      id: "ep-{file}-{verb}-{path_raw|unquote}"
+      properties:
+        framework: express
+        http_method: "{verb|upper}"
+        path: "{path_raw|unquote}"
+        mounted_on: "{router_obj}"
+
+---
+
+id: express.router-mount
+description: app.use('/prefix', router) router mount
+when:
+  language: javascript
+match:
+  query: |
+    (call_expression
+      function: (member_expression
+        object: (identifier) @router_obj
+        property: (property_identifier) @verb)
+      arguments: (arguments . (string) @path_raw . (identifier) @child_router)
+    ) @call
+  where:
+    verb: { eq: use }
+emit:
+  - node:
+      label: RouterMount
+      id: "mount-{file}-{path_raw|unquote}-{child_router}"
+      properties:
+        framework: express
+        mount_path: "{path_raw|unquote}"
+        child_router: "{child_router}"

@@ -1,0 +1,9 @@
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "src"))
+
+FIXTURES = Path(__file__).resolve().parent / "fixtures"
+PACKS = ROOT / "packs"
+SNAPSHOTS = Path(__file__).resolve().parent / "snapshots"

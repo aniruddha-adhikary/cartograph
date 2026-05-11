@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "codette"
+version = "0.1.0"
+description = "Polyglot tree-sitter extractor engine with YAML-driven framework packs"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { file = "LICENSE" }
+authors = [{ name = "Aniruddha Adhikary" }]
+dependencies = [
+    "tree-sitter>=0.25,<0.26",
+    "tree-sitter-java>=0.23",
+    "tree-sitter-javascript>=0.23",
+    "tree-sitter-typescript>=0.23",
+    "tree-sitter-python>=0.23",
+    "tree-sitter-go>=0.23",
+    "tree-sitter-c-sharp>=0.23",
+    "PyYAML>=6.0,<7",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+]
+
+[project.scripts]
+codette = "codette.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+codette = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
