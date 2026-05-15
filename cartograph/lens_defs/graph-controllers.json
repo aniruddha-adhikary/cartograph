@@ -1,0 +1,10 @@
+{
+  "name": "graph-controllers",
+  "scope": "graph",
+  "match": {
+    "query": "MATCH (s:Service)\nWHERE s.kind CONTAINS 'controller'\nRETURN s"
+  },
+  "emit": {
+    "returns": {"s": "Service"}
+  }
+}

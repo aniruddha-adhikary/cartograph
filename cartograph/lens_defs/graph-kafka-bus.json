@@ -1,0 +1,14 @@
+{
+  "name": "graph-kafka-bus",
+  "scope": "graph",
+  "match": {
+    "query": "MATCH (p:KafkaProducer)-[d:KAFKA_DELIVERS]->(c:KafkaConsumer)\nRETURN p, d, c"
+  },
+  "emit": {
+    "returns": {
+      "p": "KafkaProducer",
+      "d": "KAFKA_DELIVERS",
+      "c": "KafkaConsumer"
+    }
+  }
+}

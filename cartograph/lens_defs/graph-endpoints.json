@@ -1,0 +1,10 @@
+{
+  "name": "graph-endpoints",
+  "scope": "graph",
+  "match": {
+    "query": "MATCH (e:Endpoint)\nRETURN e"
+  },
+  "emit": {
+    "returns": {"e": "Endpoint"}
+  }
+}

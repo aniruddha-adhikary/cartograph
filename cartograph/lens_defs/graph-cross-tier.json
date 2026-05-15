@@ -1,0 +1,14 @@
+{
+  "name": "graph-cross-tier",
+  "scope": "graph",
+  "match": {
+    "query": "MATCH (caller:HttpCall)-[e:CROSSES_TIER]->(endpoint:Endpoint)\nRETURN caller, e, endpoint"
+  },
+  "emit": {
+    "returns": {
+      "caller": "HttpCall",
+      "e": "CROSSES_TIER",
+      "endpoint": "Endpoint"
+    }
+  }
+}
