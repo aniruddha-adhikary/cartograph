@@ -25,6 +25,9 @@ def run_source_lens(
         return _xml_element_strategy(lens, rel_path, content, service)
     if strategy == "config-key":
         return _config_key_strategy(lens, rel_path, content, service)
+    if strategy == "tree-sitter":
+        from .tree_sitter_strategy import run_tree_sitter_strategy
+        return run_tree_sitter_strategy(lens, rel_path, content, service)
     raise ValueError(f"unknown source lens strategy: {strategy}")
 
 

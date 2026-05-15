@@ -7,7 +7,11 @@ name = "cartograph"
 version = "0.1.0"
 description = "Configurable polyrepo graph indexing and query tools"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+  "tree-sitter>=0.24",
+  "tree-sitter-java>=0.23",
+  "tree-sitter-javascript>=0.23",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -23,7 +27,7 @@ cartograph = "cartograph.cli:main"
 packages = ["cartograph"]
 
 [tool.setuptools.package-data]
-cartograph = ["skills/*.md", "packs/*.json", "views/*.json"]
+cartograph = ["skills/*.md", "packs/*.json", "views/*.json", "lens_defs/*.json"]
 
 [tool.ruff]
 line-length = 120
