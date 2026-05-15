@@ -1,0 +1,25 @@
+{
+  "name": "struts-action",
+  "scope": "source",
+  "match": {
+    "files": ["*.xml"],
+    "strategy": "xml-element",
+    "tag": "action",
+    "attrs": ["name", "class", "method"]
+  },
+  "emit": {
+    "label": "Action",
+    "schema": {
+      "name": "string",
+      "class_name": "string",
+      "method": "string"
+    },
+    "values": {
+      "name": "{{name}}",
+      "class_name": "{{class}}",
+      "method": "{{method}}"
+    },
+    "source": "lens:struts-action",
+    "confidence": "high"
+  }
+}

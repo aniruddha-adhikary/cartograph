@@ -1,0 +1,23 @@
+{
+  "name": "sql-mapper",
+  "scope": "source",
+  "match": {
+    "files": ["*.xml"],
+    "strategy": "xml-element",
+    "tag": "select|insert|update|delete",
+    "attrs": ["id"]
+  },
+  "emit": {
+    "label": "DatabaseQuery",
+    "schema": {
+      "operation": "string",
+      "query_id": "string"
+    },
+    "values": {
+      "operation": "{{_tag}}",
+      "query_id": "{{id}}"
+    },
+    "source": "lens:sql-mapper",
+    "confidence": "high"
+  }
+}

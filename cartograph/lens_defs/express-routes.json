@@ -1,0 +1,29 @@
+{
+  "name": "express-routes",
+  "scope": "source",
+  "match": {
+    "files": ["*.js", "*.ts", "*.jsx", "*.tsx"],
+    "strategy": "regex",
+    "patterns": [
+      {
+        "regex": "\\b(?:app|router)\\.(?P<method>get|post|put|delete|patch)\\s*\\(\\s*['\"](?P<path>[^'\"]+)['\"]",
+        "per_line": true
+      }
+    ]
+  },
+  "emit": {
+    "label": "Endpoint",
+    "schema": {
+      "http_method": "string",
+      "path": "string",
+      "handler": "string"
+    },
+    "values": {
+      "http_method": "{{method}}",
+      "path": "{{path}}",
+      "handler": "{{_file_stem}}:line{{_line}}"
+    },
+    "source": "lens:express-routes",
+    "confidence": "high"
+  }
+}

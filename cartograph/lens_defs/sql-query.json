@@ -1,0 +1,25 @@
+{
+  "name": "sql-query",
+  "scope": "source",
+  "match": {
+    "files": ["*.sql"],
+    "strategy": "regex",
+    "patterns": [
+      {
+        "regex": "^\\s*(?P<operation>SELECT|INSERT|UPDATE|DELETE|MERGE|CALL)\\b",
+        "per_line": true
+      }
+    ]
+  },
+  "emit": {
+    "label": "DatabaseQuery",
+    "schema": {
+      "operation": "string"
+    },
+    "values": {
+      "operation": "{{operation}}"
+    },
+    "source": "lens:sql-query",
+    "confidence": "medium"
+  }
+}

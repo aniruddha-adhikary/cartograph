@@ -1,0 +1,64 @@
+[
+  {
+    "name": "spring-rest-endpoint",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "annotation-method",
+      "class_annotations": ["@RestController", "@Controller"],
+      "base_path_annotation": "@RequestMapping",
+      "method_annotations": {
+        "Get": "GET",
+        "Post": "POST",
+        "Put": "PUT",
+        "Delete": "DELETE",
+        "Patch": "PATCH"
+      }
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "handler": "string"
+      },
+      "values": {
+        "http_method": "{{http_method}}",
+        "path": "{{path}}",
+        "handler": "{{class_name}}.{{method_name}}"
+      },
+      "source": "lens:spring-rest-endpoint",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-rest-service",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "(?P<annotation>@(?:RestController|Controller))\\b",
+          "per_line": true,
+          "gate": "class\\s+(?P<class_name>\\w+)"
+        }
+      ]
+    },
+    "emit": {
+      "label": "Service",
+      "schema": {
+        "kind": "string",
+        "framework": "string",
+        "name": "string"
+      },
+      "values": {
+        "kind": "rest-controller",
+        "framework": "spring",
+        "name": "{{class_name}}"
+      },
+      "source": "lens:spring-rest-endpoint",
+      "confidence": "high"
+    }
+  }
+]

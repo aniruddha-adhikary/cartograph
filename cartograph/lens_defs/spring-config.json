@@ -1,0 +1,22 @@
+{
+  "name": "spring-config",
+  "scope": "source",
+  "match": {
+    "files": ["*.properties", "*.yaml", "*.yml"],
+    "strategy": "config-key",
+    "key_pattern": "spring\\.application\\.name\\s*=\\s*(?P<app_name>.+)"
+  },
+  "emit": {
+    "label": "ConfigProperty",
+    "schema": {
+      "key": "string",
+      "value": "string"
+    },
+    "values": {
+      "key": "spring.application.name",
+      "value": "{{app_name}}"
+    },
+    "source": "lens:spring-config",
+    "confidence": "high"
+  }
+}

@@ -1,0 +1,52 @@
+[
+  {
+    "name": "kafkajs-producer",
+    "scope": "source",
+    "match": {
+      "files": ["*.js", "*.ts"],
+      "strategy": "token-line",
+      "tokens": ["producer.send"],
+      "extract": "topic\\s*:\\s*['\"](?P<topic>[^'\"]+)['\"]"
+    },
+    "emit": {
+      "label": "KafkaProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "kafka",
+        "topic": "{{topic}}"
+      },
+      "source": "lens:kafkajs",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "kafkajs-consumer",
+    "scope": "source",
+    "match": {
+      "files": ["*.js", "*.ts"],
+      "strategy": "token-line",
+      "tokens": [".subscribe"],
+      "extract": "topic\\s*:\\s*['\"](?P<topic>[^'\"]+)['\"]"
+    },
+    "emit": {
+      "label": "KafkaConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "kafka",
+        "topic": "{{topic}}"
+      },
+      "source": "lens:kafkajs",
+      "confidence": "high"
+    }
+  }
+]

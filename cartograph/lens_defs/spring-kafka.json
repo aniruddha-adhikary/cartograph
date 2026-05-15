@@ -1,0 +1,56 @@
+[
+  {
+    "name": "spring-kafka-consumer",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "@KafkaListener\\s*\\((?P<args>[^)]+)\\)",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "KafkaConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topics": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "kafka",
+        "topics": "{{args}}"
+      },
+      "source": "lens:spring-kafka",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-kafka-producer",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "token-line",
+      "tokens": [".send("],
+      "extract": "\"(?P<topic>[^\"]+)\""
+    },
+    "emit": {
+      "label": "KafkaProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "kafka",
+        "topic": "{{topic}}"
+      },
+      "source": "lens:spring-kafka",
+      "confidence": "high"
+    }
+  }
+]

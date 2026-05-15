@@ -1,0 +1,23 @@
+{
+  "name": "spring-http-call",
+  "scope": "source",
+  "match": {
+    "files": ["*.java"],
+    "strategy": "token-line",
+    "tokens": ["RestTemplate", "getForObject", "postForEntity", "exchange(", ".uri("],
+    "extract": "\"(?P<url>https?://[^\"]+|/[A-Za-z0-9_./{}-]+)\""
+  },
+  "emit": {
+    "label": "HttpCall",
+    "schema": {
+      "url": "string",
+      "http_method": "string"
+    },
+    "values": {
+      "url": "{{url}}",
+      "http_method": "GET"
+    },
+    "source": "lens:spring-http-call",
+    "confidence": "high"
+  }
+}
