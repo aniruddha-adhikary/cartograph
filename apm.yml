@@ -1,0 +1,15 @@
+name: cartograph
+version: 0.1.0
+description: Agent context package for Cartograph, a CLI-first typed graph and lens system for codebases.
+license: MIT
+homepage: https://github.com/aniruddha-adhikary/codette
+keywords:
+  - cartograph
+  - code-graph
+  - lenses
+  - kuzu
+  - coding-agents
+dependencies:
+  apm: []
+  mcp: []
+includes: auto

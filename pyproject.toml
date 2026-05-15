@@ -29,6 +29,7 @@ cartograph = ["skills/*.md", "packs/*.json", "views/*.json"]
 line-length = 120
 target-version = "py311"
 extend-exclude = [
+  ".agents",
   ".cartograph-real-repos",
   "cartograph-out",
 ]

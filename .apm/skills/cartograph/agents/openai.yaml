@@ -1,0 +1,6 @@
+interface:
+  display_name: "Cartograph"
+  short_description: "Query code graphs and Kuzu-style lenses"
+  default_prompt: "Use $cartograph to inspect the project graph before broad source search."
+policy:
+  allow_implicit_invocation: true

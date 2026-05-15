@@ -33,6 +33,8 @@ htmlcov/
 
 # Local/editor noise
 .DS_Store
+.agents/
+skills-lock.json
 .idea/
 .vscode/
 *.swp

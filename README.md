@@ -88,6 +88,14 @@ The CLI validates referenced node labels and relationship types against the grap
 
 ## Agent Workflow
 
+Cartograph ships an [APM](https://microsoft.github.io/apm/) package manifest so agent context can be installed consistently across supported harnesses:
+
+```bash
+apm install
+```
+
+The package includes a Cartograph skill and graph-first instructions under `.apm/`.
+
 Install repo-local guidance for coding agents:
 
 ```bash
