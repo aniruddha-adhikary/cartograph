@@ -1,0 +1,11 @@
+{
+  "name": "graph-search",
+  "scope": "graph",
+  "match": {
+    "query": "MATCH (n:Endpoint)\nWHERE n.path CONTAINS $query\nRETURN n",
+    "params": {"query": ""}
+  },
+  "emit": {
+    "returns": {"n": "Endpoint"}
+  }
+}
