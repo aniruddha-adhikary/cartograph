@@ -1,0 +1,99 @@
+[
+  {
+    "name": "j2ee-ejb-component",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (marker_annotation name: (identifier) @ann (#match? @ann \"^(Stateless|Stateful|Singleton)$\"))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (annotation name: (identifier) @ann (#match? @ann \"^(Stateless|Stateful|Singleton)$\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {"name": "string", "kind": "string", "framework": "string"},
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "ejb-{{ann}}",
+        "framework": "j2ee-ejb"
+      },
+      "source": "lens:j2ee-ejb",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-ejb-mdb",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"MessageDriven\") arguments: (annotation_argument_list) @cfg)) name: (identifier) @class_name) @anchor (class_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"MessageDriven\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string", "bus": "string", "topic": "string",
+        "topics": "list", "destination_const": "string", "handler": "string",
+        "framework": "string", "activation_config_text": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "jms",
+        "topic": "",
+        "topics": [""],
+        "destination_const": "",
+        "handler": "{{class_name}}",
+        "framework": "j2ee-jms",
+        "activation_config_text": "{{cfg|}}"
+      },
+      "source": "lens:j2ee-ejb",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "j2ee-mdb-destination-resolve",
+    "scope": "resolve",
+    "match": {
+      "label": "MessageConsumer",
+      "where": {"framework": "j2ee-jms"},
+      "from": "activation_config_text",
+      "patterns": [
+        {"regex": "propertyName\\s*=\\s*\"destination(?:Lookup|Name)\"\\s*,\\s*propertyValue\\s*=\\s*\"(?P<topic>[^\"]+)\""},
+        {"regex": "propertyName\\s*=\\s*\"destination(?:Lookup|Name)\"\\s*,\\s*propertyValue\\s*=\\s*(?P<destination_const>[\\w.]+)"}
+      ]
+    },
+    "set": {
+      "topic": "{{topic|destination_const|}}",
+      "destination_const": "{{destination_const}}"
+    }
+  },
+  {
+    "name": "j2ee-ejb-business-interface",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(interface_declaration (modifiers (marker_annotation name: (identifier) @ann (#match? @ann \"^(Local|Remote)$\"))) name: (identifier) @class_name) @anchor (interface_declaration (modifiers (annotation name: (identifier) @ann (#match? @ann \"^(Local|Remote)$\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "EjbInterface",
+      "schema": {"name": "string", "scope": "string", "framework": "string"},
+      "values": {"name": "{{class_name}}", "scope": "{{ann}}", "framework": "j2ee-ejb"},
+      "source": "lens:j2ee-ejb",
+      "confidence": "medium"
+    }
+  }
+]

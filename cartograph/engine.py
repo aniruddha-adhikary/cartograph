@@ -23,6 +23,8 @@ def run_source_lens(
         return _token_line_strategy(lens, rel_path, content, service)
     if strategy == "xml-element":
         return _xml_element_strategy(lens, rel_path, content, service)
+    if strategy == "xml-query":
+        return _xml_query_strategy(lens, rel_path, content, service)
     if strategy == "config-key":
         return _config_key_strategy(lens, rel_path, content, service)
     if strategy == "tree-sitter":
@@ -180,6 +182,75 @@ def _xml_element_strategy(
     return nodes, edges
 
 
+def _xml_query_strategy(
+    lens: dict[str, Any], rel: str, content: str, service: str,
+) -> tuple[list[Node], list[Edge]]:
+    """Run an ElementTree XPath select, emit one node per match.
+
+    Lens match config:
+      select:    str (required) — ElementTree XPath, e.g. ".//servlet-mapping"
+      captures:  dict[str, str] — capture_name -> sub-selector. Each sub-selector is:
+                   "@attr"          — attribute on the matched element
+                   "."              — text of the matched element itself
+                   "child"          — text of first <child> below the match
+                   "child/grand"    — text of first <child>/<grand> below the match
+                   "child/@attr"    — attribute of first <child>
+                 If a capture has no match, it resolves to "".
+    """
+    import xml.etree.ElementTree as ET
+    nodes: list[Node] = []
+    edges: list[Edge] = []
+    match = lens["match"]
+    emit = lens["emit"]
+    select = match.get("select", ".")
+    captures_cfg = match.get("captures", {})
+
+    cleaned = re.sub(r"^\s*<\?xml[^?]*\?>", "", content)
+    cleaned = re.sub(r'\sxmlns(:[\w-]+)?\s*=\s*"[^"]*"', "", cleaned)
+    try:
+        root = ET.fromstring(cleaned)
+    except ET.ParseError:
+        return nodes, edges
+
+    line_starts = [0]
+    for i, ch in enumerate(content):
+        if ch == "\n":
+            line_starts.append(i + 1)
+
+    for el in root.findall(select):
+        captures: dict[str, Any] = {"_tag": el.tag}
+        for name, sub in captures_cfg.items():
+            captures[name] = _xml_resolve(el, sub)
+        line_no = _xml_lineno(el, content, line_starts)
+        nodes.append(_emit_node(emit, captures, rel, line_no, service))
+    return nodes, edges
+
+
+def _xml_resolve(el: Any, selector: str) -> str:
+    if selector in ("", "."):
+        return (el.text or "").strip()
+    if selector.startswith("@"):
+        return el.get(selector[1:], "") or ""
+    parts = selector.split("/")
+    last = parts[-1]
+    if last.startswith("@"):
+        parent_path = "/".join(parts[:-1])
+        target = el.find(parent_path) if parent_path else el
+        return target.get(last[1:], "") if target is not None else ""
+    target = el.find(selector)
+    return (target.text or "").strip() if target is not None and target.text else ""
+
+
+def _xml_lineno(el: Any, content: str, line_starts: list[int]) -> int:
+    open_tag = f"<{el.tag}"
+    idx = content.find(open_tag)
+    if idx >= 0:
+        for ln, start in enumerate(line_starts, 1):
+            if start > idx:
+                return ln - 1
+    return 1
+
+
 def _config_key_strategy(
     lens: dict[str, Any], rel: str, content: str, service: str,
 ) -> tuple[list[Node], list[Edge]]:
@@ -202,6 +273,8 @@ def _emit_node(
 ) -> Node:
     captures.setdefault("_file_stem", Path(rel).stem)
     captures.setdefault("_line", str(line_no))
+    captures.setdefault("_rel_path", rel)
+    captures.setdefault("_rel_dir", str(Path(rel).parent).replace("\\", "/"))
     values = emit.get("values", {})
     props: dict[str, Any] = {}
     for key, template in values.items():

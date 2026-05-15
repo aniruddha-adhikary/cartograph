@@ -1,0 +1,80 @@
+[
+  {
+    "name": "j2ee-jaxrs-application",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"ApplicationPath\") arguments: (annotation_argument_list (string_literal (string_fragment) @base_path)))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Service",
+      "schema": {"name": "string", "kind": "string", "framework": "string", "base_path": "string"},
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "jaxrs-application",
+        "framework": "j2ee-jaxrs",
+        "base_path": "{{base_path}}"
+      },
+      "source": "lens:j2ee-jaxrs",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-jaxrs-resource",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Path\") arguments: (annotation_argument_list (string_literal (string_fragment) @base_path)))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Service",
+      "schema": {"name": "string", "kind": "string", "framework": "string", "base_path": "string"},
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "jaxrs-resource",
+        "framework": "j2ee-jaxrs",
+        "base_path": "{{base_path}}"
+      },
+      "source": "lens:j2ee-jaxrs",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-jaxrs-endpoint",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @cls_ann (#eq? @cls_ann \"Path\") arguments: (annotation_argument_list (string_literal (string_fragment) @parent_path)))) name: (identifier) @class_name body: (class_body (method_declaration (modifiers (marker_annotation name: (identifier) @http (#match? @http \"^(GET|POST|PUT|DELETE|HEAD|OPTIONS|PATCH)$\")) (annotation name: (identifier) @path_ann (#eq? @path_ann \"Path\") arguments: (annotation_argument_list (string_literal (string_fragment) @method_path)))) name: (identifier) @method_name) @anchor)) (class_declaration (modifiers (annotation name: (identifier) @cls_ann (#eq? @cls_ann \"Path\") arguments: (annotation_argument_list (string_literal (string_fragment) @parent_path)))) name: (identifier) @class_name body: (class_body (method_declaration (modifiers (marker_annotation name: (identifier) @http (#match? @http \"^(GET|POST|PUT|DELETE|HEAD|OPTIONS|PATCH)$\"))) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {"http_method": "string", "path": "string", "handler": "string", "framework": "string"},
+      "values": {
+        "http_method": "{{http}}",
+        "path": "/{{parent_path|}}/{{method_path|}}",
+        "handler": "{{class_name}}.{{method_name}}",
+        "framework": "j2ee-jaxrs"
+      },
+      "source": "lens:j2ee-jaxrs",
+      "confidence": "high"
+    }
+  }
+]

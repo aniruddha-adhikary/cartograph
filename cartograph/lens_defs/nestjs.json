@@ -1,0 +1,133 @@
+[
+  {
+    "name": "nestjs-rest-endpoint",
+    "scope": "source",
+    "match": {
+      "files": ["*.controller.ts", "*.controller.js"],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "^\\s*@(?P<method>Get|Post|Put|Delete|Patch|All|Head|Options)\\s*\\(\\s*(?:\\[\\s*)?(?:['\"`](?P<path>[^'\"`]*)['\"`])?",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "handler": "string"
+      },
+      "values": {
+        "http_method": "{{method}}",
+        "path": "{{path|}}",
+        "handler": "{{_file_stem}}:line{{_line}}"
+      },
+      "source": "lens:nestjs-rest-endpoint",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "nestjs-controller",
+    "scope": "source",
+    "match": {
+      "files": ["*.controller.ts", "*.controller.js"],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "^\\s*@Controller\\s*\\(\\s*(?:\\{[^}]*\\bpath\\s*:\\s*['\"`](?P<obj_path>[^'\"`]*)['\"`]|['\"`](?P<str_path>[^'\"`]*)['\"`])?",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Service",
+      "schema": {
+        "kind": "string",
+        "framework": "string",
+        "base_path": "string",
+        "file": "string"
+      },
+      "values": {
+        "kind": "rest-controller",
+        "framework": "nestjs",
+        "base_path": "{{obj_path|str_path|}}",
+        "file": "{{_rel_path}}"
+      },
+      "source": "lens:nestjs-controller",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "nestjs-graphql-resolver",
+    "scope": "source",
+    "match": {
+      "files": ["*.resolver.ts", "*.resolver.js"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "typescript",
+        "extractor": "query",
+        "query": "(decorator (call_expression function: (identifier) @op (#match? @op \"^(Query|Mutation|Subscription|ResolveField)$\"))) @decorator",
+        "anchor": "decorator",
+        "next_sibling": {
+          "type": "method_definition",
+          "skip_types": ["decorator"],
+          "captures": {
+            "method": "name"
+          }
+        }
+      }
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "operation": "string",
+        "handler": "string",
+        "protocol": "string"
+      },
+      "values": {
+        "http_method": "{{op}}",
+        "path": "{{method}}",
+        "operation": "{{method}}",
+        "handler": "{{_file_stem}}.{{method}}",
+        "protocol": "graphql"
+      },
+      "source": "lens:nestjs-graphql-resolver",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "nestjs-microservice-handler",
+    "scope": "source",
+    "match": {
+      "files": ["*.ts", "*.js"],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "^\\s*@(?P<kind>MessagePattern|EventPattern)\\s*\\(\\s*(?:['\"`](?P<topic>[^'\"`]+)['\"`]|\\{[^}]*\\bcmd\\s*:\\s*['\"`](?P<cmd>[^'\"`]+)['\"`]|(?P<token>[A-Z_][A-Z0-9_]*))?",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "kind": "string",
+        "framework": "string",
+        "topic": "string",
+        "handler": "string"
+      },
+      "values": {
+        "kind": "{{kind}}",
+        "framework": "nestjs-microservices",
+        "topic": "{{topic|cmd|token|}}",
+        "handler": "{{_file_stem}}:line{{_line}}"
+      },
+      "source": "lens:nestjs-microservice-handler",
+      "confidence": "medium"
+    }
+  }
+]

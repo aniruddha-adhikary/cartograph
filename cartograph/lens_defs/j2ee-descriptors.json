@@ -1,0 +1,211 @@
+[
+  {
+    "name": "j2ee-webxml-servlet",
+    "scope": "source",
+    "match": {
+      "files": ["web.xml"],
+      "strategy": "xml-query",
+      "select": ".//servlet",
+      "captures": {
+        "servlet_name": "servlet-name",
+        "class_name": "servlet-class"
+      }
+    },
+    "emit": {
+      "label": "Servlet",
+      "schema": {"name": "string", "class_name": "string", "framework": "string"},
+      "values": {
+        "name": "{{servlet_name}}",
+        "class_name": "{{class_name}}",
+        "framework": "j2ee-webxml"
+      },
+      "source": "lens:j2ee-descriptors",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-webxml-endpoint",
+    "scope": "source",
+    "match": {
+      "files": ["web.xml"],
+      "strategy": "xml-query",
+      "select": ".//servlet-mapping",
+      "captures": {
+        "servlet_name": "servlet-name",
+        "path": "url-pattern"
+      }
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {"http_method": "string", "path": "string", "handler": "string", "framework": "string"},
+      "values": {
+        "http_method": "ANY",
+        "path": "{{path}}",
+        "handler": "{{servlet_name}}",
+        "framework": "j2ee-webxml"
+      },
+      "source": "lens:j2ee-descriptors",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-webxml-filter-mapping",
+    "scope": "source",
+    "match": {
+      "files": ["web.xml"],
+      "strategy": "xml-query",
+      "select": ".//filter-mapping",
+      "captures": {
+        "filter_name": "filter-name",
+        "path": "url-pattern"
+      }
+    },
+    "emit": {
+      "label": "Filter",
+      "schema": {"name": "string", "url_pattern": "string", "framework": "string"},
+      "values": {
+        "name": "{{filter_name}}",
+        "url_pattern": "{{path}}",
+        "framework": "j2ee-webxml"
+      },
+      "source": "lens:j2ee-descriptors",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-ejb-jar-session",
+    "scope": "source",
+    "match": {
+      "files": ["ejb-jar.xml"],
+      "strategy": "xml-query",
+      "select": ".//session",
+      "captures": {
+        "bean_name": "ejb-name",
+        "class_name": "ejb-class",
+        "session_type": "session-type"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {"name": "string", "class_name": "string", "kind": "string", "framework": "string"},
+      "values": {
+        "name": "{{bean_name}}",
+        "class_name": "{{class_name}}",
+        "kind": "ejb-{{session_type|session}}",
+        "framework": "j2ee-ejb-jar"
+      },
+      "source": "lens:j2ee-descriptors",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-ejb-jar-mdb",
+    "scope": "source",
+    "match": {
+      "files": ["ejb-jar.xml"],
+      "strategy": "xml-query",
+      "select": ".//message-driven",
+      "captures": {
+        "bean_name": "ejb-name",
+        "class_name": "ejb-class"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string", "bus": "string", "topic": "string",
+        "handler": "string", "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "jms",
+        "topic": "",
+        "handler": "{{class_name}}",
+        "framework": "j2ee-ejb-jar"
+      },
+      "source": "lens:j2ee-descriptors",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "j2ee-application-xml-web-module",
+    "scope": "source",
+    "match": {
+      "files": ["application.xml"],
+      "strategy": "xml-query",
+      "select": ".//module/web",
+      "captures": {
+        "archive": "web-uri",
+        "context_root": "context-root"
+      }
+    },
+    "emit": {
+      "label": "EarModule",
+      "schema": {"module_type": "string", "archive": "string", "context_root": "string", "framework": "string"},
+      "values": {
+        "module_type": "web",
+        "archive": "{{archive}}",
+        "context_root": "{{context_root}}",
+        "framework": "j2ee-application-xml"
+      },
+      "source": "lens:j2ee-descriptors",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-application-xml-ejb-module",
+    "scope": "source",
+    "match": {
+      "files": ["application.xml"],
+      "strategy": "xml-query",
+      "select": ".//module",
+      "captures": {
+        "ejb": "ejb",
+        "java": "java",
+        "connector": "connector"
+      }
+    },
+    "emit": {
+      "label": "EarModule",
+      "schema": {"module_type": "string", "archive": "string", "framework": "string"},
+      "values": {
+        "module_type": "{{ejb|java|connector|}}",
+        "archive": "{{ejb|java|connector|}}",
+        "framework": "j2ee-application-xml"
+      },
+      "source": "lens:j2ee-descriptors",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "j2ee-persistence-unit",
+    "scope": "source",
+    "match": {
+      "files": ["persistence.xml"],
+      "strategy": "xml-query",
+      "select": ".//persistence-unit",
+      "captures": {
+        "name": "@name",
+        "transaction_type": "@transaction-type",
+        "data_source": "jta-data-source",
+        "provider": "provider"
+      }
+    },
+    "emit": {
+      "label": "PersistenceUnit",
+      "schema": {
+        "name": "string", "transaction_type": "string",
+        "data_source": "string", "provider": "string", "framework": "string"
+      },
+      "values": {
+        "name": "{{name}}",
+        "transaction_type": "{{transaction_type}}",
+        "data_source": "{{data_source}}",
+        "provider": "{{provider}}",
+        "framework": "j2ee-jpa"
+      },
+      "source": "lens:j2ee-descriptors",
+      "confidence": "high"
+    }
+  }
+]

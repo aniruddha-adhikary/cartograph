@@ -24,11 +24,18 @@ def _get_language(name: str) -> Any:
         return _LANGUAGES[name]
     if name == "java":
         import tree_sitter_java as mod
+        lang = ts.Language(mod.language())
     elif name in ("javascript", "js"):
         import tree_sitter_javascript as mod
+        lang = ts.Language(mod.language())
+    elif name in ("typescript", "ts"):
+        import tree_sitter_typescript as mod
+        lang = ts.Language(mod.language_typescript())
+    elif name in ("tsx", "typescript-tsx"):
+        import tree_sitter_typescript as mod
+        lang = ts.Language(mod.language_tsx())
     else:
         raise ValueError(f"no tree-sitter grammar for language: {name}")
-    lang = ts.Language(mod.language())
     _LANGUAGES[name] = lang
     return lang
 
@@ -39,8 +46,8 @@ def _infer_language(rel_path: str) -> str:
         ".java": "java",
         ".js": "javascript",
         ".jsx": "javascript",
-        ".ts": "javascript",
-        ".tsx": "javascript",
+        ".ts": "typescript",
+        ".tsx": "tsx",
     }.get(ext, "")
 
 
@@ -67,6 +74,8 @@ def run_tree_sitter_strategy(
     tree = parser.parse(content.encode("utf-8"))
 
     extractor = ts_config.get("extractor", "annotation-method")
+    if extractor == "query":
+        return _ts_query(lens, language, tree.root_node, rel_path, content, service)
     if extractor == "annotation-method":
         return _ts_annotation_method(lens, tree.root_node, rel_path, content, service)
     if extractor == "walk":
@@ -328,6 +337,110 @@ def _ts_class_extends_typearg(
         nodes.append(_emit_node(emit, captures, rel, line_no, service))
 
     return nodes, edges
+
+
+def _ts_query(
+    lens: dict[str, Any],
+    language: Any,
+    root: Any,
+    rel: str,
+    content: str,
+    service: str,
+) -> tuple[list[Node], list[Edge]]:
+    """Run a tree-sitter Query against the parsed AST. Each match emits one node.
+
+    Lens match.tree_sitter config:
+      query:        str (required) — tree-sitter S-expression query string
+      anchor:       str (optional) — name of a capture that anchors the emitted node
+                    (line number and base for sibling-walks). Defaults to first capture.
+      next_sibling: dict (optional) — for the anchor node, walk forward through its
+                    siblings to find one with a matching type; expose data from it.
+        type:           str (required) — sibling node type to find (e.g. "method_definition")
+        skip_types:     list[str] (default: []) — sibling types to skip past
+        captures:       dict[str, str] (required) — `capture_name: field_name` map
+                        Use `text` as field_name for the node's full text.
+
+    Captures from the query are available as template variables in `emit.values`.
+    Captures from `next_sibling.captures` are also available.
+    """
+    from .engine import _emit_node
+
+    match = lens["match"]
+    emit = lens["emit"]
+    ts_config = match.get("tree_sitter", {})
+    query_str = ts_config.get("query")
+    if not query_str:
+        raise ValueError("query extractor requires tree_sitter.query")
+
+    anchor = ts_config.get("anchor")
+    sibling_cfg = ts_config.get("next_sibling", {})
+
+    query = ts.Query(language, query_str)
+    cursor = ts.QueryCursor(query)
+    matches = cursor.matches(root)
+
+    nodes: list[Node] = []
+    edges: list[Edge] = []
+
+    for _pat_idx, captures_map in matches:
+        # Build a flat capture dict: capture_name -> text of first node.
+        flat_captures: dict[str, str] = {}
+        for cap_name, cap_nodes in captures_map.items():
+            if cap_nodes:
+                flat_captures[cap_name] = cap_nodes[0].text.decode("utf-8")
+
+        # Pick the anchor node for positioning & sibling-walks.
+        anchor_name = anchor or next(iter(captures_map.keys()), None)
+        anchor_node = captures_map.get(anchor_name, [None])[0] if anchor_name else None
+        if anchor_node is None:
+            continue
+
+        # Optional sibling walk.
+        if sibling_cfg:
+            sib = _walk_to_sibling(
+                anchor_node,
+                target_type=sibling_cfg.get("type", ""),
+                skip_types=set(sibling_cfg.get("skip_types", [])),
+            )
+            if sib is not None:
+                for cap_name, field_name in sibling_cfg.get("captures", {}).items():
+                    if field_name == "text":
+                        flat_captures[cap_name] = sib.text.decode("utf-8")
+                    else:
+                        f = sib.child_by_field_name(field_name)
+                        if f:
+                            flat_captures[cap_name] = f.text.decode("utf-8")
+            elif sibling_cfg.get("required", True):
+                # If sibling lookup was required and failed, skip this match.
+                continue
+
+        line_no = anchor_node.start_point[0] + 1
+        nodes.append(_emit_node(emit, flat_captures, rel, line_no, service))
+
+    return nodes, edges
+
+
+def _walk_to_sibling(node: Any, target_type: str, skip_types: set[str]) -> Any:
+    """Walk forward through a node's parent's children to find a sibling of target_type.
+
+    Stops if a non-skip, non-target sibling is encountered.
+    """
+    parent = node.parent
+    if parent is None:
+        return None
+    siblings = list(parent.children)
+    try:
+        idx = siblings.index(node)
+    except ValueError:
+        return None
+    for s in siblings[idx + 1:]:
+        if s.type == target_type:
+            return s
+        if s.type in skip_types:
+            continue
+        # An unexpected sibling type - stop.
+        return None
+    return None
 
 
 def _find_nodes(root: Any, node_type: str) -> list[Any]:

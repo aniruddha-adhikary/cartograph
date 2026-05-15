@@ -1,0 +1,91 @@
+[
+  {
+    "name": "j2ee-jms-destination-definition",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(annotation name: (identifier) @ann (#eq? @ann \"JMSDestinationDefinition\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @nk (#eq? @nk \"name\") value: [(string_literal (string_fragment) @dest_name) (field_access) @dest_name_const]))) @anchor"
+      }
+    },
+    "emit": {
+      "label": "MessageDestination",
+      "schema": {"name": "string", "bus": "string", "framework": "string"},
+      "values": {
+        "name": "{{dest_name|dest_name_const|}}",
+        "bus": "jms",
+        "framework": "j2ee-jms"
+      },
+      "source": "lens:j2ee-jms",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-jms-create-producer",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "createProducer",
+        "arg_index": 0,
+        "capture_as": "destination"
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string", "bus": "string", "topic": "string",
+        "destination_const": "string", "framework": "string", "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "jms",
+        "topic": "{{destination|destination_const|destination_class|}}",
+        "destination_const": "{{destination_const}}",
+        "framework": "j2ee-jms",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:j2ee-jms",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "j2ee-jms-create-consumer",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "createConsumer",
+        "arg_index": 0,
+        "capture_as": "destination"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string", "bus": "string", "topic": "string",
+        "topics": "list", "destination_const": "string", "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "jms",
+        "topic": "{{destination|destination_const|destination_class|}}",
+        "topics": ["{{destination|destination_const|destination_class|}}"],
+        "destination_const": "{{destination_const}}",
+        "framework": "j2ee-jms"
+      },
+      "source": "lens:j2ee-jms",
+      "confidence": "medium"
+    }
+  }
+]

@@ -1,0 +1,47 @@
+[
+  {
+    "name": "apollo-gql-call",
+    "scope": "source",
+    "match": {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "extractor": "query",
+        "query": "(call_expression function: (identifier) @fn (#eq? @fn \"gql\") arguments: (template_string) @body)",
+        "anchor": "body"
+      }
+    },
+    "emit": {
+      "label": "HttpCall",
+      "schema": {
+        "framework": "string",
+        "protocol": "string",
+        "http_method": "string",
+        "host_var": "string",
+        "gql_body": "string"
+      },
+      "values": {
+        "framework": "apollo",
+        "protocol": "graphql",
+        "http_method": "GRAPHQL",
+        "host_var": "apollo",
+        "gql_body": "{{body}}"
+      },
+      "source": "lens:apollo-gql-call",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "resolve-apollo-gql-field",
+    "scope": "resolve",
+    "match": {
+      "label": "HttpCall",
+      "field": "gql_body",
+      "pattern": "(?:mutation|query|subscription)\\s+\\w*[^{]*\\{\\s*(?P<field>\\w+)"
+    },
+    "set": {
+      "path": "{{field}}",
+      "operation_name": "{{field}}"
+    }
+  }
+]

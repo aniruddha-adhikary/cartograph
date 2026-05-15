@@ -2,11 +2,11 @@
   "name": "react-component",
   "scope": "source",
   "match": {
-    "files": ["*.js", "*.jsx", "*.ts", "*.tsx"],
+    "files": ["*.jsx", "*.tsx"],
     "strategy": "regex",
     "patterns": [
       {
-        "regex": "(?:function\\s+(?P<name1>[A-Z]\\w+)|const\\s+(?P<name2>[A-Z]\\w+)\\s*=|class\\s+(?P<name3>[A-Z]\\w+)\\s+extends\\s+React\\.Component)",
+        "regex": "(?:export\\s+(?:default\\s+)?(?:function\\s+(?P<fn_name>[A-Z]\\w+)|const\\s+(?P<const_name>[A-Z]\\w+)\\s*[:=])|class\\s+(?P<class_name>[A-Z]\\w+)\\s+extends\\s+(?:React\\.)?(?:Component|PureComponent))",
         "per_line": true
       }
     ]
@@ -18,10 +18,10 @@
       "kind": "string"
     },
     "values": {
-      "name": "{{name1}}{{name2}}{{name3}}",
+      "name": "{{fn_name|const_name|class_name}}",
       "kind": "react-component"
     },
     "source": "lens:react-component",
-    "confidence": "high"
+    "confidence": "medium"
   }
 }

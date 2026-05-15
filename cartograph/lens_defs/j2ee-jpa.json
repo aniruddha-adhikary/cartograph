@@ -1,0 +1,95 @@
+[
+  {
+    "name": "j2ee-jpa-entity",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Entity\"))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Entity\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Entity",
+      "schema": {"name": "string", "framework": "string", "kind": "string"},
+      "values": {"name": "{{class_name}}", "framework": "j2ee-jpa", "kind": "entity"},
+      "source": "lens:j2ee-jpa",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-jpa-table",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Table\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @key (#eq? @key \"name\") value: (string_literal (string_fragment) @table_name))))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "DatabaseTable",
+      "schema": {"table": "string", "class_name": "string", "framework": "string"},
+      "values": {
+        "table": "{{table_name}}",
+        "class_name": "{{class_name}}",
+        "framework": "j2ee-jpa"
+      },
+      "source": "lens:j2ee-jpa",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-jpa-namedquery",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(annotation name: (identifier) @ann (#eq? @ann \"NamedQuery\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @nk (#eq? @nk \"name\") value: (string_literal (string_fragment) @query_name)) (element_value_pair key: (identifier) @qk (#eq? @qk \"query\") value: (string_literal (string_fragment) @jpql)))) @anchor"
+      }
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {"query_name": "string", "query": "string", "kind": "string", "framework": "string"},
+      "values": {
+        "query_name": "{{query_name}}",
+        "query": "{{jpql}}",
+        "kind": "jpql",
+        "framework": "j2ee-jpa"
+      },
+      "source": "lens:j2ee-jpa",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-jpa-mapped",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (marker_annotation name: (identifier) @ann (#match? @ann \"^(MappedSuperclass|Embeddable)$\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Entity",
+      "schema": {"name": "string", "framework": "string", "kind": "string"},
+      "values": {"name": "{{class_name}}", "framework": "j2ee-jpa", "kind": "{{ann}}"},
+      "source": "lens:j2ee-jpa",
+      "confidence": "high"
+    }
+  }
+]

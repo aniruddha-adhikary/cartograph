@@ -1,0 +1,75 @@
+[
+  {
+    "name": "j2ee-cdi-scoped-bean",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (marker_annotation name: (identifier) @scope (#match? @scope \"^(ApplicationScoped|RequestScoped|SessionScoped|ConversationScoped|Dependent)$\"))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (annotation name: (identifier) @scope (#match? @scope \"^(ApplicationScoped|RequestScoped|SessionScoped|ConversationScoped|Dependent)$\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {"name": "string", "kind": "string", "scope": "string", "framework": "string"},
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "cdi-bean",
+        "scope": "{{scope}}",
+        "framework": "j2ee-cdi"
+      },
+      "source": "lens:j2ee-cdi",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-cdi-named",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Named\") arguments: (annotation_argument_list (string_literal (string_fragment) @el_name)))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Named\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {"name": "string", "el_name": "string", "kind": "string", "framework": "string"},
+      "values": {
+        "name": "{{class_name}}",
+        "el_name": "{{el_name|class_name}}",
+        "kind": "cdi-named",
+        "framework": "j2ee-cdi"
+      },
+      "source": "lens:j2ee-cdi",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-cdi-qualifier",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(interface_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Qualifier\"))) name: (identifier) @class_name) @anchor (annotation_type_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Qualifier\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "CdiQualifier",
+      "schema": {"name": "string", "framework": "string"},
+      "values": {"name": "{{class_name}}", "framework": "j2ee-cdi"},
+      "source": "lens:j2ee-cdi",
+      "confidence": "high"
+    }
+  }
+]

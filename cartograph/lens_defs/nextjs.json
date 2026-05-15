@@ -1,0 +1,68 @@
+[
+  {
+    "name": "nextjs-pages-api-route",
+    "scope": "source",
+    "match": {
+      "files": ["*pages/api/*.ts", "*pages/api/*.tsx", "*pages/api/*.js", "*pages/api/**/*.ts", "*pages/api/**/*.tsx", "*pages/api/**/*.js"],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "(?m)^\\s*export\\s+(?:default\\b|\\{[^}]*\\bas\\s+default\\b[^}]*\\})",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "handler": "string",
+        "framework": "string",
+        "router": "string"
+      },
+      "values": {
+        "http_method": "ANY",
+        "path": "{{_rel_path}}",
+        "handler": "{{_file_stem}}",
+        "framework": "nextjs",
+        "router": "pages"
+      },
+      "source": "lens:nextjs-pages-api-route",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "nextjs-app-route",
+    "scope": "source",
+    "match": {
+      "files": ["*app/**/route.ts", "*app/**/route.tsx", "*app/**/route.js", "*app/route.ts", "*app/route.tsx", "*app/route.js"],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "^\\s*export\\s+(?:async\\s+function|const|function)\\s+(?P<http_method>GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\\b",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "handler": "string",
+        "framework": "string",
+        "router": "string"
+      },
+      "values": {
+        "http_method": "{{http_method}}",
+        "path": "{{_rel_dir}}",
+        "handler": "{{http_method}}",
+        "framework": "nextjs",
+        "router": "app"
+      },
+      "source": "lens:nextjs-app-route",
+      "confidence": "high"
+    }
+  }
+]

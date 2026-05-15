@@ -1,0 +1,91 @@
+[
+  {
+    "name": "j2ee-webservlet-endpoint",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"WebServlet\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @key (#match? @key \"^(urlPatterns|value)$\") value: (string_literal (string_fragment) @path))))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"WebServlet\") arguments: (annotation_argument_list (string_literal (string_fragment) @path)))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {"http_method": "string", "path": "string", "handler": "string", "framework": "string"},
+      "values": {
+        "http_method": "ANY",
+        "path": "{{path}}",
+        "handler": "{{class_name}}",
+        "framework": "j2ee-servlet"
+      },
+      "source": "lens:j2ee-servlet",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-webservlet-component",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"WebServlet\"))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"WebServlet\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Servlet",
+      "schema": {"name": "string", "framework": "string"},
+      "values": {"name": "{{class_name}}", "framework": "j2ee-servlet"},
+      "source": "lens:j2ee-servlet",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-webfilter",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"WebFilter\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @key (#match? @key \"^(urlPatterns|value)$\") value: (string_literal (string_fragment) @path))))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"WebFilter\") arguments: (annotation_argument_list (string_literal (string_fragment) @path)))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Filter",
+      "schema": {"name": "string", "url_pattern": "string", "framework": "string"},
+      "values": {"name": "{{class_name}}", "url_pattern": "{{path}}", "framework": "j2ee-servlet"},
+      "source": "lens:j2ee-servlet",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-weblistener",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"WebListener\"))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"WebListener\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Listener",
+      "schema": {"name": "string", "framework": "string"},
+      "values": {"name": "{{class_name}}", "framework": "j2ee-servlet"},
+      "source": "lens:j2ee-servlet",
+      "confidence": "high"
+    }
+  }
+]
