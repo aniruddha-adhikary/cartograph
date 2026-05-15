@@ -16,10 +16,14 @@ def validate_lens(lens: dict[str, Any]) -> None:
     if not lens.get("name"):
         raise LensValidationError("lens must have a non-empty 'name'")
     scope = lens.get("scope")
-    if scope not in ("source", "graph"):
-        raise LensValidationError(f"lens scope must be 'source' or 'graph', got '{scope}'")
+    if scope not in ("source", "graph", "resolve"):
+        raise LensValidationError(f"lens scope must be 'source', 'graph', or 'resolve', got '{scope}'")
     if not isinstance(lens.get("match"), dict):
         raise LensValidationError("lens must have a 'match' dict")
+    if scope == "resolve":
+        if not isinstance(lens.get("set"), dict):
+            raise LensValidationError("resolve lens must have a 'set' dict")
+        return
     if not isinstance(lens.get("emit"), dict):
         raise LensValidationError("lens must have an 'emit' dict")
     if scope == "source":

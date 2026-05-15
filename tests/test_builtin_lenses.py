@@ -9,7 +9,7 @@ def test_load_builtin_lenses_returns_all_definitions() -> None:
     names = [l["name"] for l in lenses]
     assert "spring-rest-endpoint" in names
     assert "express-routes" in names
-    assert "struts-action" in names
+    assert "struts-action-node" in names
     assert "sql-mapper" in names
     assert "spring-kafka-consumer" in names
     assert len(lenses) >= 10
@@ -50,7 +50,7 @@ app.post('/users', createUser);
 
 def test_builtin_struts_lens_extracts_actions() -> None:
     lenses = load_builtin_lenses()
-    lens = next(l for l in lenses if l["name"] == "struts-action")
+    lens = next(l for l in lenses if l["name"] == "struts-action-node")
     content = """<struts>
   <package name="default" namespace="/admin">
     <action name="listUsers" class="com.example.UserAction" method="list">

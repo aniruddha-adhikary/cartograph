@@ -167,10 +167,30 @@ def main(argv: list[str] | None = None) -> int:
         )
         out = Path(args.out)
         out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(json.dumps(graph.to_dict(), indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        graph_dict = graph.to_dict()
+        out.write_text(json.dumps(graph_dict, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         if args.report:
             write_report(out, Path(args.report))
         print(f"indexed {len(graph.nodes)} nodes / {len(graph.edges)} edges -> {out}")
+        unresolved = graph_dict.get("meta", {}).get("unresolved", [])
+        if unresolved:
+            workspace = Path(args.workspace).resolve()
+            print()
+            print(f"⚠ {len(unresolved)} unresolved gap(s) — the linker couldn't connect these:")
+            for u in unresolved[:20]:
+                hint = u.get("hint", "")
+                print(f"  [{u['kind']}] svc={u.get('service','?')}: {hint}")
+                raw = u.get("raw")
+                if raw:
+                    print(f"      raw: {json.dumps(raw)}")
+            if len(unresolved) > 20:
+                print(f"  ... and {len(unresolved) - 20} more (see meta.unresolved in graph file)")
+            print()
+            print("To resolve, write one of these in the workspace:")
+            print(f"  • {workspace / 'service-registry.yaml'}    (hostname → service-name map)")
+            print(f"  • {workspace / 'resolve-hints.json'}       (per-node field patches: [{{\"match\":{{...}},\"set\":{{...}}}}])")
+            print(f"  • .cartograph/lenses/*.json                 (custom source or resolve lens)")
+            print("Then re-run `cartograph index ...` to apply.")
         return 0
 
     if args.command == "verify":

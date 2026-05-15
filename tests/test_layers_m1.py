@@ -17,7 +17,7 @@ def write_json(path: Path, value: object) -> Path:
     return path
 
 
-def test_pack_overlay_merges_nested_config_without_dropping_defaults(tmp_path: Path) -> None:
+def test_lens_overlay_adds_custom_controller_annotation(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     service = workspace / "orders"
     (service / "src/main/java/example").mkdir(parents=True)
@@ -41,17 +41,30 @@ class OrderController {
         + "\n",
         encoding="utf-8",
     )
-    packs = tmp_path / "packs"
+    lenses = tmp_path / "lenses"
     write_json(
-        packs / "spring.json",
+        lenses / "custom-rest.json",
         {
-            "rest": {
-                "controller_annotations": ["@CartographRest"],
+            "name": "custom-rest-endpoint",
+            "scope": "source",
+            "match": {
+                "files": ["*.java"],
+                "strategy": "annotation-method",
+                "class_annotations": ["@CartographRest"],
+                "base_path_annotation": "@RequestMapping",
+                "method_annotations": {"Get": "GET", "Post": "POST"},
+            },
+            "emit": {
+                "label": "Endpoint",
+                "schema": {"http_method": "string", "path": "string", "handler": "string"},
+                "values": {"http_method": "{{http_method}}", "path": "{{path}}", "handler": "{{class_name}}.{{method_name}}"},
+                "source": "lens:custom-rest",
+                "confidence": "high",
             },
         },
     )
 
-    graph = index_workspace(workspace, packs_dir=packs).to_dict()
+    graph = index_workspace(workspace, lens_dirs=[lenses]).to_dict()
 
     endpoints = [node for node in graph["nodes"] if node["label"] == "Endpoint"]
     assert [(endpoint["http_method"], endpoint["path"]) for endpoint in endpoints] == [("GET", "/orders/{id}")]
@@ -90,7 +103,7 @@ class CustomController {
     assert endpoint_paths == {"/default", "/custom"}
 
 
-def test_runtime_config_can_define_new_message_bus_without_core_changes(tmp_path: Path) -> None:
+def test_lens_overlay_defines_custom_message_bus(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     producer = workspace / "orders"
     consumer = workspace / "billing"
@@ -122,29 +135,49 @@ class Billing {
         + "\n",
         encoding="utf-8",
     )
-    packs = tmp_path / "packs"
+    lenses = tmp_path / "lenses"
     write_json(
-        packs / "spring.json",
-        {
-            "message_buses": [
-                {
-                    "name": "eventbus",
-                    "listener_annotation": "@TopicListener",
-                    "producer_methods": [".publish("],
-                    "config_annotation": "@Value",
-                    "producer_label": "MessageProducer",
-                    "consumer_label": "MessageConsumer",
-                    "consumer_class_label": "MessageConsumerClass",
-                    "handler_edge": "HANDLES_MESSAGE",
-                    "delivery_edge": "MESSAGE_DELIVERS",
-                    "source": "pack:project-eventbus",
-                    "config_source": "pack:project-eventbus-config",
-                }
-            ]
-        },
+        lenses / "eventbus.json",
+        [
+            {
+                "name": "eventbus-producer",
+                "scope": "source",
+                "match": {
+                    "files": ["*.java"],
+                    "strategy": "token-line",
+                    "tokens": [".publish("],
+                    "extract": "\"(?P<topic>[^\"]+)\""
+                },
+                "emit": {
+                    "label": "MessageProducer",
+                    "schema": {"message_role": "string", "bus": "string", "topic": "string"},
+                    "values": {"message_role": "producer", "bus": "eventbus", "topic": "{{topic}}"},
+                    "source": "lens:eventbus",
+                    "confidence": "high",
+                },
+            },
+            {
+                "name": "eventbus-consumer",
+                "scope": "source",
+                "match": {
+                    "files": ["*.java"],
+                    "strategy": "regex",
+                    "patterns": [
+                        {"regex": "@TopicListener\\s*\\(\\s*topics\\s*=\\s*\"(?P<topic>[^\"]+)\"", "per_line": True}
+                    ],
+                },
+                "emit": {
+                    "label": "MessageConsumer",
+                    "schema": {"message_role": "string", "bus": "string", "topics": "list"},
+                    "values": {"message_role": "consumer", "bus": "eventbus", "topics": ["{{topic}}"]},
+                    "source": "lens:eventbus",
+                    "confidence": "high",
+                },
+            },
+        ],
     )
 
-    graph = index_workspace(workspace, packs_dir=packs).to_dict()
+    graph = index_workspace(workspace, lens_dirs=[lenses]).to_dict()
 
     assert any(node["label"] == "MessageProducer" and node["bus"] == "eventbus" for node in graph["nodes"])
     assert any(node["label"] == "MessageConsumer" and node["bus"] == "eventbus" for node in graph["nodes"])
@@ -312,11 +345,11 @@ def test_index_workspace_excludes_test_paths_from_fixture_workspace() -> None:
     workspace = Path(__file__).parent / "fixtures" / "test-path-workspace"
 
     graph = index_workspace(workspace).to_dict()
-    files = {node["path"] for node in graph["nodes"] if node["label"] == "File"}
     endpoint_paths = {node["path"] for node in graph["nodes"] if node["label"] == "Endpoint"}
+    indexed_files = {node["file"] for node in graph["nodes"]}
 
-    assert "src/main/java/example/ProdController.java" in files
-    assert "src/test/java/example/TestController.java" not in files
+    assert any("ProdController" in f for f in indexed_files)
+    assert not any("TestController" in f for f in indexed_files)
     assert endpoint_paths == {"/prod"}
 
     graph_with_tests = index_workspace(workspace, include_test_paths=True).to_dict()
@@ -411,7 +444,7 @@ metadata:
     graph = index_workspace(tmp_path).to_dict()
 
     assert graph["meta"]["services"] == ["quoted-service"]
-    from cartograph.indexer import service_config
+    from cartograph.discovery import service_config
 
     config = service_config(service)
     assert config["name"] == "quoted-service"

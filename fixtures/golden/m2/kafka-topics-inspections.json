@@ -1,36 +1,36 @@
 {
-  "confidence_summary": {
-    "high": 9,
-    "low": 0,
-    "medium": 0
-  },
-  "filter": {
-    "consumer_service": "inspections-api"
-  },
-  "graph_version": "737e35de642f1a7a",
   "name": "kafka-topics",
-  "stats": {
-    "n_delivery_edges": 3,
-    "n_topics": 1
-  },
   "topics": {
     "permit.approved": {
+      "topic": "permit.approved",
       "bus": "kafka",
+      "producers": [
+        "permits-api"
+      ],
       "consumers": [
         "inspections-api"
       ],
       "links": [
         {
-          "confidence": "high",
-          "edge_type": "KAFKA_DELIVERS",
           "from_service": "permits-api",
-          "to_service": "inspections-api"
+          "to_service": "inspections-api",
+          "confidence": "high",
+          "edge_type": "KAFKA_DELIVERS"
         }
-      ],
-      "producers": [
-        "permits-api"
-      ],
-      "topic": "permit.approved"
+      ]
     }
+  },
+  "confidence_summary": {
+    "high": 9,
+    "medium": 0,
+    "low": 0
+  },
+  "graph_version": "baa5ae0f3475b0ed",
+  "stats": {
+    "n_topics": 1,
+    "n_delivery_edges": 3
+  },
+  "filter": {
+    "consumer_service": "inspections-api"
   }
 }

@@ -7,8 +7,8 @@
       "strategy": "regex",
       "patterns": [
         {
-          "regex": "@KafkaListener\\s*\\((?P<args>[^)]+)\\)",
-          "per_line": false
+          "regex": "@KafkaListener\\s*\\(\\s*topics\\s*=\\s*\"(?P<topic>[^\"]+)\"",
+          "per_line": true
         }
       ]
     },
@@ -17,12 +17,14 @@
       "schema": {
         "message_role": "string",
         "bus": "string",
-        "topics": "string"
+        "topic": "string",
+        "topics": "list"
       },
       "values": {
         "message_role": "consumer",
         "bus": "kafka",
-        "topics": "{{args}}"
+        "topic": "{{topic}}",
+        "topics": ["{{topic}}"]
       },
       "source": "lens:spring-kafka",
       "confidence": "high"
@@ -47,7 +49,8 @@
       "values": {
         "message_role": "producer",
         "bus": "kafka",
-        "topic": "{{topic}}"
+        "topic": "{{topic}}",
+        "delivery_edge": "KAFKA_DELIVERS"
       },
       "source": "lens:spring-kafka",
       "confidence": "high"

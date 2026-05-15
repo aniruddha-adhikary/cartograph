@@ -1,23 +1,60 @@
-{
-  "name": "js-http-call",
-  "scope": "source",
-  "match": {
-    "files": ["*.js", "*.ts", "*.jsx", "*.tsx"],
-    "strategy": "token-line",
-    "tokens": ["fetch(", "axios."],
-    "extract": "[`'\"](?P<url>https?://[^`'\"]+|/[A-Za-z0-9_./{}-]+)['\"`]"
+[
+  {
+    "name": "js-http-call-url",
+    "scope": "source",
+    "match": {
+      "files": ["*.js", "*.ts", "*.jsx", "*.tsx"],
+      "strategy": "token-line",
+      "tokens": ["fetch(", "axios."],
+      "extract": "[`'\"](?P<url>https?://[^`'\"]+|/[A-Za-z0-9_./{}-]+)['\"`]"
+    },
+    "emit": {
+      "label": "HttpCall",
+      "schema": {
+        "url": "string",
+        "path": "string",
+        "http_method": "string",
+        "framework": "string"
+      },
+      "values": {
+        "url": "{{url}}",
+        "path": "{{url}}",
+        "http_method": "GET",
+        "framework": "js-fetch"
+      },
+      "source": "lens:js-http-call",
+      "confidence": "high"
+    }
   },
-  "emit": {
-    "label": "HttpCall",
-    "schema": {
-      "url": "string",
-      "http_method": "string"
+  {
+    "name": "js-http-call-template",
+    "scope": "source",
+    "match": {
+      "files": ["*.js", "*.ts", "*.jsx", "*.tsx"],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "fetch\\s*\\(\\s*`\\$\\{(?P<host_var>[^}]+)\\}(?P<path>/[^`]+)`(?:.*method:\\s*\"(?P<http_method>[A-Z]+)\")?",
+          "per_line": true
+        }
+      ]
     },
-    "values": {
-      "url": "{{url}}",
-      "http_method": "GET"
-    },
-    "source": "lens:js-http-call",
-    "confidence": "high"
+    "emit": {
+      "label": "HttpCall",
+      "schema": {
+        "host_var": "string",
+        "path": "string",
+        "http_method": "string",
+        "framework": "string"
+      },
+      "values": {
+        "host_var": "{{host_var}}",
+        "path": "{{path}}",
+        "http_method": "{{http_method|GET}}",
+        "framework": "js-fetch"
+      },
+      "source": "lens:js-http-call",
+      "confidence": "medium"
+    }
   }
-}
+]

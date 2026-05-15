@@ -1,233 +1,9 @@
 {
   "anchor": "/api/permits/motor-vehicle",
-  "async_chains": [
-    "inspections-api publishes to permits-api KafkaConsumer(inspection.completed) (inspection.completed)",
-    "inspections-api publishes to permits-api KafkaConsumer(inspection.cancelled) (inspection.cancelled)",
-    "permits-api publishes to inspections-api KafkaConsumer(permit.approved) (permit.approved)"
-  ],
-  "async_loops": [
-    "inspections-api publishes to permits-api KafkaConsumer(inspection.completed) (inspection.completed)",
-    "inspections-api publishes to permits-api KafkaConsumer(inspection.cancelled) (inspection.cancelled)",
-    "permits-api publishes to inspections-api KafkaConsumer(permit.approved) (permit.approved)"
-  ],
-  "confidence_notes": [],
+  "summary": "Flow touches 3 service(s): inspections-api, permits-api, web.",
   "entrypoints": [
     "POST /api/permits/motor-vehicle",
-    "web:src/app/PermitButton.tsx:4:92b9ab54ae"
-  ],
-  "flow": {
-    "anchor": "/api/permits/motor-vehicle",
-    "anchors": [
-      "permits-api:src/main/java/example/PermitController.java:12:4c12ea7097",
-      "web:src/app/PermitButton.tsx:4:92b9ab54ae"
-    ],
-    "confidence_summary": {
-      "high": 12,
-      "low": 0,
-      "medium": 0
-    },
-    "edges": [
-      {
-        "confidence": "high",
-        "cross_repo": true,
-        "from": "web:src/app/PermitButton.tsx:4:92b9ab54ae",
-        "from_service": "web",
-        "to": "permits-api:src/main/java/example/PermitController.java:12:4c12ea7097",
-        "to_service": "permits-api",
-        "type": "CROSSES_TIER"
-      },
-      {
-        "confidence": "high",
-        "cross_repo": true,
-        "from": "inspections-api:src/main/java/example/InspectionListener.java:11:bbab6cce34",
-        "from_service": "inspections-api",
-        "to": "permits-api:src/main/java/example/PermitController.java:27:376243e431",
-        "to_service": "permits-api",
-        "type": "KAFKA_DELIVERS"
-      },
-      {
-        "confidence": "high",
-        "cross_repo": true,
-        "from": "inspections-api:src/main/java/example/InspectionListener.java:12:eb18c44a5e",
-        "from_service": "inspections-api",
-        "to": "permits-api:src/main/java/example/PermitController.java:30:8dfe4766fe",
-        "to_service": "permits-api",
-        "type": "KAFKA_DELIVERS"
-      },
-      {
-        "confidence": "high",
-        "cross_repo": true,
-        "from": "permits-api:src/main/java/example/PermitController.java:13:434b0969eb",
-        "from_service": "permits-api",
-        "to": "inspections-api:src/main/java/example/InspectionListener.java:9:60ea952bf8",
-        "to_service": "inspections-api",
-        "type": "KAFKA_DELIVERS"
-      }
-    ],
-    "graph_version": "737e35de642f1a7a",
-    "mode": "anchored",
-    "name": "flow:/api/permits/motor-vehicle",
-    "nodes": [
-      {
-        "bus": "kafka",
-        "confidence": "high",
-        "delivery_edge": "KAFKA_DELIVERS",
-        "file": "src/main/java/example/InspectionListener.java",
-        "id": "inspections-api:src/main/java/example/InspectionListener.java:11:bbab6cce34",
-        "label": "KafkaProducer",
-        "line": 11,
-        "message_role": "producer",
-        "service": "inspections-api",
-        "source": "pack:spring-kafka",
-        "topic": "inspection.completed",
-        "topic_var": null
-      },
-      {
-        "bus": "kafka",
-        "confidence": "high",
-        "delivery_edge": "KAFKA_DELIVERS",
-        "file": "src/main/java/example/InspectionListener.java",
-        "id": "inspections-api:src/main/java/example/InspectionListener.java:12:eb18c44a5e",
-        "label": "KafkaProducer",
-        "line": 12,
-        "message_role": "producer",
-        "service": "inspections-api",
-        "source": "pack:spring-kafka",
-        "topic": "inspection.cancelled",
-        "topic_var": null
-      },
-      {
-        "bus": "kafka",
-        "confidence": "high",
-        "delivery_edge": "KAFKA_DELIVERS",
-        "file": "src/main/java/example/InspectionListener.java",
-        "group_id": "inspections",
-        "id": "inspections-api:src/main/java/example/InspectionListener.java:9:60ea952bf8",
-        "label": "KafkaConsumer",
-        "line": 9,
-        "message_role": "consumer",
-        "service": "inspections-api",
-        "source": "pack:spring-kafka",
-        "topics": [
-          "permit.approved"
-        ]
-      },
-      {
-        "confidence": "high",
-        "file": "src/main/java/example/PermitController.java",
-        "handler": "PermitController.motorVehicle",
-        "http_method": "POST",
-        "id": "permits-api:src/main/java/example/PermitController.java:12:4c12ea7097",
-        "label": "Endpoint",
-        "line": 12,
-        "path": "/api/permits/motor-vehicle",
-        "service": "permits-api",
-        "source": "pack:spring-rest-controller"
-      },
-      {
-        "bus": "kafka",
-        "confidence": "high",
-        "delivery_edge": "KAFKA_DELIVERS",
-        "file": "src/main/java/example/PermitController.java",
-        "id": "permits-api:src/main/java/example/PermitController.java:13:434b0969eb",
-        "label": "KafkaProducer",
-        "line": 13,
-        "message_role": "producer",
-        "service": "permits-api",
-        "source": "pack:spring-kafka",
-        "topic": "permit.approved",
-        "topic_var": null
-      },
-      {
-        "bus": "kafka",
-        "confidence": "high",
-        "delivery_edge": "KAFKA_DELIVERS",
-        "file": "src/main/java/example/PermitController.java",
-        "group_id": "permits",
-        "id": "permits-api:src/main/java/example/PermitController.java:27:376243e431",
-        "label": "KafkaConsumer",
-        "line": 27,
-        "message_role": "consumer",
-        "service": "permits-api",
-        "source": "pack:spring-kafka",
-        "topics": [
-          "inspection.completed"
-        ]
-      },
-      {
-        "bus": "kafka",
-        "confidence": "high",
-        "delivery_edge": "KAFKA_DELIVERS",
-        "file": "src/main/java/example/PermitController.java",
-        "group_id": "permits",
-        "id": "permits-api:src/main/java/example/PermitController.java:30:8dfe4766fe",
-        "label": "KafkaConsumer",
-        "line": 30,
-        "message_role": "consumer",
-        "service": "permits-api",
-        "source": "pack:spring-kafka",
-        "topics": [
-          "inspection.cancelled"
-        ]
-      },
-      {
-        "confidence": "high",
-        "file": "src/app/PermitButton.tsx",
-        "host": "PERMITS_API",
-        "host_var": "PERMITS_API",
-        "http_method": "POST",
-        "id": "web:src/app/PermitButton.tsx:4:92b9ab54ae",
-        "label": "HttpCall",
-        "line": 4,
-        "path": "/api/permits/motor-vehicle",
-        "service": "web",
-        "source": "pack:js-fetch-hosted"
-      }
-    ],
-    "services_touched": [
-      "inspections-api",
-      "permits-api",
-      "web"
-    ],
-    "stats": {
-      "n_cross_repo_http": 1,
-      "n_edges": 4,
-      "n_kafka_deliveries": 3,
-      "n_message_deliveries": 3,
-      "n_nodes": 8,
-      "n_services": 3
-    }
-  },
-  "ordered_steps": [
-    {
-      "description": "web calls permits-api POST /api/permits/motor-vehicle (/api/permits/motor-vehicle)",
-      "hop": 1,
-      "node": "web:src/app/PermitButton.tsx:4:92b9ab54ae",
-      "service": "web"
-    },
-    {
-      "description": "inspections-api publishes to permits-api KafkaConsumer(inspection.completed) (inspection.completed)",
-      "hop": 2,
-      "node": "KafkaProducer(inspection.completed)",
-      "service": "inspections-api"
-    },
-    {
-      "description": "inspections-api publishes to permits-api KafkaConsumer(inspection.cancelled) (inspection.cancelled)",
-      "hop": 3,
-      "node": "KafkaProducer(inspection.cancelled)",
-      "service": "inspections-api"
-    },
-    {
-      "description": "permits-api publishes to inspections-api KafkaConsumer(permit.approved) (permit.approved)",
-      "hop": 4,
-      "node": "KafkaProducer(permit.approved)",
-      "service": "permits-api"
-    }
-  ],
-  "recommended_next_commands": [
-    "cartograph flow --graph <graph> --anchor \"/api/permits/motor-vehicle\"",
-    "cartograph cross-service-edges --graph <graph>",
-    "cartograph search --graph <graph> --query <term>"
+    "web:src/app/PermitButton.tsx:4:796d579940"
   ],
   "services_touched": [
     "inspections-api",
@@ -236,29 +12,249 @@
   ],
   "steps": [
     {
-      "description": "web calls permits-api POST /api/permits/motor-vehicle (/api/permits/motor-vehicle)",
       "hop": 1,
-      "node": "web:src/app/PermitButton.tsx:4:92b9ab54ae",
-      "service": "web"
+      "service": "web",
+      "node": "web:src/app/PermitButton.tsx:4:796d579940",
+      "description": "web calls permits-api POST /api/permits/motor-vehicle (/api/permits/motor-vehicle)"
     },
     {
-      "description": "inspections-api publishes to permits-api KafkaConsumer(inspection.completed) (inspection.completed)",
       "hop": 2,
+      "service": "inspections-api",
       "node": "KafkaProducer(inspection.completed)",
-      "service": "inspections-api"
+      "description": "inspections-api publishes to permits-api KafkaConsumer(inspection.completed) (inspection.completed)"
     },
     {
-      "description": "inspections-api publishes to permits-api KafkaConsumer(inspection.cancelled) (inspection.cancelled)",
       "hop": 3,
+      "service": "inspections-api",
       "node": "KafkaProducer(inspection.cancelled)",
-      "service": "inspections-api"
+      "description": "inspections-api publishes to permits-api KafkaConsumer(inspection.cancelled) (inspection.cancelled)"
     },
     {
-      "description": "permits-api publishes to inspections-api KafkaConsumer(permit.approved) (permit.approved)",
       "hop": 4,
+      "service": "permits-api",
       "node": "KafkaProducer(permit.approved)",
-      "service": "permits-api"
+      "description": "permits-api publishes to inspections-api KafkaConsumer(permit.approved) (permit.approved)"
     }
   ],
-  "summary": "Flow touches 3 service(s): inspections-api, permits-api, web."
+  "ordered_steps": [
+    {
+      "hop": 1,
+      "service": "web",
+      "node": "web:src/app/PermitButton.tsx:4:796d579940",
+      "description": "web calls permits-api POST /api/permits/motor-vehicle (/api/permits/motor-vehicle)"
+    },
+    {
+      "hop": 2,
+      "service": "inspections-api",
+      "node": "KafkaProducer(inspection.completed)",
+      "description": "inspections-api publishes to permits-api KafkaConsumer(inspection.completed) (inspection.completed)"
+    },
+    {
+      "hop": 3,
+      "service": "inspections-api",
+      "node": "KafkaProducer(inspection.cancelled)",
+      "description": "inspections-api publishes to permits-api KafkaConsumer(inspection.cancelled) (inspection.cancelled)"
+    },
+    {
+      "hop": 4,
+      "service": "permits-api",
+      "node": "KafkaProducer(permit.approved)",
+      "description": "permits-api publishes to inspections-api KafkaConsumer(permit.approved) (permit.approved)"
+    }
+  ],
+  "async_loops": [
+    "inspections-api publishes to permits-api KafkaConsumer(inspection.completed) (inspection.completed)",
+    "inspections-api publishes to permits-api KafkaConsumer(inspection.cancelled) (inspection.cancelled)",
+    "permits-api publishes to inspections-api KafkaConsumer(permit.approved) (permit.approved)"
+  ],
+  "async_chains": [
+    "inspections-api publishes to permits-api KafkaConsumer(inspection.completed) (inspection.completed)",
+    "inspections-api publishes to permits-api KafkaConsumer(inspection.cancelled) (inspection.cancelled)",
+    "permits-api publishes to inspections-api KafkaConsumer(permit.approved) (permit.approved)"
+  ],
+  "confidence_notes": [
+    "1 medium-confidence item(s)"
+  ],
+  "recommended_next_commands": [
+    "cartograph flow --graph <graph> --anchor \"/api/permits/motor-vehicle\"",
+    "cartograph cross-service-edges --graph <graph>",
+    "cartograph search --graph <graph> --query <term>"
+  ],
+  "flow": {
+    "name": "flow:/api/permits/motor-vehicle",
+    "nodes": [
+      {
+        "id": "inspections-api:src/main/java/example/InspectionListener.java:11:26f1b70c7e",
+        "label": "KafkaProducer",
+        "service": "inspections-api",
+        "file": "src/main/java/example/InspectionListener.java",
+        "line": 11,
+        "source": "lens:spring-kafka",
+        "confidence": "high",
+        "message_role": "producer",
+        "bus": "kafka",
+        "topic": "inspection.completed",
+        "delivery_edge": "KAFKA_DELIVERS"
+      },
+      {
+        "id": "inspections-api:src/main/java/example/InspectionListener.java:12:e9518baa4d",
+        "label": "KafkaProducer",
+        "service": "inspections-api",
+        "file": "src/main/java/example/InspectionListener.java",
+        "line": 12,
+        "source": "lens:spring-kafka",
+        "confidence": "high",
+        "message_role": "producer",
+        "bus": "kafka",
+        "topic": "inspection.cancelled",
+        "delivery_edge": "KAFKA_DELIVERS"
+      },
+      {
+        "id": "inspections-api:src/main/java/example/InspectionListener.java:9:1fef79657e",
+        "label": "KafkaConsumer",
+        "service": "inspections-api",
+        "file": "src/main/java/example/InspectionListener.java",
+        "line": 9,
+        "source": "lens:spring-kafka",
+        "confidence": "high",
+        "message_role": "consumer",
+        "bus": "kafka",
+        "topic": "permit.approved",
+        "topics": [
+          "permit.approved"
+        ]
+      },
+      {
+        "id": "permits-api:src/main/java/example/PermitController.java:12:2ecd929fd2",
+        "label": "Endpoint",
+        "service": "permits-api",
+        "file": "src/main/java/example/PermitController.java",
+        "line": 12,
+        "source": "lens:spring-rest-endpoint",
+        "confidence": "high",
+        "http_method": "POST",
+        "path": "/api/permits/motor-vehicle",
+        "handler": "PermitController.motorVehicle"
+      },
+      {
+        "id": "permits-api:src/main/java/example/PermitController.java:13:7697edee86",
+        "label": "KafkaProducer",
+        "service": "permits-api",
+        "file": "src/main/java/example/PermitController.java",
+        "line": 13,
+        "source": "lens:spring-kafka",
+        "confidence": "high",
+        "message_role": "producer",
+        "bus": "kafka",
+        "topic": "permit.approved",
+        "delivery_edge": "KAFKA_DELIVERS"
+      },
+      {
+        "id": "permits-api:src/main/java/example/PermitController.java:27:97f29bab1a",
+        "label": "KafkaConsumer",
+        "service": "permits-api",
+        "file": "src/main/java/example/PermitController.java",
+        "line": 27,
+        "source": "lens:spring-kafka",
+        "confidence": "high",
+        "message_role": "consumer",
+        "bus": "kafka",
+        "topic": "inspection.completed",
+        "topics": [
+          "inspection.completed"
+        ]
+      },
+      {
+        "id": "permits-api:src/main/java/example/PermitController.java:30:d3f5c1935c",
+        "label": "KafkaConsumer",
+        "service": "permits-api",
+        "file": "src/main/java/example/PermitController.java",
+        "line": 30,
+        "source": "lens:spring-kafka",
+        "confidence": "high",
+        "message_role": "consumer",
+        "bus": "kafka",
+        "topic": "inspection.cancelled",
+        "topics": [
+          "inspection.cancelled"
+        ]
+      },
+      {
+        "id": "web:src/app/PermitButton.tsx:4:796d579940",
+        "label": "HttpCall",
+        "service": "web",
+        "file": "src/app/PermitButton.tsx",
+        "line": 4,
+        "source": "lens:js-http-call",
+        "confidence": "medium",
+        "host_var": "PERMITS_API",
+        "path": "/api/permits/motor-vehicle",
+        "http_method": "POST",
+        "framework": "js-fetch"
+      }
+    ],
+    "edges": [
+      {
+        "type": "CROSSES_TIER",
+        "from": "web:src/app/PermitButton.tsx:4:796d579940",
+        "to": "permits-api:src/main/java/example/PermitController.java:12:2ecd929fd2",
+        "from_service": "web",
+        "to_service": "permits-api",
+        "cross_repo": true,
+        "confidence": "high"
+      },
+      {
+        "type": "KAFKA_DELIVERS",
+        "from": "inspections-api:src/main/java/example/InspectionListener.java:11:26f1b70c7e",
+        "to": "permits-api:src/main/java/example/PermitController.java:27:97f29bab1a",
+        "from_service": "inspections-api",
+        "to_service": "permits-api",
+        "cross_repo": true,
+        "confidence": "high"
+      },
+      {
+        "type": "KAFKA_DELIVERS",
+        "from": "inspections-api:src/main/java/example/InspectionListener.java:12:e9518baa4d",
+        "to": "permits-api:src/main/java/example/PermitController.java:30:d3f5c1935c",
+        "from_service": "inspections-api",
+        "to_service": "permits-api",
+        "cross_repo": true,
+        "confidence": "high"
+      },
+      {
+        "type": "KAFKA_DELIVERS",
+        "from": "permits-api:src/main/java/example/PermitController.java:13:7697edee86",
+        "to": "inspections-api:src/main/java/example/InspectionListener.java:9:1fef79657e",
+        "from_service": "permits-api",
+        "to_service": "inspections-api",
+        "cross_repo": true,
+        "confidence": "high"
+      }
+    ],
+    "services_touched": [
+      "inspections-api",
+      "permits-api",
+      "web"
+    ],
+    "confidence_summary": {
+      "high": 11,
+      "medium": 1,
+      "low": 0
+    },
+    "graph_version": "baa5ae0f3475b0ed",
+    "stats": {
+      "n_nodes": 8,
+      "n_services": 3,
+      "n_edges": 4,
+      "n_cross_repo_http": 1,
+      "n_kafka_deliveries": 3,
+      "n_message_deliveries": 3
+    },
+    "anchor": "/api/permits/motor-vehicle",
+    "mode": "anchored",
+    "anchors": [
+      "permits-api:src/main/java/example/PermitController.java:12:2ecd929fd2",
+      "web:src/app/PermitButton.tsx:4:796d579940"
+    ]
+  }
 }

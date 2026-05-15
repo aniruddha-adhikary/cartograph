@@ -221,13 +221,24 @@ def _emit_node(
     )
 
 
-def _resolve_template(template: str, captures: dict[str, Any]) -> Any:
+def _resolve_template(template: Any, captures: dict[str, Any]) -> Any:
+    if isinstance(template, list):
+        return [_resolve_template(item, captures) for item in template]
     if not isinstance(template, str):
         return template
-    result = template
-    for key, value in captures.items():
-        result = result.replace(f"{{{{{key}}}}}", str(value) if value is not None else "")
-    return result
+
+    def replace(match: re.Match[str]) -> str:
+        # Supports {{key}}, {{key|alt_key}}, {{key|alt_key|literal_fallback}}.
+        # Each pipe-separated segment is tried as a capture name first; if the last
+        # segment doesn't match a known capture it's used as a literal default.
+        segments = [seg.strip() for seg in match.group(1).split("|")]
+        for seg in segments:
+            if seg in captures and captures[seg]:
+                return str(captures[seg])
+        last = segments[-1]
+        return last if last not in captures and len(segments) > 1 else ""
+
+    return re.sub(r"\{\{([^{}]+)\}\}", replace, template)
 
 
 def _first_string(text: str | None) -> str | None:

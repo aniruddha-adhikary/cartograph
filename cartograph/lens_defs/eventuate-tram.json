@@ -4,57 +4,71 @@
     "scope": "source",
     "match": {
       "files": ["*.java"],
-      "strategy": "regex",
-      "patterns": [
-        {
-          "regex": "class\\s+(?P<publisher_class>\\w+(?:EventPublisher|DomainEventPublisher))\\b",
-          "per_line": true
-        }
-      ]
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "class-extends-typearg",
+        "superclass": "AbstractAggregateDomainEventPublisher",
+        "typearg_index": 0,
+        "capture_as": "aggregate"
+      }
     },
     "emit": {
       "label": "MessageProducer",
       "schema": {
         "message_role": "string",
         "bus": "string",
-        "name": "string",
-        "framework": "string"
+        "topic": "string",
+        "aggregate_type": "string",
+        "publisher_class": "string",
+        "framework": "string",
+        "delivery_edge": "string"
       },
       "values": {
         "message_role": "producer",
         "bus": "eventuate-tram",
-        "name": "{{publisher_class}}",
-        "framework": "eventuate"
+        "topic": "{{aggregate}}",
+        "aggregate_type": "{{aggregate}}",
+        "publisher_class": "{{class_name}}",
+        "framework": "eventuate",
+        "delivery_edge": "MESSAGE_DELIVERS"
       },
       "source": "lens:eventuate-tram",
       "confidence": "high"
     }
   },
   {
-    "name": "eventuate-command-handler",
+    "name": "eventuate-domain-event-consumer",
     "scope": "source",
     "match": {
       "files": ["*.java"],
-      "strategy": "regex",
-      "patterns": [
-        {
-          "regex": "class\\s+(?P<handler_class>\\w+CommandHandler)",
-          "per_line": true
-        }
-      ]
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "forAggregateType",
+        "arg_index": 0,
+        "capture_as": "aggregate"
+      }
     },
     "emit": {
       "label": "MessageConsumer",
       "schema": {
         "message_role": "string",
         "bus": "string",
-        "name": "string",
+        "topic": "string",
+        "topics": "list",
+        "aggregate_type": "string",
+        "aggregate_const": "string",
         "framework": "string"
       },
       "values": {
         "message_role": "consumer",
         "bus": "eventuate-tram",
-        "name": "{{handler_class}}",
+        "topic": "{{aggregate|aggregate_const|aggregate_class}}",
+        "topics": ["{{aggregate|aggregate_const|aggregate_class}}"],
+        "aggregate_type": "{{aggregate|aggregate_const|aggregate_class}}",
+        "aggregate_const": "{{aggregate_const}}",
         "framework": "eventuate"
       },
       "source": "lens:eventuate-tram",
@@ -62,17 +76,18 @@
     }
   },
   {
-    "name": "eventuate-saga-channel",
+    "name": "eventuate-saga-command-handler",
     "scope": "source",
     "match": {
       "files": ["*.java"],
-      "strategy": "regex",
-      "patterns": [
-        {
-          "regex": "sagaCommandDispatcherFactory\\.make\\s*\\(\\s*\"(?P<channel>[^\"]+)\"",
-          "per_line": true
-        }
-      ]
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "fromChannel",
+        "arg_index": 0,
+        "capture_as": "channel"
+      }
     },
     "emit": {
       "label": "MessageConsumer",
@@ -80,16 +95,60 @@
         "message_role": "string",
         "bus": "string",
         "channel": "string",
+        "channel_const": "string",
+        "topic": "string",
+        "topics": "list",
         "framework": "string"
       },
       "values": {
         "message_role": "consumer",
-        "bus": "eventuate-tram",
-        "channel": "{{channel}}",
+        "bus": "eventuate-tram-saga",
+        "channel": "{{channel|channel_const}}",
+        "channel_const": "{{channel_const}}",
+        "topic": "{{channel|channel_const}}",
+        "topics": ["{{channel|channel_const}}"],
         "framework": "eventuate-saga"
       },
       "source": "lens:eventuate-tram",
       "confidence": "high"
+    }
+  },
+  {
+    "name": "eventuate-saga-command-sender",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "withChannel",
+        "arg_index": 0,
+        "capture_as": "channel"
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "channel": "string",
+        "channel_const": "string",
+        "topic": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "eventuate-tram-saga",
+        "channel": "{{channel|channel_const}}",
+        "channel_const": "{{channel_const}}",
+        "topic": "{{channel|channel_const}}",
+        "framework": "eventuate-saga",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:eventuate-tram",
+      "confidence": "medium"
     }
   }
 ]

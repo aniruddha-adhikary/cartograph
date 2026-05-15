@@ -85,7 +85,6 @@ def test_search_coverage_explain_and_lenses_are_structured() -> None:
     assert len(endpoints_lens["nodes"]) >= 5
     assert len([node for node in route_lens["nodes"] if node["label"] == "Endpoint"]) == 5
     assert domain_lens["mode"] == "domain"
-    assert domain_lens["persisted"] is True
     assert len(domain_lens["nodes"]) >= 2
 
 
@@ -149,33 +148,33 @@ def test_configured_lenses_are_raw_kuzu_cypher_queries(capsys, tmp_path: Path) -
     assert any(item["name"] == "domain.permits" for item in list_lenses(graph, specs)["lenses"])
 
 
-def test_kuzu_query_lens_can_query_persisted_lens_members(tmp_path: Path) -> None:
+def test_kuzu_query_lens_can_query_cross_tier_members(tmp_path: Path) -> None:
     graph = citypermits_graph()
     lenses_dir = tmp_path / "layer" / "lenses"
     write_json(
         lenses_dir / "project.json",
         {
-            "project.permits-domain-raw": {
+            "project.permits-cross-tier": {
                 "kind": "query",
                 "returns": {
-                    "lens": "Lens",
-                    "contains": "CONTAINS",
-                    "member": "Endpoint",
+                    "caller": "HttpCall",
+                    "call": "CROSSES_TIER",
+                    "target": "Endpoint",
                 },
                 "query": [
-                    "MATCH (lens:Lens)-[contains:CONTAINS]->(member:Endpoint)",
-                    "WHERE lens.name = 'domain.permits'",
-                    "RETURN lens, contains, member",
+                    "MATCH (caller:HttpCall)-[call:CROSSES_TIER]->(target:Endpoint)",
+                    "WHERE target.service = 'permits-api'",
+                    "RETURN caller, call, target",
                 ],
             }
         },
     )
 
-    result = lens(graph, "project.permits-domain-raw", load_lens_specs(lenses_dir=lenses_dir))
+    result = lens(graph, "project.permits-cross-tier", load_lens_specs(lenses_dir=lenses_dir))
 
     assert result["mode"] == "kuzu-query"
     assert result["configured"] is True
-    assert any(node.get("label") == "Lens" and node.get("name") == "domain.permits" for node in result["nodes"])
+    assert any(node.get("label") == "HttpCall" for node in result["nodes"])
     assert any(node.get("label") == "Endpoint" and "permits" in node.get("path", "") for node in result["nodes"])
 
 

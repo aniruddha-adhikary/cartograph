@@ -1,25 +1,112 @@
-{
-  "name": "struts-action",
-  "scope": "source",
-  "match": {
-    "files": ["*.xml"],
-    "strategy": "xml-element",
-    "tag": "action",
-    "attrs": ["name", "class", "method"]
+[
+  {
+    "name": "struts-action-node",
+    "scope": "source",
+    "match": {
+      "files": ["*.xml"],
+      "strategy": "xml-element",
+      "tag": "action",
+      "attrs": ["name", "class", "method"]
+    },
+    "emit": {
+      "label": "Action",
+      "schema": {
+        "name": "string",
+        "class_name": "string",
+        "method": "string"
+      },
+      "values": {
+        "name": "{{name}}",
+        "class_name": "{{class}}",
+        "method": "{{method}}"
+      },
+      "source": "lens:struts-action",
+      "confidence": "high"
+    }
   },
-  "emit": {
-    "label": "Action",
-    "schema": {
-      "name": "string",
-      "class_name": "string",
-      "method": "string"
+  {
+    "name": "struts-endpoint",
+    "scope": "source",
+    "match": {
+      "files": ["struts.xml", "struts-*.xml"],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "<package[^>]+namespace\\s*=\\s*\"(?P<namespace>[^\"]*)\"[\\s\\S]*?<action\\s+name\\s*=\\s*\"(?P<action>[^\"]+)\"",
+          "per_line": false
+        }
+      ]
     },
-    "values": {
-      "name": "{{name}}",
-      "class_name": "{{class}}",
-      "method": "{{method}}"
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "GET",
+        "path": "{{namespace}}/{{action}}.action",
+        "framework": "struts"
+      },
+      "source": "lens:struts-action",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-servlet",
+    "scope": "source",
+    "match": {
+      "files": ["web.xml"],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "<servlet-class>(?P<class>[^<]+)</servlet-class>[\\s\\S]*?<url-pattern>(?P<path>[^<]+)</url-pattern>",
+          "per_line": false
+        }
+      ]
     },
-    "source": "lens:struts-action",
-    "confidence": "high"
+    "emit": {
+      "label": "Servlet",
+      "schema": {
+        "path": "string",
+        "class_name": "string"
+      },
+      "values": {
+        "path": "{{path}}",
+        "class_name": "{{class}}"
+      },
+      "source": "lens:j2ee-servlet",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-servlet-endpoint",
+    "scope": "source",
+    "match": {
+      "files": ["web.xml"],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "<servlet-class>(?P<class>[^<]+)</servlet-class>[\\s\\S]*?<url-pattern>(?P<path>[^<]+)</url-pattern>",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "GET",
+        "path": "{{path}}",
+        "framework": "j2ee-servlet"
+      },
+      "source": "lens:j2ee-servlet",
+      "confidence": "high"
+    }
   }
-}
+]

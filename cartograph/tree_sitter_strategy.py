@@ -71,6 +71,10 @@ def run_tree_sitter_strategy(
         return _ts_annotation_method(lens, tree.root_node, rel_path, content, service)
     if extractor == "walk":
         return _ts_walk_extract(lens, tree.root_node, rel_path, content, service)
+    if extractor == "method-call":
+        return _ts_method_call(lens, tree.root_node, rel_path, content, service)
+    if extractor == "class-extends-typearg":
+        return _ts_class_extends_typearg(lens, tree.root_node, rel_path, content, service)
     raise ValueError(f"unknown tree-sitter extractor: {extractor}")
 
 
@@ -169,6 +173,158 @@ def _ts_walk_extract(
             if child:
                 captures[field_name] = child.text.decode("utf-8")
         line_no = found.start_point[0] + 1
+        nodes.append(_emit_node(emit, captures, rel, line_no, service))
+
+    return nodes, edges
+
+
+def _ts_method_call(
+    lens: dict[str, Any],
+    root: Any,
+    rel: str,
+    content: str,
+    service: str,
+) -> tuple[list[Node], list[Edge]]:
+    """Find Java method invocations by name, capture the first argument.
+
+    Lens match.tree_sitter config:
+      method_name: str (required) — name of the called method (e.g. "fromChannel")
+      arg_index:   int (default 0) — which argument to capture
+      capture_as:  str (default "value") — base name for the capture groups
+
+    Emits one node per matching call with captures:
+      <capture_as>          — string-literal value (if first arg is a string)
+      <capture_as>_const    — qualified identifier text (e.g. "Foo.BAR") if first arg is a field_access
+      <capture_as>_class    — short class name if first arg is a class_literal (e.g. "Foo.class" -> "Foo")
+      <capture_as>_text     — raw text of the argument as written in source
+    """
+    from .engine import _emit_node
+
+    match = lens["match"]
+    emit = lens["emit"]
+    ts_config = match.get("tree_sitter", {})
+    target_name = ts_config.get("method_name")
+    if not target_name:
+        raise ValueError("method-call extractor requires tree_sitter.method_name")
+    arg_index = int(ts_config.get("arg_index", 0))
+    capture_as = ts_config.get("capture_as", "value")
+
+    nodes: list[Node] = []
+    edges: list[Edge] = []
+
+    for call_node in _find_nodes(root, "method_invocation"):
+        name_node = call_node.child_by_field_name("name")
+        if name_node is None or name_node.text.decode("utf-8") != target_name:
+            continue
+        args_node = call_node.child_by_field_name("arguments")
+        if args_node is None:
+            continue
+        positional = [c for c in args_node.children if c.type not in (",", "(", ")")]
+        if arg_index >= len(positional):
+            continue
+        arg = positional[arg_index]
+        captures = _capture_argument(arg, capture_as)
+        if not any(captures.values()):
+            continue
+        line_no = call_node.start_point[0] + 1
+        nodes.append(_emit_node(emit, captures, rel, line_no, service))
+
+    return nodes, edges
+
+
+def _capture_argument(arg_node: Any, base: str) -> dict[str, str]:
+    """Extract string / qualified-identifier / class-literal forms from a Java argument."""
+    captures: dict[str, str] = {
+        base: "",
+        f"{base}_const": "",
+        f"{base}_class": "",
+        f"{base}_text": arg_node.text.decode("utf-8"),
+    }
+    if arg_node.type == "string_literal":
+        # Pull the string_fragment child (no quotes).
+        for ch in arg_node.children:
+            if ch.type == "string_fragment":
+                captures[base] = ch.text.decode("utf-8")
+                break
+    elif arg_node.type == "field_access":
+        captures[f"{base}_const"] = arg_node.text.decode("utf-8")
+    elif arg_node.type == "class_literal":
+        for ch in arg_node.children:
+            if ch.type == "type_identifier":
+                captures[f"{base}_class"] = ch.text.decode("utf-8")
+                break
+    elif arg_node.type == "identifier":
+        captures[f"{base}_const"] = arg_node.text.decode("utf-8")
+    return captures
+
+
+def _ts_class_extends_typearg(
+    lens: dict[str, Any],
+    root: Any,
+    rel: str,
+    content: str,
+    service: str,
+) -> tuple[list[Node], list[Edge]]:
+    """Find classes that extend a given generic superclass, capture a type argument.
+
+    Lens match.tree_sitter config:
+      superclass:    str (required) — the superclass name to look for (e.g.
+                     "AbstractAggregateDomainEventPublisher")
+      typearg_index: int (default 0) — which type argument to capture
+      capture_as:    str (default "aggregate") — capture group name
+    """
+    from .engine import _emit_node
+
+    match = lens["match"]
+    emit = lens["emit"]
+    ts_config = match.get("tree_sitter", {})
+    target_super = ts_config.get("superclass")
+    if not target_super:
+        raise ValueError("class-extends-typearg extractor requires tree_sitter.superclass")
+    typearg_index = int(ts_config.get("typearg_index", 0))
+    capture_as = ts_config.get("capture_as", "aggregate")
+
+    nodes: list[Node] = []
+    edges: list[Edge] = []
+
+    for cls_node in _find_nodes(root, "class_declaration"):
+        superclass_node = None
+        for ch in cls_node.children:
+            if ch.type == "superclass":
+                superclass_node = ch
+                break
+        if superclass_node is None:
+            continue
+
+        generic = None
+        for ch in superclass_node.children:
+            if ch.type == "generic_type":
+                generic = ch
+                break
+        if generic is None:
+            continue
+
+        # Confirm superclass name matches.
+        super_name = ""
+        type_args = None
+        for ch in generic.children:
+            if ch.type == "type_identifier":
+                super_name = ch.text.decode("utf-8")
+            elif ch.type == "type_arguments":
+                type_args = ch
+        if super_name != target_super or type_args is None:
+            continue
+
+        typeargs = [c for c in type_args.children if c.type not in ("<", ">", ",")]
+        if typearg_index >= len(typeargs):
+            continue
+        arg = typeargs[typearg_index]
+        class_name_node = cls_node.child_by_field_name("name")
+        captures = {
+            capture_as: arg.text.decode("utf-8"),
+            "class_name": class_name_node.text.decode("utf-8") if class_name_node else "",
+        }
+        line_no = cls_node.start_point[0] + 1
         nodes.append(_emit_node(emit, captures, rel, line_no, service))
 
     return nodes, edges

@@ -1,0 +1,39 @@
+[
+  {
+    "name": "resolve-url-host",
+    "scope": "resolve",
+    "match": {
+      "label": "HttpCall",
+      "field": "url",
+      "pattern": "^https?://(?P<host>[^/:]+)(?::\\d+)?(?P<path>/.*)$"
+    },
+    "set": {
+      "host": "{{host}}",
+      "path": "{{path}}"
+    }
+  },
+  {
+    "name": "resolve-feign-name",
+    "scope": "resolve",
+    "match": {
+      "label": "HttpCall",
+      "field": "feign_args",
+      "pattern": "name\\s*=\\s*\"(?P<host>[^\"]+)\""
+    },
+    "set": {
+      "host": "{{host}}"
+    }
+  },
+  {
+    "name": "resolve-feign-url",
+    "scope": "resolve",
+    "match": {
+      "label": "HttpCall",
+      "field": "feign_args",
+      "pattern": "url\\s*=\\s*\"(?P<url>[^\"]+)\""
+    },
+    "set": {
+      "url": "{{url}}"
+    }
+  }
+]

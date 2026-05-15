@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from .graph import Graph
-from .indexer import slug
+from .util import slug
 
 
 def import_cgc(path: Path, service: str | None = None) -> Graph:

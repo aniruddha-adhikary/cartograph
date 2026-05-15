@@ -499,7 +499,11 @@ def list_lenses(graph: dict[str, Any], lens_specs: dict[str, Any] | None = None)
             "pattern.components",
         ]
     ]
-    by_name = {str(item["name"]): item for item in [*builtin, *persisted, *configured]}
+    dynamic = [
+        {"name": name, "kind": "dynamic", "returns": {"member": "Node"}, "params": {}, "source": "cartograph"}
+        for name in [*route_pattern_lenses(graph), *domain_lenses(graph)]
+    ]
+    by_name = {str(item["name"]): item for item in [*builtin, *persisted, *configured, *dynamic]}
     return {"lenses": [by_name[name] for name in sorted(by_name)], "stats": {"n_lenses": len(by_name)}}
 
 
@@ -693,6 +697,9 @@ def rank_search_candidates(
     return [(node, 0.0, ["fallback"]) for node in sorted_nodes(nodes)[:limit]]
 
 
+_LABEL_PRIORITY = {"Endpoint": 0.5, "HttpCall": 0.3, "Component": 0.2, "Service": 0.1}
+
+
 def search_score(node: dict[str, Any], query_tokens: list[str], query_phrase: str) -> tuple[float, list[str]]:
     weighted_fields = search_fields(node)
     reasons: list[str] = []
@@ -709,6 +716,8 @@ def search_score(node: dict[str, Any], query_tokens: list[str], query_phrase: st
         if overlap:
             score += overlap * weight
             reasons.append(field)
+    if score > 0:
+        score += _LABEL_PRIORITY.get(node.get("label", ""), 0)
     return score, sorted(set(reasons))
 
 

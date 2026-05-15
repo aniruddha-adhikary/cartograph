@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import re
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
 
 from .engine import run_source_lens
+from .graph import Graph
 from .lens_schema import load_builtin_lenses, load_lens_dir
 from .models import Edge, Node, SchemaRegistry
 
@@ -56,10 +58,38 @@ def run_lenses_on_file(
     return all_nodes, all_edges
 
 
+def run_resolve_lenses(lenses: list[dict[str, Any]], graph: Graph) -> int:
+    resolve = [l for l in lenses if l.get("scope") == "resolve"]
+    resolved = 0
+    for node in graph.nodes:
+        for lens in resolve:
+            match = lens["match"]
+            if node.get("label") != match.get("label"):
+                continue
+            field = match.get("field", "")
+            value = str(node.get(field, ""))
+            if not value:
+                continue
+            if node.get(list(lens["set"].keys())[0]):
+                continue
+            m = re.search(match["pattern"], value)
+            if not m:
+                continue
+            captures = m.groupdict()
+            for key, template in lens["set"].items():
+                result = template
+                for cap_key, cap_val in captures.items():
+                    result = result.replace(f"{{{{{cap_key}}}}}", cap_val or "")
+                if result:
+                    node[key] = result
+            resolved += 1
+    return resolved
+
+
 def build_schema_registry(lenses: list[dict[str, Any]]) -> SchemaRegistry:
     registry = SchemaRegistry()
     for lens in lenses:
-        if lens["scope"] != "source":
+        if lens.get("scope") not in ("source",):
             continue
         emit = lens.get("emit", {})
         label = emit.get("label")

@@ -1,80 +1,79 @@
 {
-  "confidence_summary": {
-    "high": 0,
-    "low": 3,
-    "medium": 0
-  },
-  "edges": [],
-  "fallback_used": true,
-  "graph_version": "737e35de642f1a7a",
   "name": "search:automobile license",
   "nodes": [
     {
-      "confidence": "low",
-      "file": "src/main/java/example/PermitController.java",
-      "handler": "PermitController.motorVehicle",
-      "http_method": "POST",
-      "id": "permits-api:src/main/java/example/PermitController.java:12:4c12ea7097",
+      "id": "permits-api:src/main/java/example/PermitController.java:12:2ecd929fd2",
       "label": "Endpoint",
-      "line": 12,
-      "match_reasons": [
-        "path"
-      ],
-      "path": "/api/permits/motor-vehicle",
       "service": "permits-api",
-      "similarity": 10.0,
-      "source": "deterministic-search"
-    },
-    {
+      "file": "src/main/java/example/PermitController.java",
+      "line": 12,
+      "source": "deterministic-search",
       "confidence": "low",
-      "file": "src/app/PermitButton.tsx",
-      "host": "PERMITS_API",
-      "host_var": "PERMITS_API",
       "http_method": "POST",
-      "id": "web:src/app/PermitButton.tsx:4:92b9ab54ae",
-      "label": "HttpCall",
-      "line": 4,
+      "path": "/api/permits/motor-vehicle",
+      "handler": "PermitController.motorVehicle",
+      "similarity": 10.5,
       "match_reasons": [
         "path"
-      ],
-      "path": "/api/permits/motor-vehicle",
-      "service": "web",
-      "similarity": 10.0,
-      "source": "deterministic-search"
+      ]
     },
     {
-      "bus": "kafka",
-      "confidence": "low",
-      "delivery_edge": "KAFKA_DELIVERS",
-      "file": "src/main/java/example/InspectionListener.java",
-      "group_id": "inspections",
-      "id": "inspections-api:src/main/java/example/InspectionListener.java:9:60ea952bf8",
-      "label": "KafkaConsumer",
-      "line": 9,
-      "match_reasons": [
-        "topic"
-      ],
-      "message_role": "consumer",
-      "service": "inspections-api",
-      "similarity": 5.0,
+      "id": "web:src/app/PermitButton.tsx:4:796d579940",
+      "label": "HttpCall",
+      "service": "web",
+      "file": "src/app/PermitButton.tsx",
+      "line": 4,
       "source": "deterministic-search",
+      "confidence": "low",
+      "host_var": "PERMITS_API",
+      "path": "/api/permits/motor-vehicle",
+      "http_method": "POST",
+      "framework": "js-fetch",
+      "similarity": 10.3,
+      "match_reasons": [
+        "path"
+      ]
+    },
+    {
+      "id": "inspections-api:src/main/java/example/InspectionListener.java:9:1fef79657e",
+      "label": "KafkaConsumer",
+      "service": "inspections-api",
+      "file": "src/main/java/example/InspectionListener.java",
+      "line": 9,
+      "source": "deterministic-search",
+      "confidence": "low",
+      "message_role": "consumer",
+      "bus": "kafka",
+      "topic": "permit.approved",
       "topics": [
         "permit.approved"
+      ],
+      "similarity": 10.0,
+      "match_reasons": [
+        "topic"
       ]
     }
   ],
-  "query": "automobile license",
+  "edges": [],
   "services_touched": [
     "inspections-api",
     "permits-api",
     "web"
   ],
+  "confidence_summary": {
+    "high": 0,
+    "medium": 0,
+    "low": 3
+  },
+  "graph_version": "baa5ae0f3475b0ed",
   "stats": {
-    "n_cross_repo_http": 0,
-    "n_edges": 0,
-    "n_kafka_deliveries": 0,
-    "n_message_deliveries": 0,
     "n_nodes": 3,
-    "n_services": 3
-  }
+    "n_services": 3,
+    "n_edges": 0,
+    "n_cross_repo_http": 0,
+    "n_kafka_deliveries": 0,
+    "n_message_deliveries": 0
+  },
+  "query": "automobile license",
+  "fallback_used": true
 }

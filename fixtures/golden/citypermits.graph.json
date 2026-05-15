@@ -1,1505 +1,426 @@
 {
-  "edges": [
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "inspections-api:src/main/java/example/InspectionListener.java:9:1d7adaa525",
-      "from_service": "inspections-api",
-      "to": "inspections-api:src/main/java/example/InspectionListener.java:9:60ea952bf8",
-      "to_service": "inspections-api",
-      "type": "HANDLES_KAFKA"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "permits-api:src/main/java/example/PermitController.java:9:7b89e59237",
-      "from_service": "permits-api",
-      "to": "permits-api:src/main/java/example/PermitController.java:12:4c12ea7097",
-      "to_service": "permits-api",
-      "type": "HANDLES"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "permits-api:src/main/java/example/PermitController.java:9:7b89e59237",
-      "from_service": "permits-api",
-      "to": "permits-api:src/main/java/example/PermitController.java:15:55a97403bc",
-      "to_service": "permits-api",
-      "type": "HANDLES"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "permits-api:src/main/java/example/PermitController.java:9:7b89e59237",
-      "from_service": "permits-api",
-      "to": "permits-api:src/main/java/example/PermitController.java:18:3dcb22f813",
-      "to_service": "permits-api",
-      "type": "HANDLES"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "permits-api:src/main/java/example/PermitController.java:9:7b89e59237",
-      "from_service": "permits-api",
-      "to": "permits-api:src/main/java/example/PermitController.java:21:f02e281b55",
-      "to_service": "permits-api",
-      "type": "HANDLES"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "permits-api:src/main/java/example/PermitController.java:9:7b89e59237",
-      "from_service": "permits-api",
-      "to": "permits-api:src/main/java/example/PermitController.java:24:bb781859a3",
-      "to_service": "permits-api",
-      "type": "HANDLES"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "permits-api:src/main/java/example/PermitController.java:27:4106402924",
-      "from_service": "permits-api",
-      "to": "permits-api:src/main/java/example/PermitController.java:27:376243e431",
-      "to_service": "permits-api",
-      "type": "HANDLES_KAFKA"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "permits-api:src/main/java/example/PermitController.java:30:732ec1a7bf",
-      "from_service": "permits-api",
-      "to": "permits-api:src/main/java/example/PermitController.java:30:8dfe4766fe",
-      "to_service": "permits-api",
-      "type": "HANDLES_KAFKA"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": true,
-      "from": "inspections-api:src/main/java/example/InspectionListener.java:11:bbab6cce34",
-      "from_service": "inspections-api",
-      "to": "permits-api:src/main/java/example/PermitController.java:27:376243e431",
-      "to_service": "permits-api",
-      "type": "KAFKA_DELIVERS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": true,
-      "from": "inspections-api:src/main/java/example/InspectionListener.java:12:eb18c44a5e",
-      "from_service": "inspections-api",
-      "to": "permits-api:src/main/java/example/PermitController.java:30:8dfe4766fe",
-      "to_service": "permits-api",
-      "type": "KAFKA_DELIVERS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": true,
-      "from": "permits-api:src/main/java/example/PermitController.java:13:434b0969eb",
-      "from_service": "permits-api",
-      "to": "inspections-api:src/main/java/example/InspectionListener.java:9:60ea952bf8",
-      "to_service": "inspections-api",
-      "type": "KAFKA_DELIVERS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": true,
-      "from": "web:src/app/PermitButton.tsx:4:92b9ab54ae",
-      "from_service": "web",
-      "to": "permits-api:src/main/java/example/PermitController.java:12:4c12ea7097",
-      "to_service": "permits-api",
-      "type": "CROSSES_TIER"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": true,
-      "from": "web:src/app/PermitButton.tsx:5:e78d8bcb24",
-      "from_service": "web",
-      "to": "permits-api:src/main/java/example/PermitController.java:15:55a97403bc",
-      "to_service": "permits-api",
-      "type": "CROSSES_TIER"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": true,
-      "from": "web:src/app/PermitButton.tsx:6:8e6a114bfd",
-      "from_service": "web",
-      "to": "permits-api:src/main/java/example/PermitController.java:18:3dcb22f813",
-      "to_service": "permits-api",
-      "type": "CROSSES_TIER"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": true,
-      "from": "web:src/app/PermitButton.tsx:7:bd07eb6ff1",
-      "from_service": "web",
-      "to": "permits-api:src/main/java/example/PermitController.java:21:f02e281b55",
-      "to_service": "permits-api",
-      "type": "CROSSES_TIER"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": true,
-      "from": "web:src/app/PermitButton.tsx:8:f8fc646f11",
-      "from_service": "web",
-      "to": "permits-api:src/main/java/example/PermitController.java:24:bb781859a3",
-      "to_service": "permits-api",
-      "type": "CROSSES_TIER"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:060909ebc3",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:12:4c12ea7097",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:060909ebc3",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:15:55a97403bc",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:060909ebc3",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:18:3dcb22f813",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:060909ebc3",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:21:f02e281b55",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:060909ebc3",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:24:bb781859a3",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:074e614f07",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:9:7b89e59237",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:e0b5d14815",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:3:52a32eb024",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:352a2e1810",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "inspections-api:src/main/java/example/InspectionListener.java:9:60ea952bf8",
-      "to_service": "inspections-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:352a2e1810",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "inspections-api:src/main/java/example/InspectionListener.java:11:bbab6cce34",
-      "to_service": "inspections-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:352a2e1810",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "inspections-api:src/main/java/example/InspectionListener.java:12:eb18c44a5e",
-      "to_service": "inspections-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:352a2e1810",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:13:434b0969eb",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:352a2e1810",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:27:376243e431",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:352a2e1810",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:30:8dfe4766fe",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:987409fe63",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:12:4c12ea7097",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:987409fe63",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:15:55a97403bc",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:987409fe63",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:18:3dcb22f813",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:987409fe63",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:21:f02e281b55",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:987409fe63",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:24:bb781859a3",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:987409fe63",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:4:92b9ab54ae",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:987409fe63",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:5:e78d8bcb24",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:987409fe63",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:6:8e6a114bfd",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:987409fe63",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:7:bd07eb6ff1",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:987409fe63",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:8:f8fc646f11",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:207554c3ac",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:12:4c12ea7097",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:207554c3ac",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:15:55a97403bc",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:207554c3ac",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:18:3dcb22f813",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:207554c3ac",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:21:f02e281b55",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:207554c3ac",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:24:bb781859a3",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:127c86d2f8",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "inspections-api:src/main/java/example/InspectionListener.java:9:60ea952bf8",
-      "to_service": "inspections-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:127c86d2f8",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:13:434b0969eb",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:2bcc7d83f3",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "inspections-api:src/main/java/example/InspectionListener.java:9:60ea952bf8",
-      "to_service": "inspections-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:2bcc7d83f3",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:13:434b0969eb",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:12b36deda9",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "inspections-api:src/main/java/example/InspectionListener.java:11:bbab6cce34",
-      "to_service": "inspections-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:12b36deda9",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:27:376243e431",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:a84691b0e9",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "inspections-api:src/main/java/example/InspectionListener.java:11:bbab6cce34",
-      "to_service": "inspections-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:a84691b0e9",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "inspections-api:src/main/java/example/InspectionListener.java:12:eb18c44a5e",
-      "to_service": "inspections-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:a84691b0e9",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:27:376243e431",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:a84691b0e9",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:30:8dfe4766fe",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:527707febd",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "inspections-api:src/main/java/example/InspectionListener.java:12:eb18c44a5e",
-      "to_service": "inspections-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:527707febd",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:30:8dfe4766fe",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:3423065bb6",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:12:4c12ea7097",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:3423065bb6",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:4:92b9ab54ae",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:85f003025c",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:12:4c12ea7097",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:85f003025c",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:4:92b9ab54ae",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:69d87f849e",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:12:4c12ea7097",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:69d87f849e",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:15:55a97403bc",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:69d87f849e",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:18:3dcb22f813",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:69d87f849e",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:21:f02e281b55",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:69d87f849e",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:24:bb781859a3",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:69d87f849e",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:4:92b9ab54ae",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:69d87f849e",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:5:e78d8bcb24",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:69d87f849e",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:6:8e6a114bfd",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:69d87f849e",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:7:bd07eb6ff1",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:69d87f849e",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:8:f8fc646f11",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:4310150b39",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:12:4c12ea7097",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:4310150b39",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:15:55a97403bc",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:4310150b39",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:18:3dcb22f813",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:4310150b39",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:21:f02e281b55",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:4310150b39",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:24:bb781859a3",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:4310150b39",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:4:92b9ab54ae",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:4310150b39",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:5:e78d8bcb24",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:4310150b39",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:6:8e6a114bfd",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:4310150b39",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:7:bd07eb6ff1",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:4310150b39",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:8:f8fc646f11",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:b0da5f7df4",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:12:4c12ea7097",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:b0da5f7df4",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:4:92b9ab54ae",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:ed9ff98fab",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:15:55a97403bc",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:ed9ff98fab",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:5:e78d8bcb24",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:7e53e215ef",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:18:3dcb22f813",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:7e53e215ef",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:6:8e6a114bfd",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:ff5de85f09",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:21:f02e281b55",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:ff5de85f09",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:7:bd07eb6ff1",
-      "to_service": "web",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:78ba540ebc",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "permits-api:src/main/java/example/PermitController.java:24:bb781859a3",
-      "to_service": "permits-api",
-      "type": "CONTAINS"
-    },
-    {
-      "confidence": "high",
-      "cross_repo": false,
-      "from": "cartograph:lens:78ba540ebc",
-      "from_service": "cartograph",
-      "source": "pack:lens",
-      "to": "web:src/app/PermitButton.tsx:8:f8fc646f11",
-      "to_service": "web",
-      "type": "CONTAINS"
-    }
-  ],
   "meta": {
-    "edge_count": 90,
-    "m1": true,
-    "node_count": 49,
+    "version": 2,
+    "workspace": "<workspace>",
+    "unresolved": [],
     "services": [
       "inspections-api",
       "permits-api",
       "web"
     ],
-    "version": 1,
-    "workspace": "<workspace>"
+    "node_count": 20,
+    "edge_count": 8,
+    "lens_count": 33,
+    "schema": {
+      "node_labels": {
+        "MessageProducer": {
+          "message_role": "string",
+          "bus": "string",
+          "topic": "string",
+          "aggregate_type": "string",
+          "publisher_class": "string",
+          "framework": "string",
+          "delivery_edge": "string",
+          "channel": "string",
+          "channel_const": "string"
+        },
+        "MessageConsumer": {
+          "message_role": "string",
+          "bus": "string",
+          "topic": "string",
+          "topics": "list",
+          "aggregate_type": "string",
+          "aggregate_const": "string",
+          "framework": "string",
+          "channel": "string",
+          "channel_const": "string"
+        },
+        "Endpoint": {
+          "http_method": "string",
+          "path": "string",
+          "handler": "string",
+          "framework": "string"
+        },
+        "HttpCall": {
+          "url": "string",
+          "path": "string",
+          "http_method": "string",
+          "framework": "string",
+          "host_var": "string",
+          "feign_args": "string"
+        },
+        "KafkaProducer": {
+          "message_role": "string",
+          "bus": "string",
+          "topic": "string"
+        },
+        "KafkaConsumer": {
+          "message_role": "string",
+          "bus": "string",
+          "topic": "string",
+          "topics": "list"
+        },
+        "Component": {
+          "name": "string",
+          "kind": "string"
+        },
+        "ConfigProperty": {
+          "key": "string",
+          "value": "string"
+        },
+        "DatabaseQuery": {
+          "operation": "string",
+          "collection": "string",
+          "framework": "string",
+          "query": "string",
+          "query_id": "string"
+        },
+        "Service": {
+          "kind": "string",
+          "framework": "string",
+          "name": "string"
+        },
+        "Action": {
+          "name": "string",
+          "class_name": "string",
+          "method": "string"
+        },
+        "Servlet": {
+          "path": "string",
+          "class_name": "string"
+        }
+      },
+      "edge_types": {}
+    }
   },
   "nodes": [
     {
-      "confidence": "high",
-      "id": "inspections-api:cartograph.yaml:1:039eb36f8a",
-      "label": "File",
-      "language": "yaml",
-      "path": "cartograph.yaml",
-      "service": "inspections-api",
-      "source": "pack:file"
-    },
-    {
-      "confidence": "high",
-      "id": "inspections-api:src/main/java/example/InspectionListener.java:1:298683f03f",
-      "label": "File",
-      "language": "java",
-      "path": "src/main/java/example/InspectionListener.java",
-      "service": "inspections-api",
-      "source": "pack:file"
-    },
-    {
-      "bus": "kafka",
-      "confidence": "high",
-      "file": "src/main/java/example/InspectionListener.java",
-      "id": "inspections-api:src/main/java/example/InspectionListener.java:9:1d7adaa525",
-      "label": "KafkaConsumerClass",
-      "line": 9,
-      "name": "InspectionListener",
-      "service": "inspections-api",
-      "source": "pack:spring-kafka"
-    },
-    {
-      "bus": "kafka",
-      "confidence": "high",
-      "delivery_edge": "KAFKA_DELIVERS",
-      "file": "src/main/java/example/InspectionListener.java",
-      "group_id": "inspections",
-      "id": "inspections-api:src/main/java/example/InspectionListener.java:9:60ea952bf8",
+      "id": "inspections-api:src/main/java/example/InspectionListener.java:9:1fef79657e",
       "label": "KafkaConsumer",
-      "line": 9,
-      "message_role": "consumer",
       "service": "inspections-api",
-      "source": "pack:spring-kafka",
+      "file": "src/main/java/example/InspectionListener.java",
+      "line": 9,
+      "source": "lens:spring-kafka",
+      "confidence": "high",
+      "message_role": "consumer",
+      "bus": "kafka",
+      "topic": "permit.approved",
       "topics": [
         "permit.approved"
       ]
     },
     {
-      "bus": "kafka",
-      "confidence": "high",
-      "delivery_edge": "KAFKA_DELIVERS",
-      "file": "src/main/java/example/InspectionListener.java",
-      "id": "inspections-api:src/main/java/example/InspectionListener.java:11:bbab6cce34",
+      "id": "inspections-api:src/main/java/example/InspectionListener.java:11:26f1b70c7e",
       "label": "KafkaProducer",
+      "service": "inspections-api",
+      "file": "src/main/java/example/InspectionListener.java",
       "line": 11,
+      "source": "lens:spring-kafka",
+      "confidence": "high",
       "message_role": "producer",
-      "service": "inspections-api",
-      "source": "pack:spring-kafka",
+      "bus": "kafka",
       "topic": "inspection.completed",
-      "topic_var": null
+      "delivery_edge": "KAFKA_DELIVERS"
     },
     {
-      "bus": "kafka",
-      "confidence": "high",
-      "delivery_edge": "KAFKA_DELIVERS",
+      "id": "inspections-api:src/main/java/example/InspectionListener.java:12:e9518baa4d",
+      "label": "KafkaProducer",
+      "service": "inspections-api",
       "file": "src/main/java/example/InspectionListener.java",
-      "id": "inspections-api:src/main/java/example/InspectionListener.java:12:eb18c44a5e",
-      "label": "KafkaProducer",
       "line": 12,
+      "source": "lens:spring-kafka",
+      "confidence": "high",
       "message_role": "producer",
-      "service": "inspections-api",
-      "source": "pack:spring-kafka",
+      "bus": "kafka",
       "topic": "inspection.cancelled",
-      "topic_var": null
+      "delivery_edge": "KAFKA_DELIVERS"
     },
     {
-      "confidence": "high",
-      "id": "inspections-api:src/main/resources/application.properties:1:c3ea828331",
-      "label": "File",
-      "language": "properties",
-      "path": "src/main/resources/application.properties",
+      "id": "inspections-api:src/main/resources/application.properties:1:48309f5de6",
+      "label": "ConfigProperty",
       "service": "inspections-api",
-      "source": "pack:file"
+      "file": "src/main/resources/application.properties",
+      "line": 1,
+      "source": "lens:spring-config",
+      "confidence": "high",
+      "key": "spring.application.name",
+      "value": "inspections-api"
     },
     {
-      "confidence": "high",
-      "id": "permits-api:cartograph.yaml:1:a9e8ee33e2",
-      "label": "File",
-      "language": "yaml",
-      "path": "cartograph.yaml",
-      "service": "permits-api",
-      "source": "pack:file"
-    },
-    {
-      "confidence": "high",
-      "id": "permits-api:src/main/java/example/PermitController.java:1:db2ff47bd5",
-      "label": "File",
-      "language": "java",
-      "path": "src/main/java/example/PermitController.java",
-      "service": "permits-api",
-      "source": "pack:file"
-    },
-    {
-      "confidence": "high",
-      "file": "src/main/java/example/PermitController.java",
-      "framework": "spring",
-      "id": "permits-api:src/main/java/example/PermitController.java:9:7b89e59237",
-      "kind": "rest-controller",
-      "label": "Service",
-      "line": 9,
-      "name": "PermitController",
-      "service": "permits-api",
-      "source": "pack:spring-rest-controller"
-    },
-    {
-      "confidence": "high",
-      "file": "src/main/java/example/PermitController.java",
-      "handler": "PermitController.motorVehicle",
-      "http_method": "POST",
-      "id": "permits-api:src/main/java/example/PermitController.java:12:4c12ea7097",
-      "label": "Endpoint",
-      "line": 12,
-      "path": "/api/permits/motor-vehicle",
-      "service": "permits-api",
-      "source": "pack:spring-rest-controller"
-    },
-    {
-      "bus": "kafka",
-      "confidence": "high",
-      "delivery_edge": "KAFKA_DELIVERS",
-      "file": "src/main/java/example/PermitController.java",
-      "id": "permits-api:src/main/java/example/PermitController.java:13:434b0969eb",
-      "label": "KafkaProducer",
-      "line": 13,
-      "message_role": "producer",
-      "service": "permits-api",
-      "source": "pack:spring-kafka",
-      "topic": "permit.approved",
-      "topic_var": null
-    },
-    {
-      "confidence": "high",
-      "file": "src/main/java/example/PermitController.java",
-      "handler": "PermitController.residential",
-      "http_method": "POST",
-      "id": "permits-api:src/main/java/example/PermitController.java:15:55a97403bc",
-      "label": "Endpoint",
-      "line": 15,
-      "path": "/api/permits/residential",
-      "service": "permits-api",
-      "source": "pack:spring-rest-controller"
-    },
-    {
-      "confidence": "high",
-      "file": "src/main/java/example/PermitController.java",
-      "handler": "PermitController.commercial",
-      "http_method": "POST",
-      "id": "permits-api:src/main/java/example/PermitController.java:18:3dcb22f813",
-      "label": "Endpoint",
-      "line": 18,
-      "path": "/api/permits/commercial",
-      "service": "permits-api",
-      "source": "pack:spring-rest-controller"
-    },
-    {
-      "confidence": "high",
-      "file": "src/main/java/example/PermitController.java",
-      "handler": "PermitController.renewal",
-      "http_method": "POST",
-      "id": "permits-api:src/main/java/example/PermitController.java:21:f02e281b55",
-      "label": "Endpoint",
-      "line": 21,
-      "path": "/api/permits/renewal",
-      "service": "permits-api",
-      "source": "pack:spring-rest-controller"
-    },
-    {
-      "confidence": "high",
-      "file": "src/main/java/example/PermitController.java",
-      "handler": "PermitController.status",
-      "http_method": "POST",
-      "id": "permits-api:src/main/java/example/PermitController.java:24:bb781859a3",
-      "label": "Endpoint",
-      "line": 24,
-      "path": "/api/permits/status",
-      "service": "permits-api",
-      "source": "pack:spring-rest-controller"
-    },
-    {
-      "bus": "kafka",
-      "confidence": "high",
-      "file": "src/main/java/example/PermitController.java",
-      "id": "permits-api:src/main/java/example/PermitController.java:27:4106402924",
-      "label": "KafkaConsumerClass",
-      "line": 27,
-      "name": "PermitController",
-      "service": "permits-api",
-      "source": "pack:spring-kafka"
-    },
-    {
-      "bus": "kafka",
-      "confidence": "high",
-      "delivery_edge": "KAFKA_DELIVERS",
-      "file": "src/main/java/example/PermitController.java",
-      "group_id": "permits",
-      "id": "permits-api:src/main/java/example/PermitController.java:27:376243e431",
+      "id": "permits-api:src/main/java/example/PermitController.java:27:97f29bab1a",
       "label": "KafkaConsumer",
-      "line": 27,
-      "message_role": "consumer",
       "service": "permits-api",
-      "source": "pack:spring-kafka",
+      "file": "src/main/java/example/PermitController.java",
+      "line": 27,
+      "source": "lens:spring-kafka",
+      "confidence": "high",
+      "message_role": "consumer",
+      "bus": "kafka",
+      "topic": "inspection.completed",
       "topics": [
         "inspection.completed"
       ]
     },
     {
-      "bus": "kafka",
-      "confidence": "high",
-      "file": "src/main/java/example/PermitController.java",
-      "id": "permits-api:src/main/java/example/PermitController.java:30:732ec1a7bf",
-      "label": "KafkaConsumerClass",
-      "line": 30,
-      "name": "PermitController",
-      "service": "permits-api",
-      "source": "pack:spring-kafka"
-    },
-    {
-      "bus": "kafka",
-      "confidence": "high",
-      "delivery_edge": "KAFKA_DELIVERS",
-      "file": "src/main/java/example/PermitController.java",
-      "group_id": "permits",
-      "id": "permits-api:src/main/java/example/PermitController.java:30:8dfe4766fe",
+      "id": "permits-api:src/main/java/example/PermitController.java:30:d3f5c1935c",
       "label": "KafkaConsumer",
-      "line": 30,
-      "message_role": "consumer",
       "service": "permits-api",
-      "source": "pack:spring-kafka",
+      "file": "src/main/java/example/PermitController.java",
+      "line": 30,
+      "source": "lens:spring-kafka",
+      "confidence": "high",
+      "message_role": "consumer",
+      "bus": "kafka",
+      "topic": "inspection.cancelled",
       "topics": [
         "inspection.cancelled"
       ]
     },
     {
-      "confidence": "high",
-      "id": "permits-api:src/main/resources/application.properties:1:be86f6f12b",
-      "label": "File",
-      "language": "properties",
-      "path": "src/main/resources/application.properties",
+      "id": "permits-api:src/main/java/example/PermitController.java:13:7697edee86",
+      "label": "KafkaProducer",
       "service": "permits-api",
-      "source": "pack:file"
+      "file": "src/main/java/example/PermitController.java",
+      "line": 13,
+      "source": "lens:spring-kafka",
+      "confidence": "high",
+      "message_role": "producer",
+      "bus": "kafka",
+      "topic": "permit.approved",
+      "delivery_edge": "KAFKA_DELIVERS"
     },
     {
+      "id": "permits-api:src/main/java/example/PermitController.java:12:2ecd929fd2",
+      "label": "Endpoint",
+      "service": "permits-api",
+      "file": "src/main/java/example/PermitController.java",
+      "line": 12,
+      "source": "lens:spring-rest-endpoint",
       "confidence": "high",
-      "id": "web:cartograph.yaml:1:101f894b90",
-      "label": "File",
-      "language": "yaml",
-      "path": "cartograph.yaml",
-      "service": "web",
-      "source": "pack:file"
-    },
-    {
-      "confidence": "high",
-      "id": "web:src/app/PermitButton.tsx:1:41ebb68136",
-      "label": "File",
-      "language": "tsx",
-      "path": "src/app/PermitButton.tsx",
-      "service": "web",
-      "source": "pack:file"
-    },
-    {
-      "confidence": "high",
-      "file": "src/app/PermitButton.tsx",
-      "id": "web:src/app/PermitButton.tsx:3:52a32eb024",
-      "kind": "react-component",
-      "label": "Component",
-      "line": 3,
-      "name": "PermitButton",
-      "service": "web",
-      "source": "pack:react-components"
-    },
-    {
-      "confidence": "high",
-      "file": "src/app/PermitButton.tsx",
-      "host": "PERMITS_API",
-      "host_var": "PERMITS_API",
       "http_method": "POST",
-      "id": "web:src/app/PermitButton.tsx:4:92b9ab54ae",
-      "label": "HttpCall",
-      "line": 4,
       "path": "/api/permits/motor-vehicle",
-      "service": "web",
-      "source": "pack:js-fetch-hosted"
+      "handler": "PermitController.motorVehicle"
     },
     {
+      "id": "permits-api:src/main/java/example/PermitController.java:15:8e5ed929e4",
+      "label": "Endpoint",
+      "service": "permits-api",
+      "file": "src/main/java/example/PermitController.java",
+      "line": 15,
+      "source": "lens:spring-rest-endpoint",
       "confidence": "high",
-      "file": "src/app/PermitButton.tsx",
-      "host": "PERMITS_API",
-      "host_var": "PERMITS_API",
       "http_method": "POST",
-      "id": "web:src/app/PermitButton.tsx:5:e78d8bcb24",
-      "label": "HttpCall",
-      "line": 5,
       "path": "/api/permits/residential",
-      "service": "web",
-      "source": "pack:js-fetch-hosted"
+      "handler": "PermitController.residential"
     },
     {
+      "id": "permits-api:src/main/java/example/PermitController.java:18:f4b62f77e6",
+      "label": "Endpoint",
+      "service": "permits-api",
+      "file": "src/main/java/example/PermitController.java",
+      "line": 18,
+      "source": "lens:spring-rest-endpoint",
       "confidence": "high",
-      "file": "src/app/PermitButton.tsx",
-      "host": "PERMITS_API",
-      "host_var": "PERMITS_API",
       "http_method": "POST",
-      "id": "web:src/app/PermitButton.tsx:6:8e6a114bfd",
-      "label": "HttpCall",
-      "line": 6,
       "path": "/api/permits/commercial",
-      "service": "web",
-      "source": "pack:js-fetch-hosted"
+      "handler": "PermitController.commercial"
     },
     {
+      "id": "permits-api:src/main/java/example/PermitController.java:21:99d2ebb560",
+      "label": "Endpoint",
+      "service": "permits-api",
+      "file": "src/main/java/example/PermitController.java",
+      "line": 21,
+      "source": "lens:spring-rest-endpoint",
       "confidence": "high",
-      "file": "src/app/PermitButton.tsx",
-      "host": "PERMITS_API",
-      "host_var": "PERMITS_API",
       "http_method": "POST",
-      "id": "web:src/app/PermitButton.tsx:7:bd07eb6ff1",
-      "label": "HttpCall",
-      "line": 7,
       "path": "/api/permits/renewal",
-      "service": "web",
-      "source": "pack:js-fetch-hosted"
+      "handler": "PermitController.renewal"
     },
     {
+      "id": "permits-api:src/main/java/example/PermitController.java:24:0a18cb0d77",
+      "label": "Endpoint",
+      "service": "permits-api",
+      "file": "src/main/java/example/PermitController.java",
+      "line": 24,
+      "source": "lens:spring-rest-endpoint",
       "confidence": "high",
-      "file": "src/app/PermitButton.tsx",
-      "host": "PERMITS_API",
-      "host_var": "PERMITS_API",
-      "http_method": "GET",
-      "id": "web:src/app/PermitButton.tsx:8:f8fc646f11",
-      "label": "HttpCall",
-      "line": 8,
+      "http_method": "POST",
       "path": "/api/permits/status",
+      "handler": "PermitController.status"
+    },
+    {
+      "id": "permits-api:src/main/java/example/PermitController.java:8:e1f7385296",
+      "label": "Service",
+      "service": "permits-api",
+      "file": "src/main/java/example/PermitController.java",
+      "line": 8,
+      "source": "lens:spring-rest-endpoint",
+      "confidence": "high",
+      "kind": "rest-controller",
+      "framework": "spring",
+      "name": ""
+    },
+    {
+      "id": "permits-api:src/main/resources/application.properties:1:9d5872922c",
+      "label": "ConfigProperty",
+      "service": "permits-api",
+      "file": "src/main/resources/application.properties",
+      "line": 1,
+      "source": "lens:spring-config",
+      "confidence": "high",
+      "key": "spring.application.name",
+      "value": "permits-api"
+    },
+    {
+      "id": "web:src/app/PermitButton.tsx:4:796d579940",
+      "label": "HttpCall",
       "service": "web",
-      "source": "pack:js-fetch-hosted"
+      "file": "src/app/PermitButton.tsx",
+      "line": 4,
+      "source": "lens:js-http-call",
+      "confidence": "medium",
+      "host_var": "PERMITS_API",
+      "path": "/api/permits/motor-vehicle",
+      "http_method": "POST",
+      "framework": "js-fetch"
     },
     {
-      "anchors": [
-        "pattern.endpoints"
-      ],
-      "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:060909ebc3",
-      "label": "Lens",
-      "mode": "pattern",
-      "name": "pattern.endpoints",
-      "service": "cartograph",
-      "source": "pack:lens"
+      "id": "web:src/app/PermitButton.tsx:5:b474d0731e",
+      "label": "HttpCall",
+      "service": "web",
+      "file": "src/app/PermitButton.tsx",
+      "line": 5,
+      "source": "lens:js-http-call",
+      "confidence": "medium",
+      "host_var": "PERMITS_API",
+      "path": "/api/permits/residential",
+      "http_method": "POST",
+      "framework": "js-fetch"
     },
     {
-      "anchors": [
-        "pattern.controllers"
-      ],
-      "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:074e614f07",
-      "label": "Lens",
-      "mode": "pattern",
-      "name": "pattern.controllers",
-      "service": "cartograph",
-      "source": "pack:lens"
+      "id": "web:src/app/PermitButton.tsx:6:5a6dbed166",
+      "label": "HttpCall",
+      "service": "web",
+      "file": "src/app/PermitButton.tsx",
+      "line": 6,
+      "source": "lens:js-http-call",
+      "confidence": "medium",
+      "host_var": "PERMITS_API",
+      "path": "/api/permits/commercial",
+      "http_method": "POST",
+      "framework": "js-fetch"
     },
     {
-      "anchors": [
-        "pattern.components"
-      ],
-      "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:e0b5d14815",
-      "label": "Lens",
-      "mode": "pattern",
-      "name": "pattern.components",
-      "service": "cartograph",
-      "source": "pack:lens"
+      "id": "web:src/app/PermitButton.tsx:7:bf0bc62a87",
+      "label": "HttpCall",
+      "service": "web",
+      "file": "src/app/PermitButton.tsx",
+      "line": 7,
+      "source": "lens:js-http-call",
+      "confidence": "medium",
+      "host_var": "PERMITS_API",
+      "path": "/api/permits/renewal",
+      "http_method": "POST",
+      "framework": "js-fetch"
     },
     {
-      "anchors": [
-        "pattern.message_bus"
-      ],
-      "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:352a2e1810",
-      "label": "Lens",
-      "mode": "pattern",
-      "name": "pattern.message_bus",
-      "service": "cartograph",
-      "source": "pack:lens"
+      "id": "web:src/app/PermitButton.tsx:8:bd88536d5f",
+      "label": "HttpCall",
+      "service": "web",
+      "file": "src/app/PermitButton.tsx",
+      "line": 8,
+      "source": "lens:js-http-call",
+      "confidence": "medium",
+      "host_var": "PERMITS_API",
+      "path": "/api/permits/status",
+      "http_method": "GET",
+      "framework": "js-fetch"
     },
     {
-      "anchors": [
-        "pattern.cross_tier_calls"
-      ],
+      "id": "web:src/app/PermitButton.tsx:3:0d44577d6d",
+      "label": "Component",
+      "service": "web",
+      "file": "src/app/PermitButton.tsx",
+      "line": 3,
+      "source": "lens:react-component",
       "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:987409fe63",
-      "label": "Lens",
-      "mode": "pattern",
-      "name": "pattern.cross_tier_calls",
-      "service": "cartograph",
-      "source": "pack:lens"
+      "name": "PermitButton",
+      "kind": "react-component"
+    }
+  ],
+  "edges": [
+    {
+      "type": "KAFKA_DELIVERS",
+      "from": "inspections-api:src/main/java/example/InspectionListener.java:11:26f1b70c7e",
+      "to": "permits-api:src/main/java/example/PermitController.java:27:97f29bab1a",
+      "from_service": "inspections-api",
+      "to_service": "permits-api",
+      "cross_repo": true,
+      "confidence": "high"
     },
     {
-      "anchors": [
-        "/api/permits/status"
-      ],
-      "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:207554c3ac",
-      "label": "Lens",
-      "mode": "route-pattern",
-      "name": "route.api.permits",
-      "service": "cartograph",
-      "source": "pack:lens"
+      "type": "KAFKA_DELIVERS",
+      "from": "inspections-api:src/main/java/example/InspectionListener.java:12:e9518baa4d",
+      "to": "permits-api:src/main/java/example/PermitController.java:30:d3f5c1935c",
+      "from_service": "inspections-api",
+      "to_service": "permits-api",
+      "cross_repo": true,
+      "confidence": "high"
     },
     {
-      "anchors": [
-        "approved"
-      ],
-      "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:127c86d2f8",
-      "label": "Lens",
-      "mode": "domain",
-      "name": "domain.approved",
-      "service": "cartograph",
-      "source": "pack:lens"
+      "type": "KAFKA_DELIVERS",
+      "from": "permits-api:src/main/java/example/PermitController.java:13:7697edee86",
+      "to": "inspections-api:src/main/java/example/InspectionListener.java:9:1fef79657e",
+      "from_service": "permits-api",
+      "to_service": "inspections-api",
+      "cross_repo": true,
+      "confidence": "high"
     },
     {
-      "anchors": [
-        "permit"
-      ],
-      "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:2bcc7d83f3",
-      "label": "Lens",
-      "mode": "domain",
-      "name": "domain.permit",
-      "service": "cartograph",
-      "source": "pack:lens"
+      "type": "CROSSES_TIER",
+      "from": "web:src/app/PermitButton.tsx:4:796d579940",
+      "to": "permits-api:src/main/java/example/PermitController.java:12:2ecd929fd2",
+      "from_service": "web",
+      "to_service": "permits-api",
+      "cross_repo": true,
+      "confidence": "high"
     },
     {
-      "anchors": [
-        "completed"
-      ],
-      "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:12b36deda9",
-      "label": "Lens",
-      "mode": "domain",
-      "name": "domain.completed",
-      "service": "cartograph",
-      "source": "pack:lens"
+      "type": "CROSSES_TIER",
+      "from": "web:src/app/PermitButton.tsx:5:b474d0731e",
+      "to": "permits-api:src/main/java/example/PermitController.java:15:8e5ed929e4",
+      "from_service": "web",
+      "to_service": "permits-api",
+      "cross_repo": true,
+      "confidence": "high"
     },
     {
-      "anchors": [
-        "inspection"
-      ],
-      "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:a84691b0e9",
-      "label": "Lens",
-      "mode": "domain",
-      "name": "domain.inspection",
-      "service": "cartograph",
-      "source": "pack:lens"
+      "type": "CROSSES_TIER",
+      "from": "web:src/app/PermitButton.tsx:6:5a6dbed166",
+      "to": "permits-api:src/main/java/example/PermitController.java:18:f4b62f77e6",
+      "from_service": "web",
+      "to_service": "permits-api",
+      "cross_repo": true,
+      "confidence": "high"
     },
     {
-      "anchors": [
-        "cancelled"
-      ],
-      "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:527707febd",
-      "label": "Lens",
-      "mode": "domain",
-      "name": "domain.cancelled",
-      "service": "cartograph",
-      "source": "pack:lens"
+      "type": "CROSSES_TIER",
+      "from": "web:src/app/PermitButton.tsx:7:bf0bc62a87",
+      "to": "permits-api:src/main/java/example/PermitController.java:21:99d2ebb560",
+      "from_service": "web",
+      "to_service": "permits-api",
+      "cross_repo": true,
+      "confidence": "high"
     },
     {
-      "anchors": [
-        "motor"
-      ],
-      "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:3423065bb6",
-      "label": "Lens",
-      "mode": "domain",
-      "name": "domain.motor",
-      "service": "cartograph",
-      "source": "pack:lens"
-    },
-    {
-      "anchors": [
-        "motorvehicle"
-      ],
-      "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:85f003025c",
-      "label": "Lens",
-      "mode": "domain",
-      "name": "domain.motorvehicle",
-      "service": "cartograph",
-      "source": "pack:lens"
-    },
-    {
-      "anchors": [
-        "permitcontroller"
-      ],
-      "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:69d87f849e",
-      "label": "Lens",
-      "mode": "domain",
-      "name": "domain.permitcontroller",
-      "service": "cartograph",
-      "source": "pack:lens"
-    },
-    {
-      "anchors": [
-        "permits"
-      ],
-      "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:4310150b39",
-      "label": "Lens",
-      "mode": "domain",
-      "name": "domain.permits",
-      "service": "cartograph",
-      "source": "pack:lens"
-    },
-    {
-      "anchors": [
-        "vehicle"
-      ],
-      "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:b0da5f7df4",
-      "label": "Lens",
-      "mode": "domain",
-      "name": "domain.vehicle",
-      "service": "cartograph",
-      "source": "pack:lens"
-    },
-    {
-      "anchors": [
-        "residential"
-      ],
-      "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:ed9ff98fab",
-      "label": "Lens",
-      "mode": "domain",
-      "name": "domain.residential",
-      "service": "cartograph",
-      "source": "pack:lens"
-    },
-    {
-      "anchors": [
-        "commercial"
-      ],
-      "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:7e53e215ef",
-      "label": "Lens",
-      "mode": "domain",
-      "name": "domain.commercial",
-      "service": "cartograph",
-      "source": "pack:lens"
-    },
-    {
-      "anchors": [
-        "renewal"
-      ],
-      "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:ff5de85f09",
-      "label": "Lens",
-      "mode": "domain",
-      "name": "domain.renewal",
-      "service": "cartograph",
-      "source": "pack:lens"
-    },
-    {
-      "anchors": [
-        "status"
-      ],
-      "confidence": "high",
-      "graph_version": "c6439b7563959a84",
-      "id": "cartograph:lens:78ba540ebc",
-      "label": "Lens",
-      "mode": "domain",
-      "name": "domain.status",
-      "service": "cartograph",
-      "source": "pack:lens"
+      "type": "CROSSES_TIER",
+      "from": "web:src/app/PermitButton.tsx:8:bd88536d5f",
+      "to": "permits-api:src/main/java/example/PermitController.java:24:0a18cb0d77",
+      "from_service": "web",
+      "to_service": "permits-api",
+      "cross_repo": true,
+      "confidence": "high"
     }
   ]
 }

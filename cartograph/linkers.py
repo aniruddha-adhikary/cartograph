@@ -9,14 +9,19 @@ from .graph import Graph, edge_key
 from .util import slug, normalize_path, edge
 
 if TYPE_CHECKING:
-    from .indexer import ServiceContext
+    from typing import Protocol
+
+    class ServiceCtx(Protocol):
+        name: str
+        application_names: set[str]
 
 
-def run_linkers(graph: Graph, services: list[ServiceContext], registry: dict[str, str]) -> None:
+def run_linkers(graph: Graph, services: list[ServiceCtx], registry: dict[str, str]) -> None:
     endpoint_by_service_path: dict[tuple[str, str], dict[str, Any]] = {}
     app_name_to_service: dict[str, str] = {}
     topic_consumers: dict[tuple[str, str], list[dict[str, Any]]] = {}
     config_defaults: dict[tuple[str, str], str] = {}
+    unresolved: list[dict[str, Any]] = []
 
     for ctx in services:
         app_name_to_service[slug(ctx.name)] = ctx.name
@@ -34,7 +39,18 @@ def run_linkers(graph: Graph, services: list[ServiceContext], registry: dict[str
 
     for producer in [n for n in graph.nodes if n.get("message_role") == "producer"]:
         topic = resolve_topic(producer, config_defaults)
-        for consumer in topic_consumers.get((producer.get("bus", "default"), topic), []):
+        consumers = topic_consumers.get((producer.get("bus", "default"), topic), [])
+        if not consumers:
+            unresolved.append({
+                "kind": "no_consumer",
+                "node_id": producer["id"],
+                "service": producer["service"],
+                "topic": topic,
+                "bus": producer.get("bus", "default"),
+                "hint": f"Producer publishes to '{topic}' but no consumer subscribes to it",
+            })
+            continue
+        for consumer in consumers:
             if producer["service"] != consumer["service"]:
                 graph.add_edge(
                     edge(
@@ -49,6 +65,20 @@ def run_linkers(graph: Graph, services: list[ServiceContext], registry: dict[str
         host = slug(str(call.get("host") or call.get("host_var") or ""))
         target_service = registry.get(host) or app_name_to_service.get(host)
         if not target_service:
+            raw_refs = {
+                k: call[k]
+                for k in ("host", "host_var", "url", "feign_args", "path")
+                if call.get(k)
+            }
+            unresolved.append({
+                "kind": "unresolved_host",
+                "node_id": call["id"],
+                "service": call["service"],
+                "host_slug": host,
+                "raw": raw_refs,
+                "hint": f"HttpCall has references {raw_refs} but no service matched slug '{host}'",
+                "known_services": sorted(app_name_to_service.keys()),
+            })
             continue
         endpoint = endpoint_by_service_path.get((target_service, normalize_path(call.get("path", ""))))
         if not endpoint:
@@ -56,6 +86,8 @@ def run_linkers(graph: Graph, services: list[ServiceContext], registry: dict[str
         if endpoint and call["service"] != endpoint["service"]:
             confidence = "high" if host in registry else "medium"
             graph.add_edge(edge("CROSSES_TIER", call, endpoint, confidence))
+
+    graph.meta.setdefault("unresolved", []).extend(unresolved)
 
 
 def dedup_call_sites(graph: Graph) -> None:
