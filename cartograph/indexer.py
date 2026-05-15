@@ -1,18 +1,63 @@
 from __future__ import annotations
 
-import hashlib
-import json
 import re
 from dataclasses import dataclass
 from fnmatch import fnmatch
-from importlib import resources
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
 
-from .graph import Graph, edge_key
+from .graph import Graph
 from .lenses import persist_lenses
-from .schema import validate_pack_config
+
+# --- Re-exported from new modules for backward compatibility ---
+from .util import (
+    slug,
+    first_string,
+    join_paths,
+    split_url,
+    infer_http_method,
+    xml_attrs,
+    xml_tag_value,
+    first_xml_attr,
+    line_for_offset,
+    sql_operation,
+    object_string_value,
+    struts_action_path,
+    gateway_target_path,
+    extract_topics,
+    extract_group_id,
+    extract_message_send_topic,
+    collect_string_fields,
+    previous_key,
+    normalize_path,
+    node,
+    edge,
+)
+from .discovery import (
+    discover_service_roots,
+    looks_like_service,
+    service_name,
+    service_config,
+    parse_config_file,
+    parse_simple_yaml,
+    parse_scalar,
+)
+from .pack_loader import (
+    load_pack_config,
+    normalize_pack_config,
+    deep_merge,
+    merge_lists,
+    unique_paths,
+)
+from .linkers import (
+    run_linkers,
+    dedup_call_sites,
+    dedup_edges,
+    load_service_registry,
+    resolve_topic,
+    first_endpoint_for_service,
+    find_node,
+)
 
 CORE_EXCLUDES = [
     "src/test/**",
@@ -86,192 +131,11 @@ def index_workspace(
     dedup_edges(merged)
     persist_lenses(merged)
     merged.meta["services"] = sorted(
-        {node["service"] for node in merged.nodes if "service" in node and node["service"] != "cartograph"}
+        {node_item["service"] for node_item in merged.nodes if "service" in node_item and node_item["service"] != "cartograph"}
     )
     merged.meta["node_count"] = len(merged.nodes)
     merged.meta["edge_count"] = len(merged.edges)
     return merged
-
-
-def discover_service_roots(workspace: Path) -> list[Path]:
-    children = [p for p in sorted(workspace.iterdir()) if p.is_dir() and not p.name.startswith(".")]
-    service_children = [p for p in children if looks_like_service(p)]
-    if service_children:
-        return service_children
-    return [workspace]
-
-
-def load_pack_config(name: str, workspace: Path, packs_dir: Path | list[Path] | None = None) -> dict[str, Any]:
-    bundled = json.loads(resources.files("cartograph").joinpath(f"packs/{name}.json").read_text(encoding="utf-8"))
-    validate_pack_config(bundled, name=f"bundled:{name}")
-    candidates: list[Path] = []
-    pack_dirs_value = [packs_dir] if isinstance(packs_dir, Path) else packs_dir or []
-    candidates.append(workspace / ".cartograph" / "packs" / f"{name}.json")
-    for item in pack_dirs_value:
-        candidates.append(item / f"{name}.json")
-    candidates = unique_paths(candidates)
-    for path in candidates:
-        if path.exists():
-            overlay = json.loads(path.read_text(encoding="utf-8"))
-            validate_pack_config(overlay, name=str(path), partial=True)
-            bundled = deep_merge(bundled, overlay)
-            validate_pack_config(bundled, name=f"merged:{name}")
-    return normalize_pack_config(bundled)
-
-
-def normalize_pack_config(config: dict[str, Any]) -> dict[str, Any]:
-    normalized = dict(config)
-    if "kafka" in normalized:
-        kafka = normalized["kafka"]
-        kafka_bus = {
-            "name": "kafka",
-            "listener_annotation": kafka.get("listener_annotation", "@KafkaListener"),
-            "producer_methods": kafka.get("producer_methods", [".send("]),
-            "config_annotation": kafka.get("config_annotation", "@Value"),
-            "producer_label": "KafkaProducer",
-            "consumer_label": "KafkaConsumer",
-            "consumer_class_label": "KafkaConsumerClass",
-            "handler_edge": "HANDLES_KAFKA",
-            "delivery_edge": "KAFKA_DELIVERS",
-            "source": "pack:spring-kafka",
-            "config_source": "pack:spring-kafka-config",
-        }
-        buses = [bus for bus in normalized.get("message_buses", []) if bus.get("name") != "kafka"]
-        normalized["message_buses"] = [*buses, kafka_bus]
-    return normalized
-
-
-def deep_merge(base: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
-    merged = dict(base)
-    for key, value in overlay.items():
-        if isinstance(value, dict) and isinstance(merged.get(key), dict):
-            merged[key] = deep_merge(merged[key], value)
-        elif isinstance(value, list) and isinstance(merged.get(key), list):
-            merged[key] = merge_lists(merged[key], value)
-        else:
-            merged[key] = value
-    return merged
-
-
-def merge_lists(base: list[Any], overlay: list[Any]) -> list[Any]:
-    if all(isinstance(item, dict) and "name" in item for item in [*base, *overlay]):
-        by_name = {item["name"]: dict(item) for item in base}
-        order = [item["name"] for item in base]
-        for item in overlay:
-            item_name = item["name"]
-            if item_name in by_name:
-                by_name[item_name] = deep_merge(by_name[item_name], item)
-            else:
-                order.append(item_name)
-                by_name[item_name] = dict(item)
-        return [by_name[item_name] for item_name in order]
-    merged = list(base)
-    for item in overlay:
-        if item not in merged:
-            merged.append(item)
-    return merged
-
-
-def unique_paths(paths: list[Path]) -> list[Path]:
-    seen: set[Path] = set()
-    unique: list[Path] = []
-    for path in paths:
-        resolved = path.resolve()
-        if resolved in seen:
-            continue
-        seen.add(resolved)
-        unique.append(path)
-    return unique
-
-
-def looks_like_service(path: Path) -> bool:
-    if (path / "cartograph.yaml").exists() or (path / "package.json").exists() or (path / "pom.xml").exists():
-        return True
-    return any(p.suffix in SOURCE_EXTS for p in path.rglob("*") if p.is_file())
-
-
-def service_name(root: Path) -> str:
-    name = service_config(root).get("name")
-    if name:
-        return slug(str(name))
-    pkg = root / "package.json"
-    if pkg.exists():
-        try:
-            name = json.loads(pkg.read_text(encoding="utf-8")).get("name")
-            if name:
-                return slug(str(name).split("/")[-1])
-        except json.JSONDecodeError:
-            pass
-    return slug(root.name)
-
-
-def service_config(root: Path) -> dict[str, Any]:
-    cfg = root / "cartograph.yaml"
-    result: dict[str, Any] = {"exclude": []}
-    if cfg.exists():
-        parsed = parse_config_file(cfg)
-        result.update(parsed)
-        excludes: list[str] = []
-        for key in ("exclude", "excludes", "additional_excludes"):
-            value = parsed.get(key)
-            if isinstance(value, list):
-                excludes.extend(str(item) for item in value)
-            elif isinstance(value, str):
-                excludes.append(value)
-        result["exclude"] = excludes
-    return result
-
-
-def parse_config_file(path: Path) -> dict[str, Any]:
-    text = path.read_text(encoding="utf-8")
-    if path.suffix == ".json":
-        data = json.loads(text)
-        return data if isinstance(data, dict) else {}
-    return parse_simple_yaml(text)
-
-
-def parse_simple_yaml(text: str) -> dict[str, Any]:
-    root: dict[str, Any] = {}
-    stack: list[tuple[int, dict[str, Any] | list[Any], dict[str, Any] | None, str | None]] = [(-1, root, None, None)]
-    for raw in text.splitlines():
-        if not raw.strip() or raw.lstrip().startswith("#"):
-            continue
-        indent = len(raw) - len(raw.lstrip(" "))
-        line = raw.strip()
-        while len(stack) > 1 and indent <= stack[-1][0]:
-            stack.pop()
-        container = stack[-1][1]
-        if line.startswith("- "):
-            if not isinstance(container, list):
-                parent = stack[-1][2]
-                key = stack[-1][3]
-                if isinstance(parent, dict) and key:
-                    parent[key] = []
-                    container = parent[key]
-                    stack[-1] = (stack[-1][0], container, parent, key)
-            if isinstance(container, list):
-                container.append(parse_scalar(line[2:].strip()))
-            continue
-        if ":" not in line or not isinstance(container, dict):
-            continue
-        key, value = line.split(":", 1)
-        key = key.strip()
-        value = value.strip()
-        if value:
-            container[key] = parse_scalar(value)
-            continue
-        container[key] = {}
-        stack.append((indent, container[key], container, key))
-    return root
-
-
-def parse_scalar(value: str) -> Any:
-    value = value.strip().strip("'\"")
-    if value.lower() in {"true", "false"}:
-        return value.lower() == "true"
-    if value.startswith("[") and value.endswith("]"):
-        return [parse_scalar(item.strip()) for item in value[1:-1].split(",") if item.strip()]
-    return value
 
 
 def index_service(ctx: ServiceContext, include_test_paths: bool) -> None:
@@ -864,312 +728,9 @@ def index_js(ctx: ServiceContext, rel: str, text: str) -> None:
             )
 
 
-def run_linkers(graph: Graph, services: list[ServiceContext], registry: dict[str, str]) -> None:
-    endpoint_by_service_path: dict[tuple[str, str], dict[str, Any]] = {}
-    app_name_to_service: dict[str, str] = {}
-    topic_consumers: dict[tuple[str, str], list[dict[str, Any]]] = {}
-    config_defaults: dict[tuple[str, str], str] = {}
-
-    for ctx in services:
-        app_name_to_service[slug(ctx.name)] = ctx.name
-        for app_name in ctx.application_names:
-            app_name_to_service[slug(app_name)] = ctx.name
-
-    for node_item in graph.nodes:
-        if node_item["label"] == "Endpoint":
-            endpoint_by_service_path[(node_item["service"], normalize_path(node_item.get("path", "")))] = node_item
-        elif node_item.get("message_role") == "consumer":
-            for topic in node_item.get("topics", []):
-                topic_consumers.setdefault((node_item.get("bus", "default"), topic), []).append(node_item)
-        elif node_item["label"] == "ConfigProperty" and node_item.get("default_value"):
-            config_defaults[(node_item["service"], node_item["key"])] = node_item["default_value"]
-
-    for producer in [n for n in graph.nodes if n.get("message_role") == "producer"]:
-        topic = resolve_topic(producer, config_defaults)
-        for consumer in topic_consumers.get((producer.get("bus", "default"), topic), []):
-            if producer["service"] != consumer["service"]:
-                graph.add_edge(
-                    edge(
-                        producer.get("delivery_edge", "MESSAGE_DELIVERS"),
-                        producer,
-                        consumer,
-                        "high" if not producer.get("topic_var") else "medium",
-                    )
-                )
-
-    for call in [n for n in graph.nodes if n["label"] == "HttpCall"]:
-        host = slug(str(call.get("host") or call.get("host_var") or ""))
-        target_service = registry.get(host) or app_name_to_service.get(host)
-        if not target_service:
-            continue
-        endpoint = endpoint_by_service_path.get((target_service, normalize_path(call.get("path", ""))))
-        if not endpoint:
-            endpoint = first_endpoint_for_service(graph, target_service)
-        if endpoint and call["service"] != endpoint["service"]:
-            confidence = "high" if host in registry else "medium"
-            graph.add_edge(edge("CROSSES_TIER", call, endpoint, confidence))
-
-
-def dedup_call_sites(graph: Graph) -> None:
-    seen: dict[tuple[Any, ...], dict[str, Any]] = {}
-    kept: list[dict[str, Any]] = []
-    removed_ids: set[str] = set()
-    for n in graph.nodes:
-        if n.get("message_role") == "producer" or n["label"] == "HttpCall":
-            key = (
-                n["label"],
-                n["service"],
-                n.get("file"),
-                n.get("line"),
-                n.get("topic") or n.get("topic_var") or n.get("path"),
-            )
-            if key in seen:
-                seen[key]["duplicate_count"] = seen[key].get("duplicate_count", 1) + 1
-                removed_ids.add(n["id"])
-                continue
-            seen[key] = n
-        kept.append(n)
-    graph.nodes = kept
-    graph.edges = [e for e in graph.edges if e["from"] not in removed_ids and e["to"] not in removed_ids]
-
-
-def dedup_edges(graph: Graph) -> None:
-    seen: set[tuple[str, str, str]] = set()
-    kept: list[dict[str, Any]] = []
-    for item in graph.edges:
-        key = edge_key(item)
-        if key not in seen:
-            seen.add(key)
-            kept.append(item)
-    graph.edges = kept
-
-
-def load_service_registry(path: Path) -> dict[str, str]:
-    if not path.exists():
-        return {}
-    registry: dict[str, str] = {}
-    for line in path.read_text(encoding="utf-8").splitlines():
-        m = re.match(r"\s*([^:#]+)\s*:\s*([^#]+)", line)
-        if m:
-            registry[slug(m.group(1).strip())] = slug(m.group(2).strip())
-    return registry
-
-
-def node(
-    ctx: ServiceContext, label: str, rel: str, line_no: int, source: str, confidence: str, **props: Any
-) -> dict[str, Any]:
-    digest = hashlib.sha1(f"{ctx.name}:{rel}:{line_no}:{label}:{source}:{props}".encode()).hexdigest()[:10]
-    base = {
-        "id": f"{ctx.name}:{rel}:{line_no}:{digest}",
-        "label": label,
-        "service": ctx.name,
-        "source": source,
-        "confidence": confidence,
-    }
-    base.update(props)
-    return base
-
-
-def edge(kind: str, from_node: dict[str, Any], to_node: dict[str, Any], confidence: str) -> dict[str, Any]:
-    return {
-        "type": kind,
-        "from": from_node["id"],
-        "to": to_node["id"],
-        "from_service": from_node["service"],
-        "to_service": to_node["service"],
-        "cross_repo": from_node["service"] != to_node["service"],
-        "confidence": confidence,
-    }
-
-
-def first_string(text: str | None) -> str | None:
-    if not text:
-        return None
-    m = re.search(r'"([^"]+)"|\'([^\']+)\'', text)
-    return next((g for g in m.groups() if g), None) if m else None
-
-
 def next_java_method(lines: list[str], start: int) -> str | None:
     for line in lines[start : min(start + 8, len(lines))]:
         m = re.search(r"\b(?:public|private|protected)?\s*(?:[\w<>?,\s]+)\s+(\w+)\s*\(", line)
         if m and m.group(1) not in {"if", "for", "while", "switch"}:
             return m.group(1)
     return None
-
-
-def join_paths(base: str, child: str) -> str:
-    if not base and not child:
-        return "/"
-    return "/" + "/".join(part.strip("/") for part in (base, child) if part and part != "/")
-
-
-def normalize_path(path: str) -> str:
-    if not path:
-        return "/"
-    path = re.sub(r"\{[^}]+}", "{}", path)
-    return "/" + path.strip("/")
-
-
-def split_url(url: str) -> tuple[str, str]:
-    if "${" in url:
-        host_match = re.search(r"\$\{([^}]+)}", url)
-        host = host_match.group(1) if host_match else ""
-        tail = url.split("}", 1)[-1] if "}" in url else ""
-        return host, tail or "/"
-    if url.startswith("/"):
-        return "", url
-    parsed = urlparse(url)
-    return parsed.netloc, parsed.path or "/"
-
-
-def infer_http_method(line: str) -> str:
-    lowered = line.lower()
-    for method in ("get", "post", "put", "delete", "patch"):
-        if method in lowered:
-            return method.upper()
-    return "GET"
-
-
-def extract_topics(text: str) -> list[str]:
-    values = []
-    list_match = re.search(r"topics\s*=\s*\{([^}]+)}", text)
-    if list_match:
-        values.extend(re.findall(r'"([^"]+)"', list_match.group(1)))
-    single = re.search(r"topics\s*=\s*\"([^\"]+)\"", text)
-    if single:
-        values.append(single.group(1))
-    if not values:
-        values.extend(re.findall(r'"([^"]+)"', text))
-    return values or ["{unknown}"]
-
-
-def extract_group_id(text: str) -> str | None:
-    m = re.search(r"groupId\s*=\s*\"([^\"]+)\"", text)
-    return m.group(1) if m else None
-
-
-def extract_message_send_topic(line: str, producer_methods: list[str]) -> tuple[str | None, str | None]:
-    for token in sorted(producer_methods, key=len, reverse=True):
-        index = line.find(token)
-        if index < 0:
-            continue
-        tail = line[index + len(token) :]
-        literal = re.match(r'\s*"([^"]+)"', tail)
-        if literal:
-            return literal.group(1), None
-        variable = re.match(r"\s*(\w+)", tail)
-        if variable:
-            return None, variable.group(1)
-    return None, None
-
-
-def first_xml_attr(text: str, tag: str, attr: str) -> str | None:
-    match = re.search(rf"<{re.escape(tag)}\b([^>]*)>", text, flags=re.IGNORECASE)
-    if not match:
-        return None
-    return xml_attrs(match.group(1)).get(attr)
-
-
-def xml_attrs(text: str) -> dict[str, str]:
-    return {
-        match.group(1): match.group(2) or match.group(3)
-        for match in re.finditer(r"([\w:-]+)\s*=\s*(?:\"([^\"]*)\"|'([^']*)')", text)
-    }
-
-
-def xml_tag_value(text: str, tag: str) -> str | None:
-    match = re.search(rf"<{re.escape(tag)}\b[^>]*>(.*?)</{re.escape(tag)}>", text, flags=re.IGNORECASE | re.DOTALL)
-    if not match:
-        return None
-    return re.sub(r"\s+", " ", match.group(1)).strip()
-
-
-def struts_action_path(namespace: str, name: str, extension: str) -> str:
-    action = name.strip()
-    if action.startswith("/"):
-        base = action
-    else:
-        base = join_paths(namespace, action)
-    if extension and not base.endswith(extension):
-        base += extension
-    return base
-
-
-def line_for_offset(text: str, offset: int) -> int:
-    return text.count("\n", 0, offset) + 1
-
-
-def sql_operation(line: str) -> str | None:
-    stripped = line.strip().lower()
-    for operation in ("select", "insert", "update", "delete", "merge", "call"):
-        if (
-            stripped.startswith(operation + " ")
-            or stripped.startswith(operation + "\t")
-            or stripped.startswith(operation + "(")
-        ):
-            return operation.upper()
-    return None
-
-
-def object_string_value(line: str, key: str) -> str | None:
-    m = re.search(rf"{key}\s*:\s*['\"]([^'\"]+)['\"]", line)
-    return m.group(1) if m else None
-
-
-def previous_key(lines: list[str], idx: int, key: str) -> bool:
-    start = max(0, idx - 4)
-    return any(re.match(rf"\s*{re.escape(key)}\s*:", line) for line in lines[start:idx])
-
-
-def collect_string_fields(lines: list[str]) -> dict[str, str]:
-    fields: dict[str, str] = {}
-    for line in lines:
-        m = re.search(r"\b(?:private|protected|public)?\s*(?:final\s+)?String\s+(\w+)\s*=\s*\"([^\"]+)\"", line)
-        if m:
-            fields[m.group(1)] = m.group(2)
-    return fields
-
-
-def gateway_target_path(path_pattern: str, strip_prefix: int = 0) -> str:
-    path = path_pattern.split(",", 1)[0].strip()
-    path = re.sub(r"\*\*$", "", path).rstrip("/")
-    parts = [part for part in path.split("/") if part]
-    if strip_prefix:
-        parts = parts[strip_prefix:]
-    return "/" + "/".join(parts) if parts else "/"
-
-
-def resolve_topic(producer: dict[str, Any], config_defaults: dict[tuple[str, str], str]) -> str:
-    topic = producer.get("topic")
-    if topic and not (topic.startswith("{") and topic.endswith("}")):
-        return topic
-    topic_var = producer.get("topic_var")
-    if topic_var:
-        for (service, key), value in config_defaults.items():
-            if service == producer["service"] and key.endswith(topic_var):
-                return value
-    return topic or "{unknown}"
-
-
-def first_endpoint_for_service(graph: Graph, service: str) -> dict[str, Any] | None:
-    for item in graph.nodes:
-        if item["label"] == "Endpoint" and item["service"] == service:
-            return item
-    return None
-
-
-def find_node(graph: Graph, node_id: str | None) -> dict[str, Any] | None:
-    if not node_id:
-        return None
-    for item in graph.nodes:
-        if item["id"] == node_id:
-            return item
-    return None
-
-
-def slug(value: str) -> str:
-    value = value.strip().strip("'\"")
-    value = value.replace("_", "-").lower()
-    value = re.sub(r"^https?://", "", value)
-    value = value.split("/")[0]
-    return value
