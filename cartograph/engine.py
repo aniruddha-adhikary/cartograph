@@ -74,8 +74,11 @@ def _annotation_method_strategy(
     base_path = ""
     class_name = Path(rel).stem
     for line in lines:
-        if base_path_annotation in line and not any(
-            f"{k}Mapping" in line for k in method_annotations
+        if (
+            base_path_annotation in line
+            and not any(f"{k}Mapping" in line for k in method_annotations)
+            and "RequestMethod." not in line
+            and "method =" not in line
         ):
             base_path = _first_string(line) or base_path
         class_match = re.search(r"\bclass\s+(\w+)", line)
@@ -83,11 +86,31 @@ def _annotation_method_strategy(
             class_name = class_match.group(1)
 
     for idx, line in enumerate(lines, 1):
+        matched = False
         for ann_prefix, http_method in method_annotations.items():
             pattern = rf"@{re.escape(ann_prefix)}Mapping\s*(?:\((.*)\))?"
             m = re.search(pattern, line)
             if m:
                 method_path = _first_string(m.group(1) or line) or ""
+                method_name = _next_java_method(lines, idx) or "handler"
+                captures = {
+                    "base_path": base_path,
+                    "method_path": method_path,
+                    "path": _join_paths(base_path, method_path),
+                    "http_method": http_method,
+                    "class_name": class_name,
+                    "method_name": method_name,
+                }
+                nodes.append(_emit_node(emit, captures, rel, idx, service))
+                matched = True
+        if not matched:
+            rm = re.search(
+                r"@RequestMapping\s*\(([^)]*method\s*=\s*RequestMethod\.(\w+)[^)]*)\)",
+                line,
+            )
+            if rm:
+                http_method = rm.group(2).upper()
+                method_path = _first_string(rm.group(1)) or ""
                 method_name = _next_java_method(lines, idx) or "handler"
                 captures = {
                     "base_path": base_path,

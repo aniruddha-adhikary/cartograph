@@ -1,0 +1,29 @@
+[
+  {
+    "name": "spring-feign-client",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "@FeignClient\\s*\\((?P<args>[^)]+)\\)",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "HttpCall",
+      "schema": {
+        "framework": "string",
+        "feign_args": "string"
+      },
+      "values": {
+        "framework": "spring-feign",
+        "feign_args": "{{args}}"
+      },
+      "source": "lens:spring-feign",
+      "confidence": "high"
+    }
+  }
+]

@@ -1,0 +1,60 @@
+[
+  {
+    "name": "spring-data-mongo-document",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "@Document\\s*\\(\\s*collection\\s*=\\s*\"(?P<collection>[^\"]+)\"",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "collection": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "COLLECTION",
+        "collection": "{{collection}}",
+        "framework": "spring-data-mongodb"
+      },
+      "source": "lens:spring-data-mongo",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-data-mongo-query",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "@Query\\s*\\(\\s*\"(?P<query>[^\"]+)\"",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "query": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "QUERY",
+        "query": "{{query}}",
+        "framework": "spring-data"
+      },
+      "source": "lens:spring-data-mongo",
+      "confidence": "high"
+    }
+  }
+]

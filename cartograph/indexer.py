@@ -389,7 +389,7 @@ def index_java(ctx: ServiceContext, rel: str, text: str) -> None:
     for idx, line in enumerate(lines, 1):
         if rest["base_mapping_annotation"] in line and not re.search(
             r"(" + "|".join(rest["method_mappings"]) + r")Mapping", line
-        ):
+        ) and "RequestMethod." not in line and "method =" not in line:
             base_path = first_string(line) or base_path
         class_match = re.search(r"\bclass\s+(\w+)", line)
         if class_match:
@@ -413,9 +413,18 @@ def index_java(ctx: ServiceContext, rel: str, text: str) -> None:
 
     for idx, line in enumerate(lines, 1):
         mapping = re.search(r"@(" + "|".join(rest["method_mappings"]) + r")Mapping\s*(?:\((.*)\))?", line)
-        if mapping and rest_controller:
-            method = rest["method_mappings"][mapping.group(1)]
-            path = first_string(mapping.group(2) or line) or ""
+        rm_mapping = None
+        if not mapping:
+            rm_mapping = re.search(
+                r"@RequestMapping\s*\(([^)]*method\s*=\s*RequestMethod\.(\w+)[^)]*)\)", line
+            )
+        if (mapping or rm_mapping) and rest_controller:
+            if mapping:
+                method = rest["method_mappings"][mapping.group(1)]
+                path = first_string(mapping.group(2) or line) or ""
+            else:
+                method = rm_mapping.group(2).upper()
+                path = first_string(rm_mapping.group(1)) or ""
             handler = next_java_method(lines, idx) or f"{class_name}.handler"
             endpoint = node(
                 ctx,

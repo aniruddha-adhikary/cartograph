@@ -1,0 +1,95 @@
+[
+  {
+    "name": "eventuate-domain-event-publisher",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "class\\s+(?P<publisher_class>\\w+(?:EventPublisher|DomainEventPublisher))\\b",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "name": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "eventuate-tram",
+        "name": "{{publisher_class}}",
+        "framework": "eventuate"
+      },
+      "source": "lens:eventuate-tram",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "eventuate-command-handler",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "class\\s+(?P<handler_class>\\w+CommandHandler)",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "name": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "eventuate-tram",
+        "name": "{{handler_class}}",
+        "framework": "eventuate"
+      },
+      "source": "lens:eventuate-tram",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "eventuate-saga-channel",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "sagaCommandDispatcherFactory\\.make\\s*\\(\\s*\"(?P<channel>[^\"]+)\"",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "channel": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "eventuate-tram",
+        "channel": "{{channel}}",
+        "framework": "eventuate-saga"
+      },
+      "source": "lens:eventuate-tram",
+      "confidence": "high"
+    }
+  }
+]

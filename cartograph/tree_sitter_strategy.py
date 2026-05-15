@@ -109,6 +109,7 @@ def _ts_annotation_method(
             method_anns = _get_annotations(method_node)
             method_name = _field_text(method_node, "name") or "handler"
 
+            matched = False
             for ann_prefix, http_method in method_annotations.items():
                 ann_key = f"@{ann_prefix}Mapping"
                 if ann_key in method_anns:
@@ -123,6 +124,22 @@ def _ts_annotation_method(
                     }
                     line_no = method_node.start_point[0] + 1
                     nodes.append(_emit_node(emit, captures, rel, line_no, service))
+                    matched = True
+
+            if not matched and "@RequestMapping" in method_anns:
+                rm_node = method_anns["@RequestMapping"]
+                http_method = _annotation_request_method(rm_node) or "GET"
+                method_path = _annotation_string_arg(rm_node) or ""
+                captures = {
+                    "base_path": base_path,
+                    "method_path": method_path,
+                    "path": _join_paths(base_path, method_path),
+                    "http_method": http_method,
+                    "class_name": class_name,
+                    "method_name": method_name,
+                }
+                line_no = method_node.start_point[0] + 1
+                nodes.append(_emit_node(emit, captures, rel, line_no, service))
 
     return nodes, edges
 
@@ -200,7 +217,20 @@ def _annotation_string_arg(ann_node: Any) -> str | None:
                 if arg_child.type == "string_literal":
                     text = arg_child.text.decode("utf-8")
                     return text.strip('"').strip("'")
+                if arg_child.type == "element_value_pair":
+                    for pair_child in arg_child.children:
+                        if pair_child.type == "string_literal":
+                            text = pair_child.text.decode("utf-8")
+                            return text.strip('"').strip("'")
     return None
+
+
+def _annotation_request_method(ann_node: Any) -> str | None:
+    if ann_node is None:
+        return None
+    text = ann_node.text.decode("utf-8") if ann_node.text else ""
+    m = re.search(r"RequestMethod\.(\w+)", text)
+    return m.group(1).upper() if m else None
 
 
 def _field_text(node: Any, field_name: str) -> str | None:
