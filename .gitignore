@@ -1,0 +1,44 @@
+# Cartograph/runtime outputs
+cartograph-out/
+out/
+.cartograph-real-repos/
+.cartograph/discovery.json
+.cartograph/cache/
+.cartograph/tmp/
+
+# Python
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Tests/coverage
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+
+# Local/editor noise
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs/temp
+*.log
+*.tmp
+tmp/

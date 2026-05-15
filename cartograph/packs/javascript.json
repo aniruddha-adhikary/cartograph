@@ -1,0 +1,18 @@
+{
+  "express": {
+    "app_tokens": ["express()", "Router()"],
+    "route_receivers": ["app", "router"],
+    "methods": ["get", "post", "put", "delete", "patch"],
+    "mount_method": "use"
+  },
+  "kafkajs": {
+    "producer_token": "producer.send",
+    "consumer_token": ".subscribe"
+  },
+  "http_clients": {
+    "tokens": ["fetch(", "axios."]
+  },
+  "react": {
+    "component_name_pattern": "^[A-Z]"
+  }
+}

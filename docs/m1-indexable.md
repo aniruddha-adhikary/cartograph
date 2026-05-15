@@ -21,13 +21,57 @@ M1.5 (LLM extraction) is a separate milestone. The pack-only baseline ships and 
 M1 delivers:
 
 - Graph schema v1 with canonical `service`, `source`, and `confidence` properties on every node and edge
-- Pack engine with default test exclusion, producer dedup, and a forward-compatible file-hash caching scheme
+- Pack engine with default test exclusion, producer dedup, project-level pack config overlays, and a forward-compatible file-hash caching scheme
 - Spring pack family: REST controllers (`spring-rest-controller`), Kafka producer/consumer (`spring-kafka`, `spring-kafka-config`), WebClient (`spring-webclient`), Eureka service-name resolver (`spring-cloud-eureka`), RestTemplate (`spring-rest-template`)
 - Express/Node pack family: route handlers (`express-routes`), kafkajs producer/consumer (`kafkajs`), axios and fetch HTTP calls (`js-fetch-hosted`)
 - React pack: component extraction (`react-components`)
 - Auto-author skill: `discover_frameworks.py` + `synthesize_pack.py` loop for frameworks outside the shipped set
-- Polyrepo federation driver: per-repo extraction, service namespacing, merge, four cross-repo linker passes
+- Polyrepo federation driver: per-repo extraction, service namespacing, merge, and three production linker passes (`link-http-via-service-registry`, `link-http-via-eureka`, `link-kafka-by-topic`)
 - CGC importer: read a CodeGraphContext graph export and re-emit nodes with `source: cgc-import`
+- Agent integration installer: writes Codex/Claude skill instructions and graph-first repo guidance modelled on Graphify's operational pattern
+- Runtime view/plugin layer: built-in views such as `kafka-topics` are configuration, and project-specific graph queries can be added through `.cartograph/views/*.json` or explicit `.cartograph/plugins/*.py`
+
+---
+
+## Real-world calibration corpus
+
+**M1 is gated by real Java systems, not toy fixtures.** The calibration set intentionally mixes monorepo-style multi-module projects, polyrepo-style checkouts, synchronous REST, service discovery, asynchronous Kafka, and legacy Java web stacks so the indexer is tested against the patterns that make cross-service reasoning hard.
+
+| Corpus | Shape | Why it is in M1 | M1 evidence required |
+|---|---|---|---|
+| [`piomin/sample-spring-kafka-microservices`](https://github.com/piomin/sample-spring-kafka-microservices) | Java 21, Maven multi-module, 3 services: `order-service`, `payment-service`, `stock-service` | Validates Spring Kafka producers, consumers, config properties, default test exclusion, and producer dedup against a real Saga/Kafka example | Expected service-pair graph contains only the real Kafka deliveries between order, payment, and stock services; no `src/test/**` producers or consumers contribute edges |
+| [`spring-petclinic/spring-petclinic-microservices`](https://github.com/spring-petclinic/spring-petclinic-microservices) | Spring Cloud microservices with API gateway, config server, discovery server, customers, vets, visits, and GenAI services | Validates REST endpoint extraction, WebClient call extraction, and Eureka service-name resolution across a larger Java system | Expected HTTP graph resolves gateway/client calls to `customers-service`, `vets-service`, and `visits-service` via `spring.application.name`, with `confidence: medium` on Eureka-derived edges |
+| [`ewolff/microservice-kafka`](https://github.com/ewolff/microservice-kafka) | Java Spring Kafka sample with order, shipping, and invoicing services | Regression corpus for literal topic matching, separate consumer groups, and test-source isolation on a second Kafka codebase | Topic `order` links one producer service to two consumer services without counting embedded-Kafka tests as production consumers |
+| [`apache/struts-examples`](https://github.com/apache/struts-examples) | Official Apache Struts2 multi-module examples, materialized as selected WAR-style services | Validates Struts action XML, servlet/J2EE descriptors, JSP-adjacent XML, and SQL mapper extraction without Spring assumptions | Expected graph includes `Action`, `Endpoint`, and `DatabaseQuery` nodes from selected modules such as `basic-struts`, `annotations`, `form-processing`, and `crud` |
+| CityPermits split fixture | Synthetic but polyrepo-shaped: web, permits API, inspections API | Keeps the exact Spike A flow trace stable while real repos cover framework diversity | Motor-vehicle permit flow still spans all 3 services with 8 cross-repo HTTP edges and 3 Kafka deliveries |
+
+**Large-scale means many repos in one federation.** The M1 CI job checks out each service directory as if it were an independently versioned repository, even when the upstream sample is published as a single GitHub repo. For `piomin` and `petclinic`, the harness materialises a workspace like:
+
+```text
+workspace/
+  order-service/
+  payment-service/
+  stock-service/
+  spring-petclinic-api-gateway/
+  spring-petclinic-customers-service/
+  spring-petclinic-vets-service/
+  spring-petclinic-visits-service/
+  spring-petclinic-config-server/
+  spring-petclinic-discovery-server/
+```
+
+Each directory gets an explicit `cartograph.yaml` service name and is indexed independently before merge. This tests the same namespacing, collision handling, and linker code path a customer uses for a true 10-20 repo checkout.
+
+**Scale pass/fail is structural, not anecdotal.** The large-workspace gate must index the combined Java corpus in a single run, produce service-namespaced IDs for every node, and emit a federation report with:
+
+- zero duplicate node IDs after namespacing
+- zero edges sourced from excluded test paths
+- at least one resolved cross-service HTTP edge from Petclinic
+- at least one resolved Kafka delivery in each Kafka corpus
+- no `low` confidence edges unless they come from an auto-authored pack or CGC import
+- no gRPC, Kubernetes, or runtime-trace nodes in the M1 graph
+
+The purpose of the large-scale gate is not to prove every possible edge in these projects is recoverable by Layer 1. It proves the deterministic substrate can process real multi-service Java workspaces without false-positive fanout, namespace collisions, or scope drift.
 
 ---
 
@@ -125,13 +169,38 @@ M1 delivers:
 
 ### Rule evaluation order
 
-1. Load all `.yaml` rule files from `packs/<framework>/`. Validate schema on startup.
+1. Load bundled pack config from `cartograph/packs/*.json`, then merge project overlays from `.cartograph/packs/*.json` or `--packs-dir`. Validate schema on startup.
 2. For each file in the repo (after exclusion filtering): match language, check `imports_any`, run matching rules, evaluate `where` constraints, expand `{capture | filter}` templates, emit nodes and edges to the in-memory graph.
-3. Run linker passes in order: path resolution, cross-repo HTTP, cross-repo Kafka, cross-repo RabbitMQ, gRPC placeholder (no-op in M1).
+3. Run linker passes in order: local path resolution, `link-http-via-service-registry`, `link-http-via-eureka`, `link-kafka-by-topic`.
+
+### Project pack overlays
+
+**Framework-specific names live in config, not extractor code.** The engine owns reusable extraction shapes: Java annotations, Java method-call literals, Spring Cloud Gateway route blocks, JavaScript route calls, and topic producer/consumer calls. The pack config supplies the framework vocabulary for those shapes.
+
+Bundled config lives under `cartograph/packs/`. A project can override it without forking Cartograph:
+
+```text
+.cartograph/
+  packs/
+    spring.json
+    javascript.json
+```
+
+The merge is deep and deterministic: a project overlay can add a controller annotation, HTTP client token, route predicate name, or named message-bus definition while inheriting the rest of the bundled pack. Lists append unique values by default, and named object lists such as `message_buses` merge by `name`. This is the M1-compatible landing zone for M1.5 discovery. The LLM may propose an overlay, but the M1 indexer only runs reviewed deterministic config.
+
+### Runtime graph views
+
+**Named graph queries are also configuration.** Built-in query names such as `kafka-topics`, `endpoints`, and `cross-service-edges` are bundled view specs in `cartograph/views/default.json`, not separate CLI branches. Projects can add or override views under `.cartograph/views/*.json` and run them with:
+
+```bash
+cartograph query --graph cartograph-out/graph.json --name <view-name> --workspace .
+```
+
+For logic that cannot be expressed as a declarative view, a project may add an explicit local plugin under `.cartograph/plugins/<name>.py` with a `run(graph, args)` function, then invoke it with `cartograph run-plugin --allow-plugin`. This is intentionally explicit: LLM-authored runtime behavior lives in the project, is reviewable in git, and is never smuggled into Cartograph core.
 
 ### Default exclusion patterns
 
-The engine applies these exclusions before any rule runs. They are on by default; a per-repo `cartograph.yaml` can add to or override the list, but cannot remove the core set without an explicit `include_test_paths: true` flag.
+The engine applies these exclusions before any rule runs. They are on by default; a per-repo `cartograph.yaml` can add project-specific patterns through `exclude:` / `excludes:` / `additional_excludes:`, but cannot remove the core set without an explicit `include_test_paths: true` flag.
 
 - `src/test/**`
 - `tests/`
@@ -192,11 +261,11 @@ M1 is fully deterministic; caching is forward-compatible scaffolding for M1.5, n
 
 ### Auto-author skill
 
-The auto-author skill (`discover_frameworks.py` + `synthesize_pack.py`) is a first-class M1 deliverable, not an experimental feature. It is the mechanism for extending coverage to frameworks outside the shipped set without writing engine code.
+The auto-author skill (`discover-packs` + reviewed pack overlays) is a first-class M1 deliverable, not an experimental feature. It is the mechanism for extending coverage to frameworks outside the shipped set without writing engine code.
 
-The loop: scan repo imports and `package.json` dependencies → subtract already-covered modules → for each uncovered candidate, render a prompt (schema + example packs + 3–5 sample files from the target repo) → submit to a model → validate the output by running the engine on the sample files and asserting nodes were emitted → save to `packs/<module>/auto.yaml` with `confidence: low`.
+The loop: scan repo imports, annotations, method-call tokens, and `package.json` dependencies → subtract already-covered modules → for each uncovered candidate, render a prompt (schema + example packs + 3–5 sample files from the target repo) → submit to a model → validate the output by running the engine on the sample files and asserting nodes were emitted → save to `.cartograph/packs/<language>.json` as a reviewed overlay.
 
-Auto-authored packs carry `confidence: low` and are flagged for human review before promotion to `confidence: medium` or `high`. The WebClient and Eureka packs were the first real-world exercises of this loop during Spike B development and each took approximately one day.
+Auto-authored candidates are not used directly by M1. They are flagged for human review before becoming deterministic pack config. Once reviewed, their output is `source: pack:<rule-id>` like any other M1 pack. Unreviewed probabilistic extraction belongs to M1.5 and carries `source: llm:<model>@<date>`.
 
 ---
 
@@ -225,10 +294,6 @@ Each linker pass reads the merged graph and emits new edges with `cross_repo: tr
 **`link-http-via-eureka`** (`spring-cloud-eureka` resolver) — matches `HttpCall.host` against `spring.application.name` values from `application.yml` files across the federation. Emits `CROSSES_TIER` edges. `confidence: medium` (inferred, not explicit).
 
 **`link-kafka-by-topic`** — matches `KafkaProducer.topic` against `KafkaConsumer.topics` across all services. Resolves topic variables via `ConfigProperty` default values before matching. Emits `KAFKA_DELIVERS` edges. `confidence: high` for literal topic matches; `medium` for variable-resolved matches.
-
-**`link-rabbitmq-by-exchange`** — matches RabbitMQ publisher exchange+routing-key against consumer bindings. Emits `AMQP_DELIVERS` edges. Pack (`spring-amqp`, `amqplib`) and linker are M1 deliverables; confidence tiers follow the same literal/variable pattern as Kafka.
-
-**`link-grpc-by-proto`** — placeholder pass. Reads `.proto` file imports and emits stub `GRPC_CALLS` edges with `confidence: low`. Full gRPC resolution (generated client code matching) is out of M1 scope and is the flagship M2 cross-language feature.
 
 ---
 
@@ -263,7 +328,7 @@ The CGC-compat MCP shim (exposing Cartograph's graph through CGC's 21-tool surfa
 
 ### Test exclusion
 
-Test paths are excluded by default at the engine level, before any pack rule runs. The full pattern list is in the [Pack engine](#pack-engine) section. The default cannot be silently overridden; `include_test_paths: true` in `cartograph.yaml` is required and logged as a warning at index time.
+Test paths are excluded by default at the engine level, before any pack rule runs. The full pattern list is in the [Pack engine](#pack-engine) section. Repositories can add more patterns in `cartograph.yaml`; the default cannot be silently disabled, and `include_test_paths: true` is required to include test paths.
 
 ### Producer dedup
 
@@ -287,7 +352,8 @@ The following are deliberately deferred and will not be accepted as M1 pull requ
 - **Query API and MCP tools** — M2 deliverable; M1 produces a graph file, not a queryable service
 - **LLM extraction (Layer 2)** — M1.5 deliverable; the pack-only baseline must be validated first
 - **Agent-driven gap-filling (Layer 3)** — M2+ deliverable
-- **gRPC code analysis beyond proto placeholder** — M2 flagship; the proto parsing + generated-client matching problem spans multiple languages and is architecturally distinct from the pack model
+- **gRPC code analysis** — M2 flagship; the proto parsing + generated-client matching problem spans multiple languages and is architecturally distinct from the pack model
+- **RabbitMQ / AMQP extraction** — M2 add-on unless a real-repo calibration pass promotes it earlier; Kafka is the M1 message-bus target
 - **Polyglot grammars beyond Java / JS / TS / Python** — Go and .NET are M2; the tree-sitter grammar integration and pack authoring for those languages is a distinct workstream
 - **Kubernetes-manifest service resolver** — M2 alongside OpenTelemetry runtime-trace import
 - **CGC-compat MCP shim** — M2; requires the query layer to be in place
@@ -296,7 +362,7 @@ The following are deliberately deferred and will not be accepted as M1 pull requ
 
 ## Success metrics
 
-M1 is complete when the following calibration runs pass on the same target repos used in Spike B.
+M1 is complete when the following calibration runs pass on the same target repos used in Spike B plus the second Kafka regression corpus.
 
 **Primary targets:**
 
@@ -306,6 +372,8 @@ M1 is complete when the following calibration runs pass on the same target repos
 | `piomin/sample-spring-kafka-microservices` | Recall (cross-repo Kafka edges) | ≥ 90% | 100% after fixes |
 | `spring-petclinic/spring-petclinic-microservices` | Precision (cross-repo HTTP) | ≥ 95% | 0% (no WebClient pack) |
 | `spring-petclinic/spring-petclinic-microservices` | Recall (cross-repo HTTP edges) | ≥ 90% | 0% (no Eureka resolver) |
+| `ewolff/microservice-kafka` | Precision (topic delivery) | ≥ 95% | New M1 regression target |
+| `ewolff/microservice-kafka` | Recall (order topic consumers) | ≥ 90% | New M1 regression target |
 
 The piomin 100/100 result from Spike B ([`spike/real-repos/SPIKE-B-FINDINGS.md`](../spike/real-repos/SPIKE-B-FINDINGS.md)) is the proof point that these targets are reachable. The petclinic 0/0 result defines the two specific packs (`spring-webclient`, `spring-cloud-eureka`) whose completion gates the M1 close.
 
@@ -313,6 +381,23 @@ The piomin 100/100 result from Spike B ([`spike/real-repos/SPIKE-B-FINDINGS.md`]
 
 - The CityPermits polyrepo fixture from Spike A must still produce ≥ 92 nodes / 25 edges with all 8 cross-repo HTTP edges and 3 Kafka delivery edges intact.
 - Auto-author skill must produce a runnable pack (zero engine validation errors) on at least one new framework not in the shipped set, in a single loop iteration.
+- The large Java workspace assembled from Petclinic + Piomin + Ewolff must index as a single federation with zero duplicate service-prefixed node IDs.
+- The large Java workspace must emit no `KAFKA_DELIVERS` or `CROSSES_TIER` edge whose source or target file is under a default-excluded path.
+
+**Required CI gates:**
+
+```bash
+python scripts/prepare_real_repos.py
+cartograph index --workspace fixtures/real-java-workspace --out out/m1-real-java.graph.json
+cartograph verify --graph out/m1-real-java.graph.json --suite fixtures/expectations/m1-real-java.yaml
+cartograph index --workspace .cartograph-real-repos/workspace --out cartograph-out/real-repos.graph.json --report cartograph-out/GRAPH_REPORT.md
+cartograph verify --graph cartograph-out/real-repos.graph.json --suite fixtures/expectations/m1-real-java.yaml
+cartograph verify --graph out/citypermits.graph.json --suite fixtures/expectations/citypermits-m1.yaml
+```
+
+The `m1-real-java.yaml` verifier owns the corpus-specific assertions: service list, expected Kafka topic links, expected Petclinic HTTP links, duplicate-ID check, confidence-tier check, and test-path exclusion check. The CityPermits verifier owns the Spike A regression numbers.
+
+**Agent integration gate:** `cartograph install --platform codex --project <tmpdir>` must write a Cartograph skill, `AGENTS.md`, and a Codex hook config. The installed instructions must tell the agent to consult `cartograph-out/GRAPH_REPORT.md` and use graph commands before broad source search, while still allowing source reads for edits and debugging.
 
 **The test-exclusion and dedup defaults must remain on.** Any PR that makes these opt-in rather than opt-out will be rejected on the grounds that it reverts the Spike B precision gain.
 
@@ -322,6 +407,6 @@ The piomin 100/100 result from Spike B ([`spike/real-repos/SPIKE-B-FINDINGS.md`]
 
 1. **`spring-cloud-eureka` resolver scope.** The resolver reads `spring.application.name` from `application.yml` files across all repos in the federation. This works when all repos are co-located (monorepo-style checkout or CI workspace). For the case where repos are checked out separately and the service registry is the only shared artifact, does the Eureka resolver need to be driven from the registry file alone, or is a full multi-repo checkout a reasonable M1 requirement? *Owner: indexing team.*
 
-2. **RabbitMQ pack authoring timeline.** The `link-rabbitmq-by-exchange` linker is in M1 scope, but the underlying `spring-amqp` and `amqplib` packs are not yet calibrated against a real repo. If pack authoring for RabbitMQ takes longer than estimated, can the linker ship with `confidence: low` on all edges pending pack promotion, without blocking the M1 close? *Owner: pack team.*
+2. **Large-workspace fixture ownership.** The real Java workspace is assembled from upstream open-source projects. Who owns pinning commits, refreshing expected edges, and auditing upstream changes that add or remove services? *Owner: QA lead.*
 
 3. **CGC importer file format stability.** CGC v0.4.9 exports graphs as KuzuDB dumps. If CGC releases a breaking schema change before M1 ships, the importer may need to target a pinned CGC version. Should we target the JSON export format instead of the binary KuzuDB dump to reduce coupling? *Owner: integrations team.*

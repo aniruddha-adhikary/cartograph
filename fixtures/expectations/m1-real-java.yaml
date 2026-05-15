@@ -1,0 +1,45 @@
+{
+  "services": [
+    "order-service",
+    "payment-service",
+    "stock-service",
+    "spring-petclinic-api-gateway",
+    "spring-petclinic-customers-service",
+    "spring-petclinic-vets-service",
+    "spring-petclinic-visits-service",
+    "spring-petclinic-config-server",
+    "spring-petclinic-discovery-server",
+    "microservice-kafka-order",
+    "microservice-kafka-shipping",
+    "microservice-kafka-invoicing",
+    "basic-struts",
+    "annotations",
+    "form-processing",
+    "crud"
+  ],
+  "no_duplicate_node_ids": true,
+  "no_test_path_edges": true,
+  "forbidden_labels": ["GrpcCall", "KubernetesService", "RuntimeTrace"],
+  "min_counts": {
+    "Endpoint": 4,
+    "KafkaProducer": 3,
+    "KafkaConsumer": 4,
+    "Action": 4,
+    "DatabaseQuery": 4,
+    "KAFKA_DELIVERS": 4,
+    "CROSSES_TIER": 3
+  },
+  "required_edges": [
+    {"type": "KAFKA_DELIVERS", "from_service": "order-service", "to_service": "payment-service", "topic": "orders"},
+    {"type": "KAFKA_DELIVERS", "from_service": "order-service", "to_service": "stock-service", "topic": "orders"},
+    {"type": "KAFKA_DELIVERS", "from_service": "microservice-kafka-order", "to_service": "microservice-kafka-shipping", "topic": "order"},
+    {"type": "KAFKA_DELIVERS", "from_service": "microservice-kafka-order", "to_service": "microservice-kafka-invoicing", "topic": "order"},
+    {"type": "CROSSES_TIER", "from_service": "spring-petclinic-api-gateway", "to_service": "spring-petclinic-customers-service", "path": "/owners"},
+    {"type": "CROSSES_TIER", "from_service": "spring-petclinic-api-gateway", "to_service": "spring-petclinic-vets-service", "path": "/vets"},
+    {"type": "CROSSES_TIER", "from_service": "spring-petclinic-api-gateway", "to_service": "spring-petclinic-visits-service", "path": "/pets/visits"}
+  ],
+  "confidence": {
+    "no_unapproved_low": true,
+    "allowed_low_sources": ["cgc-import", "pack:auto"]
+  }
+}

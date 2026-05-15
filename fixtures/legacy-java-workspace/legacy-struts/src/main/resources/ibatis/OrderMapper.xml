@@ -1,0 +1,8 @@
+<mapper namespace="OrderMapper">
+  <select id="findOrder" parameterType="long" resultType="Order">
+    SELECT * FROM ORDERS WHERE ID = #{id}
+  </select>
+  <update id="markSubmitted">
+    UPDATE ORDERS SET STATUS = 'SUBMITTED' WHERE ID = #{id}
+  </update>
+</mapper>

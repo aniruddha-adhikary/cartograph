@@ -1,0 +1,85 @@
+{
+  "confidence_summary": {
+    "high": 5,
+    "low": 0,
+    "medium": 0
+  },
+  "edges": [],
+  "graph_version": "737e35de642f1a7a",
+  "name": "endpoints:permits-api",
+  "nodes": [
+    {
+      "confidence": "high",
+      "file": "src/main/java/example/PermitController.java",
+      "handler": "PermitController.motorVehicle",
+      "http_method": "POST",
+      "id": "permits-api:src/main/java/example/PermitController.java:12:4c12ea7097",
+      "label": "Endpoint",
+      "line": 12,
+      "path": "/api/permits/motor-vehicle",
+      "service": "permits-api",
+      "source": "pack:spring-rest-controller"
+    },
+    {
+      "confidence": "high",
+      "file": "src/main/java/example/PermitController.java",
+      "handler": "PermitController.residential",
+      "http_method": "POST",
+      "id": "permits-api:src/main/java/example/PermitController.java:15:55a97403bc",
+      "label": "Endpoint",
+      "line": 15,
+      "path": "/api/permits/residential",
+      "service": "permits-api",
+      "source": "pack:spring-rest-controller"
+    },
+    {
+      "confidence": "high",
+      "file": "src/main/java/example/PermitController.java",
+      "handler": "PermitController.commercial",
+      "http_method": "POST",
+      "id": "permits-api:src/main/java/example/PermitController.java:18:3dcb22f813",
+      "label": "Endpoint",
+      "line": 18,
+      "path": "/api/permits/commercial",
+      "service": "permits-api",
+      "source": "pack:spring-rest-controller"
+    },
+    {
+      "confidence": "high",
+      "file": "src/main/java/example/PermitController.java",
+      "handler": "PermitController.renewal",
+      "http_method": "POST",
+      "id": "permits-api:src/main/java/example/PermitController.java:21:f02e281b55",
+      "label": "Endpoint",
+      "line": 21,
+      "path": "/api/permits/renewal",
+      "service": "permits-api",
+      "source": "pack:spring-rest-controller"
+    },
+    {
+      "confidence": "high",
+      "file": "src/main/java/example/PermitController.java",
+      "handler": "PermitController.status",
+      "http_method": "POST",
+      "id": "permits-api:src/main/java/example/PermitController.java:24:bb781859a3",
+      "label": "Endpoint",
+      "line": 24,
+      "path": "/api/permits/status",
+      "service": "permits-api",
+      "source": "pack:spring-rest-controller"
+    }
+  ],
+  "path": "/api/permits",
+  "service": "permits-api",
+  "services_touched": [
+    "permits-api"
+  ],
+  "stats": {
+    "n_cross_repo_http": 0,
+    "n_edges": 0,
+    "n_kafka_deliveries": 0,
+    "n_message_deliveries": 0,
+    "n_nodes": 5,
+    "n_services": 1
+  }
+}

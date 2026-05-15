@@ -1,0 +1,54 @@
+{
+  "rest": {
+    "controller_annotations": ["@RestController", "@Controller"],
+    "base_mapping_annotation": "@RequestMapping",
+    "method_mappings": {
+      "Get": "GET",
+      "Post": "POST",
+      "Put": "PUT",
+      "Delete": "DELETE",
+      "Patch": "PATCH"
+    }
+  },
+  "message_buses": [
+    {
+      "name": "kafka",
+      "listener_annotation": "@KafkaListener",
+      "producer_methods": [".send("],
+      "config_annotation": "@Value",
+      "producer_label": "KafkaProducer",
+      "consumer_label": "KafkaConsumer",
+      "consumer_class_label": "KafkaConsumerClass",
+      "handler_edge": "HANDLES_KAFKA",
+      "delivery_edge": "KAFKA_DELIVERS",
+      "source": "pack:spring-kafka",
+      "config_source": "pack:spring-kafka-config"
+    }
+  ],
+  "http_clients": {
+    "tokens": ["RestTemplate", "getForObject", "postForEntity", "exchange(", ".uri("],
+    "webclient_token": ".uri("
+  },
+  "gateway": {
+    "uri_prefix": "lb://",
+    "path_predicate": "Path",
+    "strip_prefix_filter": "StripPrefix"
+  },
+  "struts": {
+    "framework": "struts",
+    "action_label": "Action",
+    "source": "pack:struts-action",
+    "action_extension": ".action",
+    "default_http_method": "GET"
+  },
+  "j2ee": {
+    "servlet_label": "Servlet",
+    "source": "pack:j2ee-web",
+    "default_http_method": "GET"
+  },
+  "database": {
+    "query_label": "DatabaseQuery",
+    "mapper_source": "pack:sql-mapper",
+    "sql_source": "pack:sql"
+  }
+}

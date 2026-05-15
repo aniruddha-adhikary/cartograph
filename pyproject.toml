@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cartograph"
+version = "0.1.0"
+description = "Configurable polyrepo graph indexing and query tools"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=1.18",
+  "pytest>=9",
+  "ruff>=0.15",
+]
+
+[project.scripts]
+cartograph = "cartograph.cli:main"
+
+[tool.setuptools]
+packages = ["cartograph"]
+
+[tool.setuptools.package-data]
+cartograph = ["skills/*.md", "packs/*.json", "views/*.json"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+extend-exclude = [
+  ".cartograph-real-repos",
+  "cartograph-out",
+]
+
+[tool.ruff.lint]
+select = [
+  "E",
+  "F",
+  "I",
+  "B",
+  "UP",
+]
+ignore = [
+  "E501",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/update_golden.py" = ["E402"]
+
+[tool.mypy]
+python_version = "3.11"
+packages = ["cartograph"]
+strict = false
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_optional = true
+check_untyped_defs = true

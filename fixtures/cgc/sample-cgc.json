@@ -1,0 +1,11 @@
+{
+  "service": "legacy-service",
+  "nodes": [
+    {"id": "f1", "label": "Function", "name": "listOwners", "http_method": "GET", "path": "/owners"},
+    {"id": "c1", "label": "Class", "name": "OwnerResource"},
+    {"id": "x1", "label": "UnknownThing", "name": "opaque"}
+  ],
+  "edges": [
+    {"from": "c1", "to": "f1", "type": "CallEdge"}
+  ]
+}

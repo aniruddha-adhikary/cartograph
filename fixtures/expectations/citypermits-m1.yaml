@@ -1,0 +1,20 @@
+{
+  "services": ["web", "permits-api", "inspections-api"],
+  "no_duplicate_node_ids": true,
+  "no_test_path_edges": true,
+  "min_counts": {
+    "Endpoint": 5,
+    "Component": 1,
+    "HttpCall": 5,
+    "KafkaProducer": 3,
+    "KafkaConsumer": 3,
+    "KAFKA_DELIVERS": 3,
+    "CROSSES_TIER": 5
+  },
+  "required_edges": [
+    {"type": "CROSSES_TIER", "from_service": "web", "to_service": "permits-api", "path": "/api/permits/motor-vehicle"},
+    {"type": "KAFKA_DELIVERS", "from_service": "permits-api", "to_service": "inspections-api", "topic": "permit.approved"},
+    {"type": "KAFKA_DELIVERS", "from_service": "inspections-api", "to_service": "permits-api", "topic": "inspection.completed"},
+    {"type": "KAFKA_DELIVERS", "from_service": "inspections-api", "to_service": "permits-api", "topic": "inspection.cancelled"}
+  ]
+}

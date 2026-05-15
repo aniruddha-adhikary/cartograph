@@ -1,0 +1,52 @@
+{
+  "below_threshold": [],
+  "graph_version": "737e35de642f1a7a",
+  "name": "coverage-report",
+  "services": {
+    "cartograph": {
+      "confidence_breakdown": {
+        "high": 20
+      },
+      "llm_ratio": 0.0,
+      "pack_coverage_ratio": 1.0,
+      "source_breakdown": {
+        "pack": 20
+      },
+      "total_nodes": 20
+    },
+    "inspections-api": {
+      "confidence_breakdown": {
+        "high": 7
+      },
+      "llm_ratio": 0.0,
+      "pack_coverage_ratio": 1.0,
+      "source_breakdown": {
+        "pack": 7
+      },
+      "total_nodes": 7
+    },
+    "permits-api": {
+      "confidence_breakdown": {
+        "high": 14
+      },
+      "llm_ratio": 0.0,
+      "pack_coverage_ratio": 1.0,
+      "source_breakdown": {
+        "pack": 14
+      },
+      "total_nodes": 14
+    },
+    "web": {
+      "confidence_breakdown": {
+        "high": 8
+      },
+      "llm_ratio": 0.0,
+      "pack_coverage_ratio": 1.0,
+      "source_breakdown": {
+        "pack": 8
+      },
+      "total_nodes": 8
+    }
+  },
+  "threshold": 0.8
+}

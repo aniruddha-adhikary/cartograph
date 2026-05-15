@@ -1,0 +1,21 @@
+{
+  "endpoints": {
+    "kind": "nodes",
+    "label": "Endpoint",
+    "sort": ["service", "path"]
+  },
+  "cross-service-edges": {
+    "kind": "edges",
+    "cross_repo": true,
+    "sort": ["from_service", "to_service", "type"]
+  },
+  "kafka-topics": {
+    "kind": "group_edges",
+    "edge_type": "KAFKA_DELIVERS",
+    "group_by": {"side": "from", "property": "topic"},
+    "fields": {
+      "producers": {"side": "from", "property": "service"},
+      "consumers": {"side": "to", "property": "service"}
+    }
+  }
+}

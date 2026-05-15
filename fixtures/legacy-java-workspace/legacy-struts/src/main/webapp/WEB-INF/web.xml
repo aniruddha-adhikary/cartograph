@@ -1,0 +1,10 @@
+<web-app>
+  <servlet>
+    <servlet-name>legacyServlet</servlet-name>
+    <servlet-class>example.LegacyServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>legacyServlet</servlet-name>
+    <url-pattern>/legacy/servlet</url-pattern>
+  </servlet-mapping>
+</web-app>

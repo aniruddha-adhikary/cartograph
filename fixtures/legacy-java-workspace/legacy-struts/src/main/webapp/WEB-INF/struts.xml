@@ -1,0 +1,7 @@
+<struts>
+  <package name="legacy" namespace="/legacy" extends="struts-default">
+    <action name="submitOrder" class="example.LegacyOrderAction" method="submit">
+      <result name="success">/WEB-INF/jsp/order.jsp</result>
+    </action>
+  </package>
+</struts>

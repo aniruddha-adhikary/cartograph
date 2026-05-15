@@ -1,0 +1,8 @@
+{
+  "medium-confidence-crossings": {
+    "kind": "edges",
+    "cross_repo": true,
+    "where": {"confidence": "medium"},
+    "sort": ["from_service", "to_service", "type"]
+  }
+}

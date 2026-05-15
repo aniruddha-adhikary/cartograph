@@ -1,0 +1,4 @@
+name: oracle-portal
+include_test_paths: false
+additional_excludes:
+  - src/generated/**

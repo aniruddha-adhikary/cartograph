@@ -1,0 +1,11 @@
+{
+  "message-topics": {
+    "kind": "group_edges",
+    "edge_type": "KAFKA_DELIVERS",
+    "group_by": {"side": "from", "property": "topic"},
+    "fields": {
+      "publishers": {"side": "from", "property": "service"},
+      "subscribers": {"side": "to", "property": "service"}
+    }
+  }
+}

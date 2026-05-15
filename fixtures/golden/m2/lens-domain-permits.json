@@ -1,0 +1,201 @@
+{
+  "anchors": [
+    "permits"
+  ],
+  "confidence_summary": {
+    "high": 15,
+    "low": 0,
+    "medium": 0
+  },
+  "edges": [
+    {
+      "confidence": "high",
+      "cross_repo": true,
+      "from": "web:src/app/PermitButton.tsx:4:92b9ab54ae",
+      "from_service": "web",
+      "to": "permits-api:src/main/java/example/PermitController.java:12:4c12ea7097",
+      "to_service": "permits-api",
+      "type": "CROSSES_TIER"
+    },
+    {
+      "confidence": "high",
+      "cross_repo": true,
+      "from": "web:src/app/PermitButton.tsx:5:e78d8bcb24",
+      "from_service": "web",
+      "to": "permits-api:src/main/java/example/PermitController.java:15:55a97403bc",
+      "to_service": "permits-api",
+      "type": "CROSSES_TIER"
+    },
+    {
+      "confidence": "high",
+      "cross_repo": true,
+      "from": "web:src/app/PermitButton.tsx:6:8e6a114bfd",
+      "from_service": "web",
+      "to": "permits-api:src/main/java/example/PermitController.java:18:3dcb22f813",
+      "to_service": "permits-api",
+      "type": "CROSSES_TIER"
+    },
+    {
+      "confidence": "high",
+      "cross_repo": true,
+      "from": "web:src/app/PermitButton.tsx:7:bd07eb6ff1",
+      "from_service": "web",
+      "to": "permits-api:src/main/java/example/PermitController.java:21:f02e281b55",
+      "to_service": "permits-api",
+      "type": "CROSSES_TIER"
+    },
+    {
+      "confidence": "high",
+      "cross_repo": true,
+      "from": "web:src/app/PermitButton.tsx:8:f8fc646f11",
+      "from_service": "web",
+      "to": "permits-api:src/main/java/example/PermitController.java:24:bb781859a3",
+      "to_service": "permits-api",
+      "type": "CROSSES_TIER"
+    }
+  ],
+  "graph_version": "737e35de642f1a7a",
+  "lens_id": "cartograph:lens:4310150b39",
+  "mode": "domain",
+  "name": "domain.permits",
+  "nodes": [
+    {
+      "confidence": "high",
+      "file": "src/main/java/example/PermitController.java",
+      "handler": "PermitController.motorVehicle",
+      "http_method": "POST",
+      "id": "permits-api:src/main/java/example/PermitController.java:12:4c12ea7097",
+      "label": "Endpoint",
+      "line": 12,
+      "path": "/api/permits/motor-vehicle",
+      "service": "permits-api",
+      "source": "pack:spring-rest-controller"
+    },
+    {
+      "confidence": "high",
+      "file": "src/main/java/example/PermitController.java",
+      "handler": "PermitController.residential",
+      "http_method": "POST",
+      "id": "permits-api:src/main/java/example/PermitController.java:15:55a97403bc",
+      "label": "Endpoint",
+      "line": 15,
+      "path": "/api/permits/residential",
+      "service": "permits-api",
+      "source": "pack:spring-rest-controller"
+    },
+    {
+      "confidence": "high",
+      "file": "src/main/java/example/PermitController.java",
+      "handler": "PermitController.commercial",
+      "http_method": "POST",
+      "id": "permits-api:src/main/java/example/PermitController.java:18:3dcb22f813",
+      "label": "Endpoint",
+      "line": 18,
+      "path": "/api/permits/commercial",
+      "service": "permits-api",
+      "source": "pack:spring-rest-controller"
+    },
+    {
+      "confidence": "high",
+      "file": "src/main/java/example/PermitController.java",
+      "handler": "PermitController.renewal",
+      "http_method": "POST",
+      "id": "permits-api:src/main/java/example/PermitController.java:21:f02e281b55",
+      "label": "Endpoint",
+      "line": 21,
+      "path": "/api/permits/renewal",
+      "service": "permits-api",
+      "source": "pack:spring-rest-controller"
+    },
+    {
+      "confidence": "high",
+      "file": "src/main/java/example/PermitController.java",
+      "handler": "PermitController.status",
+      "http_method": "POST",
+      "id": "permits-api:src/main/java/example/PermitController.java:24:bb781859a3",
+      "label": "Endpoint",
+      "line": 24,
+      "path": "/api/permits/status",
+      "service": "permits-api",
+      "source": "pack:spring-rest-controller"
+    },
+    {
+      "confidence": "high",
+      "file": "src/app/PermitButton.tsx",
+      "host": "PERMITS_API",
+      "host_var": "PERMITS_API",
+      "http_method": "POST",
+      "id": "web:src/app/PermitButton.tsx:4:92b9ab54ae",
+      "label": "HttpCall",
+      "line": 4,
+      "path": "/api/permits/motor-vehicle",
+      "service": "web",
+      "source": "pack:js-fetch-hosted"
+    },
+    {
+      "confidence": "high",
+      "file": "src/app/PermitButton.tsx",
+      "host": "PERMITS_API",
+      "host_var": "PERMITS_API",
+      "http_method": "POST",
+      "id": "web:src/app/PermitButton.tsx:5:e78d8bcb24",
+      "label": "HttpCall",
+      "line": 5,
+      "path": "/api/permits/residential",
+      "service": "web",
+      "source": "pack:js-fetch-hosted"
+    },
+    {
+      "confidence": "high",
+      "file": "src/app/PermitButton.tsx",
+      "host": "PERMITS_API",
+      "host_var": "PERMITS_API",
+      "http_method": "POST",
+      "id": "web:src/app/PermitButton.tsx:6:8e6a114bfd",
+      "label": "HttpCall",
+      "line": 6,
+      "path": "/api/permits/commercial",
+      "service": "web",
+      "source": "pack:js-fetch-hosted"
+    },
+    {
+      "confidence": "high",
+      "file": "src/app/PermitButton.tsx",
+      "host": "PERMITS_API",
+      "host_var": "PERMITS_API",
+      "http_method": "POST",
+      "id": "web:src/app/PermitButton.tsx:7:bd07eb6ff1",
+      "label": "HttpCall",
+      "line": 7,
+      "path": "/api/permits/renewal",
+      "service": "web",
+      "source": "pack:js-fetch-hosted"
+    },
+    {
+      "confidence": "high",
+      "file": "src/app/PermitButton.tsx",
+      "host": "PERMITS_API",
+      "host_var": "PERMITS_API",
+      "http_method": "GET",
+      "id": "web:src/app/PermitButton.tsx:8:f8fc646f11",
+      "label": "HttpCall",
+      "line": 8,
+      "path": "/api/permits/status",
+      "service": "web",
+      "source": "pack:js-fetch-hosted"
+    }
+  ],
+  "persisted": true,
+  "services_touched": [
+    "permits-api",
+    "web"
+  ],
+  "stats": {
+    "n_cross_repo_http": 5,
+    "n_edges": 5,
+    "n_kafka_deliveries": 0,
+    "n_message_deliveries": 0,
+    "n_nodes": 10,
+    "n_services": 2
+  }
+}

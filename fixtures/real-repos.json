@@ -1,0 +1,36 @@
+{
+  "workspace": ".cartograph-real-repos/workspace",
+  "repos": [
+    {
+      "name": "piomin-spring-kafka",
+      "url": "https://github.com/piomin/sample-spring-kafka-microservices.git",
+      "ref": "master",
+      "services": ["order-service", "payment-service", "stock-service"]
+    },
+    {
+      "name": "spring-petclinic-microservices",
+      "url": "https://github.com/spring-petclinic/spring-petclinic-microservices.git",
+      "ref": "main",
+      "services": [
+        "spring-petclinic-api-gateway",
+        "spring-petclinic-customers-service",
+        "spring-petclinic-vets-service",
+        "spring-petclinic-visits-service",
+        "spring-petclinic-config-server",
+        "spring-petclinic-discovery-server"
+      ]
+    },
+    {
+      "name": "ewolff-microservice-kafka",
+      "url": "https://github.com/ewolff/microservice-kafka.git",
+      "ref": "master",
+      "service_globs": ["microservice-kafka/microservice-kafka-*"]
+    },
+    {
+      "name": "apache-struts-examples",
+      "url": "https://github.com/apache/struts-examples.git",
+      "ref": "main",
+      "services": ["basic-struts", "annotations", "form-processing", "crud"]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "project.checkout-db-flow": {
+    "kind": "query",
+    "language": "kuzu-cypher",
+    "returns": {
+      "call": "HttpCall",
+      "edge": "CROSSES_TIER",
+      "route": "Endpoint",
+      "lens": "Lens"
+    },
+    "query": [
+      "MATCH (call:HttpCall)-[edge:CROSSES_TIER]->(route:Endpoint)",
+      "OPTIONAL MATCH (lens:Lens)-[contains:CONTAINS]->(route:Endpoint)",
+      "WHERE route.path CONTAINS 'checkout'",
+      "RETURN call, edge, route, lens"
+    ]
+  }
+}
