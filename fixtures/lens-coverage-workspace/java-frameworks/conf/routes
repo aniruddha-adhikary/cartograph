@@ -1,0 +1,5 @@
+# Play Framework routes file
+GET     /api/books              controllers.BookController.list()
+POST    /api/books              controllers.BookController.create()
+GET     /api/books/:id          controllers.BookController.byId(id: Long)
+DELETE  /api/books/:id          controllers.BookController.delete(id: Long)

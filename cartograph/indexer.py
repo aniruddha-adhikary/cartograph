@@ -40,10 +40,22 @@ CORE_EXCLUDES = [
 ]
 
 SOURCE_EXTS = {
-    ".java", ".js", ".jsx", ".ts", ".tsx",
+    ".java", ".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs",
     ".yml", ".yaml", ".properties",
     ".xml", ".jsp", ".jspx", ".tag", ".tld", ".xhtml", ".wsdl",
     ".sql", ".json",
+    # Domain-specific source files referenced by lens file-globs.
+    # Without these, lenses that target schema/DDL/IDL formats would be dead code.
+    ".cql",       # Cassandra CQL DDL (cassandra-java lens)
+    ".prisma",    # Prisma schema (prisma lens)
+    ".graphql", ".gql",  # GraphQL SDL (graphql-server lens)
+    ".routes",    # Play framework routes (play-framework lens)
+}
+
+# Files without an extension whose presence indicates a build/config artifact
+# referenced by a lens. Matched by exact basename. Used in addition to SOURCE_EXTS.
+SOURCE_BASENAMES = {
+    "routes",     # Play framework's conventional extensionless routes file
 }
 
 
@@ -115,7 +127,9 @@ def _index_service(
     config: dict[str, Any],
 ) -> None:
     for path in sorted(ctx.root.rglob("*")):
-        if not path.is_file() or path.suffix not in SOURCE_EXTS:
+        if not path.is_file():
+            continue
+        if path.suffix not in SOURCE_EXTS and path.name not in SOURCE_BASENAMES:
             continue
         rel = path.relative_to(ctx.root).as_posix()
         if not include_test_paths and _excluded(rel, config.get("exclude", [])):
