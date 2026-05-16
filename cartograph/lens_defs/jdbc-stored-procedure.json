@@ -1,0 +1,203 @@
+[
+  {
+    "name": "jdbc-callable-statement-prepare-call",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".prepareCall("
+      ],
+      "extract": "\"\\s*\\{\\s*(?:\\?\\s*=\\s*)?call\\s+(?P<proc_name>[A-Za-z_][\\w.$]*)\\s*\\("
+    },
+    "emit": {
+      "label": "StoredProcedureCall",
+      "schema": {
+        "proc_name": "string",
+        "framework": "string",
+        "kind": "string",
+        "delivery_edge": "string",
+        "target_label": "string"
+      },
+      "values": {
+        "proc_name": "{{proc_name}}",
+        "framework": "jdbc",
+        "kind": "callable-statement",
+        "delivery_edge": "EXECUTES_PROCEDURE",
+        "target_label": "StoredProcedure"
+      },
+      "source": "lens:jdbc-stored-procedure",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "jdbc-stored-procedure-target",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".prepareCall("
+      ],
+      "extract": "\"\\s*\\{\\s*(?:\\?\\s*=\\s*)?call\\s+(?P<proc_name>[A-Za-z_][\\w.$]*)\\s*\\("
+    },
+    "emit": {
+      "label": "StoredProcedure",
+      "schema": {
+        "name": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{proc_name}}",
+        "framework": "jdbc"
+      },
+      "source": "lens:jdbc-stored-procedure",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "jpa-named-stored-procedure-query",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "@NamedStoredProcedureQuery\\s*\\((?P<args>[^)]*name\\s*=\\s*\"(?P<query_name>[^\"]+)\"[^)]*procedureName\\s*=\\s*\"(?P<proc_name>[^\"]+)\"[^)]*)\\)",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "StoredProcedureCall",
+      "schema": {
+        "query_name": "string",
+        "proc_name": "string",
+        "framework": "string",
+        "kind": "string",
+        "args": "string",
+        "delivery_edge": "string",
+        "target_label": "string"
+      },
+      "values": {
+        "query_name": "{{query_name}}",
+        "proc_name": "{{proc_name}}",
+        "framework": "jpa",
+        "kind": "named-stored-procedure-query",
+        "args": "{{args}}",
+        "delivery_edge": "EXECUTES_PROCEDURE",
+        "target_label": "StoredProcedure"
+      },
+      "source": "lens:jdbc-stored-procedure",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "jpa-named-stored-procedure-query-reversed",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "@NamedStoredProcedureQuery\\s*\\((?P<args>[^)]*procedureName\\s*=\\s*\"(?P<proc_name>[^\"]+)\"[^)]*name\\s*=\\s*\"(?P<query_name>[^\"]+)\"[^)]*)\\)",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "StoredProcedureCall",
+      "schema": {
+        "query_name": "string",
+        "proc_name": "string",
+        "framework": "string",
+        "kind": "string",
+        "args": "string",
+        "delivery_edge": "string",
+        "target_label": "string"
+      },
+      "values": {
+        "query_name": "{{query_name}}",
+        "proc_name": "{{proc_name}}",
+        "framework": "jpa",
+        "kind": "named-stored-procedure-query",
+        "args": "{{args}}",
+        "delivery_edge": "EXECUTES_PROCEDURE",
+        "target_label": "StoredProcedure"
+      },
+      "source": "lens:jdbc-stored-procedure",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "jpa-procedure-annotation",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)Procedure$\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @method_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "StoredProcedureCall",
+      "schema": {
+        "query_name": "string",
+        "proc_name": "string",
+        "framework": "string",
+        "kind": "string",
+        "args_text": "string",
+        "delivery_edge": "string",
+        "target_label": "string"
+      },
+      "values": {
+        "query_name": "{{method_name}}",
+        "proc_name": "",
+        "framework": "spring-data-jpa",
+        "kind": "procedure-annotation",
+        "args_text": "{{args_text}}",
+        "delivery_edge": "EXECUTES_PROCEDURE",
+        "target_label": "StoredProcedure"
+      },
+      "source": "lens:jdbc-stored-procedure",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "jpa-procedure-resolve-proc-name",
+    "scope": "resolve",
+    "match": {
+      "label": "StoredProcedureCall",
+      "field": "args_text",
+      "pattern": "procedureName\\s*=\\s*\"(?P<pn>[^\"]+)\""
+    },
+    "set": {
+      "proc_name": "{{pn}}"
+    }
+  },
+  {
+    "name": "jpa-procedure-resolve-bare",
+    "scope": "resolve",
+    "match": {
+      "label": "StoredProcedureCall",
+      "field": "args_text",
+      "pattern": "^\\(\\s*\"(?P<pn>[^\"]+)\"\\s*\\)$"
+    },
+    "set": {
+      "proc_name": "{{pn}}"
+    }
+  }
+]

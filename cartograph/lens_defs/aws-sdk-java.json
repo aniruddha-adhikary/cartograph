@@ -1,0 +1,271 @@
+[
+  {
+    "name": "aws-sdk-java-sqs-send",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "sendMessage",
+        "arg_index": 0,
+        "capture_as": "queue_url",
+        "receiver_types": [
+          "SqsClient",
+          "AmazonSQS",
+          "AmazonSQSAsync"
+        ]
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "queue_url": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "aws-sqs",
+        "topic": "{{queue_url}}",
+        "queue_url": "{{queue_url}}",
+        "framework": "aws-sdk-java",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:aws-sdk-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "aws-sdk-java-sqs-send-batch",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".sendMessageBatch("
+      ],
+      "extract": "queueUrl\\s*[(=]\\s*\"(?P<queue_url>[^\"]+)\""
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "queue_url": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "aws-sqs",
+        "topic": "{{queue_url}}",
+        "queue_url": "{{queue_url}}",
+        "framework": "aws-sdk-java",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:aws-sdk-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "aws-sdk-java-sqs-receive",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".receiveMessage(",
+        ".receiveMessageBatch("
+      ],
+      "extract": "queueUrl\\s*[(=]\\s*\"(?P<queue_url>[^\"]+)\""
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "queue_url": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "aws-sqs",
+        "topic": "{{queue_url}}",
+        "topics": [
+          "{{queue_url}}"
+        ],
+        "queue_url": "{{queue_url}}",
+        "framework": "aws-sdk-java"
+      },
+      "source": "lens:aws-sdk-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "aws-sdk-java-sns-publish",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "publish",
+        "arg_index": 0,
+        "capture_as": "topic_arn",
+        "receiver_types": [
+          "SnsClient",
+          "AmazonSNS",
+          "AmazonSNSAsync"
+        ]
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topic_arn": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "aws-sns",
+        "topic": "{{topic_arn}}",
+        "topic_arn": "{{topic_arn}}",
+        "framework": "aws-sdk-java",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:aws-sdk-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "aws-sdk-java-s3-put",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".putObject("
+      ],
+      "extract": "\"(?P<bucket>[^\"]+)\"\\s*,\\s*\"(?P<key>[^\"]+)\""
+    },
+    "emit": {
+      "label": "DataStore",
+      "schema": {
+        "kind": "string",
+        "bus": "string",
+        "bucket": "string",
+        "object_key": "string",
+        "operation": "string",
+        "framework": "string"
+      },
+      "values": {
+        "kind": "s3-object",
+        "bus": "aws-s3",
+        "bucket": "{{bucket}}",
+        "object_key": "{{key}}",
+        "operation": "put",
+        "framework": "aws-sdk-java"
+      },
+      "source": "lens:aws-sdk-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "aws-sdk-java-s3-get",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".getObject("
+      ],
+      "extract": "\"(?P<bucket>[^\"]+)\"\\s*,\\s*\"(?P<key>[^\"]+)\""
+    },
+    "emit": {
+      "label": "DataStore",
+      "schema": {
+        "kind": "string",
+        "bus": "string",
+        "bucket": "string",
+        "object_key": "string",
+        "operation": "string",
+        "framework": "string"
+      },
+      "values": {
+        "kind": "s3-object",
+        "bus": "aws-s3",
+        "bucket": "{{bucket}}",
+        "object_key": "{{key}}",
+        "operation": "get",
+        "framework": "aws-sdk-java"
+      },
+      "source": "lens:aws-sdk-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "aws-sdk-java-dynamodb-call",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".putItem(",
+        ".getItem(",
+        ".updateItem(",
+        ".deleteItem(",
+        ".query(",
+        ".scan(",
+        ".batchGetItem(",
+        ".batchWriteItem("
+      ],
+      "extract": "tableName\\s*[(=]\\s*\"(?P<table>[^\"]+)\""
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "kind": "string",
+        "bus": "string",
+        "table": "string",
+        "framework": "string",
+        "query_name": "string"
+      },
+      "values": {
+        "kind": "dynamodb",
+        "bus": "dynamodb",
+        "table": "{{table}}",
+        "framework": "aws-sdk-java",
+        "query_name": "{{table}}"
+      },
+      "source": "lens:aws-sdk-java",
+      "confidence": "medium"
+    }
+  }
+]

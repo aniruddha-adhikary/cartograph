@@ -1,0 +1,188 @@
+[
+  {
+    "name": "spring-batch-enable",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "@EnableBatchProcessing\\b",
+          "per_line": true,
+          "gate": "class\\s+(?P<class_name>\\w+)"
+        }
+      ]
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "kind": "string",
+        "framework": "string",
+        "name": "string"
+      },
+      "values": {
+        "kind": "spring-batch-config",
+        "framework": "spring-batch",
+        "name": "{{class_name}}"
+      },
+      "source": "lens:spring-batch",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-batch-job",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "get",
+        "arg_index": 0,
+        "capture_as": "name",
+        "receiver_type": "JobBuilderFactory"
+      }
+    },
+    "emit": {
+      "label": "BatchJob",
+      "schema": {
+        "name": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "name": "{{name}}",
+        "framework": "spring-batch",
+        "delivery_edge": "CONTAINS"
+      },
+      "source": "lens:spring-batch",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-batch-step",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "get",
+        "arg_index": 0,
+        "capture_as": "name",
+        "receiver_type": "StepBuilderFactory"
+      }
+    },
+    "emit": {
+      "label": "BatchStep",
+      "schema": {
+        "name": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{name}}",
+        "framework": "spring-batch"
+      },
+      "source": "lens:spring-batch",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-batch-step-builder-reader",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "reader",
+        "arg_index": 0,
+        "capture_as": "reader"
+      }
+    },
+    "emit": {
+      "label": "BatchReader",
+      "schema": {
+        "reader": "string",
+        "framework": "string"
+      },
+      "values": {
+        "reader": "{{reader}}",
+        "framework": "spring-batch"
+      },
+      "source": "lens:spring-batch",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "spring-batch-step-builder-writer",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "writer",
+        "arg_index": 0,
+        "capture_as": "writer"
+      }
+    },
+    "emit": {
+      "label": "BatchWriter",
+      "schema": {
+        "writer": "string",
+        "framework": "string"
+      },
+      "values": {
+        "writer": "{{writer}}",
+        "framework": "spring-batch"
+      },
+      "source": "lens:spring-batch",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "spring-batch-step-builder-processor",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "processor",
+        "arg_index": 0,
+        "capture_as": "processor"
+      }
+    },
+    "emit": {
+      "label": "BatchProcessor",
+      "schema": {
+        "processor": "string",
+        "framework": "string"
+      },
+      "values": {
+        "processor": "{{processor}}",
+        "framework": "spring-batch"
+      },
+      "source": "lens:spring-batch",
+      "confidence": "medium"
+    }
+  }
+]

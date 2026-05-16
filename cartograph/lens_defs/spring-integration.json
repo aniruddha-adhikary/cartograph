@@ -1,0 +1,237 @@
+[
+  {
+    "name": "spring-integration-messaging-gateway",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "@MessagingGateway\\b",
+          "per_line": true,
+          "gate": "(?:class|interface)\\s+(?P<class_name>\\w+)"
+        }
+      ]
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "kind": "string",
+        "framework": "string",
+        "name": "string"
+      },
+      "values": {
+        "kind": "messaging-gateway",
+        "framework": "spring-integration",
+        "name": "{{class_name}}"
+      },
+      "source": "lens:spring-integration",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-integration-service-activator",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)ServiceActivator$\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @method_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "channel": "string",
+        "handler": "string",
+        "kind": "string",
+        "framework": "string",
+        "args_text": "string",
+        "topic": "string",
+        "topics": "list"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "spring-integration",
+        "channel": "",
+        "handler": "{{method_name}}",
+        "kind": "service-activator",
+        "framework": "spring-integration",
+        "args_text": "{{args_text}}",
+        "topic": "",
+        "topics": [
+          ""
+        ]
+      },
+      "source": "lens:spring-integration",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-integration-transformer",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)(Transformer|Splitter|Aggregator|Filter|Router)$\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @method_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "kind": "string",
+        "name": "string",
+        "framework": "string",
+        "args_text": "string",
+        "channel": "string"
+      },
+      "values": {
+        "kind": "{{ann}}",
+        "name": "{{method_name}}",
+        "framework": "spring-integration",
+        "args_text": "{{args_text}}",
+        "channel": ""
+      },
+      "source": "lens:spring-integration",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-integration-inbound-channel-adapter",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)InboundChannelAdapter$\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @method_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "channel": "string",
+        "handler": "string",
+        "framework": "string",
+        "args_text": "string",
+        "topic": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "spring-integration",
+        "channel": "",
+        "handler": "{{method_name}}",
+        "framework": "spring-integration",
+        "args_text": "{{args_text}}",
+        "topic": "",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:spring-integration",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-integration-resolve-inputchannel",
+    "scope": "resolve",
+    "match": {
+      "label": "MessageConsumer",
+      "field": "args_text",
+      "pattern": "inputChannel\\s*=\\s*\"(?P<ch>[^\"]+)\""
+    },
+    "set": {
+      "channel": "{{ch}}",
+      "topic": "{{ch}}",
+      "topics": [
+        "{{ch}}"
+      ]
+    }
+  },
+  {
+    "name": "spring-integration-resolve-channel-component",
+    "scope": "resolve",
+    "match": {
+      "label": "Component",
+      "field": "args_text",
+      "pattern": "inputChannel\\s*=\\s*\"(?P<ch>[^\"]+)\""
+    },
+    "set": {
+      "channel": "{{ch}}"
+    }
+  },
+  {
+    "name": "spring-integration-resolve-channel-producer",
+    "scope": "resolve",
+    "match": {
+      "label": "MessageProducer",
+      "field": "args_text",
+      "pattern": "channel\\s*=\\s*\"(?P<ch>[^\"]+)\""
+    },
+    "set": {
+      "channel": "{{ch}}",
+      "topic": "{{ch}}"
+    }
+  },
+  {
+    "name": "spring-integration-flow-from",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "from",
+        "arg_index": 0,
+        "capture_as": "channel",
+        "receiver_type": "IntegrationFlows"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "channel": "string",
+        "topic": "string",
+        "topics": "list",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "spring-integration",
+        "channel": "{{channel|channel_const|channel_class}}",
+        "topic": "{{channel|channel_const|channel_class}}",
+        "topics": [
+          "{{channel|channel_const|channel_class}}"
+        ],
+        "framework": "spring-integration"
+      },
+      "source": "lens:spring-integration",
+      "confidence": "medium"
+    }
+  }
+]

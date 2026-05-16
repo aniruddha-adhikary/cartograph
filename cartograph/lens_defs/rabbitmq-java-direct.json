@@ -1,0 +1,142 @@
+[
+  {
+    "name": "rabbitmq-java-direct-publish",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".basicPublish("
+      ],
+      "extract": "\\.basicPublish\\(\\s*\"(?P<exchange>[^\"]*)\"\\s*,\\s*\"(?P<routing_key>[^\"]*)\""
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "exchange": "string",
+        "routing_key": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "amqp",
+        "topic": "{{exchange}}",
+        "exchange": "{{exchange}}",
+        "routing_key": "{{routing_key}}",
+        "framework": "rabbitmq-java-direct",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:rabbitmq-java-direct",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "rabbitmq-java-direct-consume",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".basicConsume("
+      ],
+      "extract": "\\.basicConsume\\(\\s*\"(?P<queue>[^\"]+)\""
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "queue": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "amqp",
+        "topic": "{{queue}}",
+        "topics": [
+          "{{queue}}"
+        ],
+        "queue": "{{queue}}",
+        "framework": "rabbitmq-java-direct"
+      },
+      "source": "lens:rabbitmq-java-direct",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "rabbitmq-java-direct-queue-declare",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".queueDeclare("
+      ],
+      "extract": "\\.queueDeclare\\(\\s*\"(?P<queue>[^\"]+)\""
+    },
+    "emit": {
+      "label": "MessageDestination",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "bus": "string",
+        "queue": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{queue}}",
+        "kind": "queue",
+        "bus": "amqp",
+        "queue": "{{queue}}",
+        "framework": "rabbitmq-java-direct"
+      },
+      "source": "lens:rabbitmq-java-direct",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "rabbitmq-java-direct-exchange-declare",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".exchangeDeclare("
+      ],
+      "extract": "\\.exchangeDeclare\\(\\s*\"(?P<exchange>[^\"]+)\""
+    },
+    "emit": {
+      "label": "MessageDestination",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "bus": "string",
+        "exchange": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{exchange}}",
+        "kind": "exchange",
+        "bus": "amqp",
+        "exchange": "{{exchange}}",
+        "framework": "rabbitmq-java-direct"
+      },
+      "source": "lens:rabbitmq-java-direct",
+      "confidence": "high"
+    }
+  }
+]

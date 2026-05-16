@@ -1,0 +1,154 @@
+[
+  {
+    "name": "gcp-pubsub-topic-handle",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        "pubsub.topic(",
+        "pubSubClient.topic(",
+        "pubSub.topic("
+      ],
+      "extract": "\\.topic\\s*\\(\\s*['\"`](?P<topic>[^'\"`]+)['\"`]"
+    },
+    "emit": {
+      "label": "MessageDestination",
+      "schema": {
+        "kind": "string",
+        "bus": "string",
+        "topic": "string",
+        "name": "string",
+        "framework": "string"
+      },
+      "values": {
+        "kind": "topic",
+        "bus": "gcp-pubsub",
+        "topic": "{{topic}}",
+        "name": "{{topic}}",
+        "framework": "google-cloud-pubsub"
+      },
+      "source": "lens:gcp-pubsub-js",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "gcp-pubsub-publish",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\.topic\\s*\\(\\s*['\"`](?P<topic>[^'\"`]+)['\"`]\\s*\\)\\s*\\.publish(?:Message)?\\s*\\(",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "gcp-pubsub",
+        "topic": "{{topic}}",
+        "framework": "google-cloud-pubsub",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:gcp-pubsub-js",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "gcp-pubsub-publish-bare",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".publishMessage("
+      ],
+      "extract": "data\\s*:\\s*Buffer"
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "gcp-pubsub",
+        "framework": "google-cloud-pubsub",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:gcp-pubsub-js",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "gcp-pubsub-subscription-on",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\.subscription\\s*\\(\\s*['\"`](?P<subscription>[^'\"`]+)['\"`]\\s*\\)\\s*\\.on\\s*\\(\\s*['\"`]message['\"`]",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "subscription": "string",
+        "topic": "string",
+        "topics": "list",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "gcp-pubsub",
+        "subscription": "{{subscription}}",
+        "topic": "{{subscription}}",
+        "topics": [
+          "{{subscription}}"
+        ],
+        "framework": "google-cloud-pubsub"
+      },
+      "source": "lens:gcp-pubsub-js",
+      "confidence": "high"
+    }
+  }
+]

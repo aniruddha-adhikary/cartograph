@@ -1,0 +1,129 @@
+[
+  {
+    "name": "socketio-server-on",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\bsocket\\.on\\s*\\(\\s*['\"`](?P<event>[^'\"`]+)['\"`]",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "channel": "string",
+        "topic": "string",
+        "topics": "list",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "socketio",
+        "channel": "{{event}}",
+        "topic": "{{event}}",
+        "topics": [
+          "{{event}}"
+        ],
+        "handler": "{{_file_stem}}:line{{_line}}",
+        "framework": "socketio"
+      },
+      "source": "lens:socketio",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "socketio-server-io-on-connection",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\bio(?:\\.of\\s*\\(\\s*['\"`](?P<namespace>[^'\"`]+)['\"`]\\s*\\))?\\.on\\s*\\(\\s*['\"`](?P<event>connection|connect)['\"`]",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "channel": "string",
+        "topic": "string",
+        "topics": "list",
+        "namespace": "string",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "socketio",
+        "channel": "{{event}}",
+        "topic": "{{event}}",
+        "topics": [
+          "{{event}}"
+        ],
+        "namespace": "{{namespace|/}}",
+        "handler": "{{_file_stem}}:line{{_line}}",
+        "framework": "socketio"
+      },
+      "source": "lens:socketio",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "socketio-emit",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\b(?:socket|io|client)\\.emit\\s*\\(\\s*['\"`](?P<event>[^'\"`]+)['\"`]",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "channel": "string",
+        "topic": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "socketio",
+        "channel": "{{event}}",
+        "topic": "{{event}}",
+        "framework": "socketio",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:socketio",
+      "confidence": "high"
+    }
+  }
+]

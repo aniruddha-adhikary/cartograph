@@ -1,0 +1,148 @@
+[
+  {
+    "name": "graphql-schema-query-field",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.graphql",
+        "*.gql"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "^\\s*(?P<field>[A-Za-z_][A-Za-z0-9_]*)\\s*(?:\\([^)]*\\))?\\s*:\\s*[A-Za-z_!\\[\\]]+",
+          "per_line": true,
+          "gate": "type\\s+Query\\s*\\{"
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "operation": "string",
+        "protocol": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "GRAPHQL",
+        "path": "Query.{{field}}",
+        "operation": "Query.{{field}}",
+        "protocol": "graphql",
+        "framework": "graphql-server"
+      },
+      "source": "lens:graphql-server",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "graphql-schema-mutation-field",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.graphql",
+        "*.gql"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "^\\s*(?P<field>[A-Za-z_][A-Za-z0-9_]*)\\s*(?:\\([^)]*\\))?\\s*:\\s*[A-Za-z_!\\[\\]]+",
+          "per_line": true,
+          "gate": "type\\s+Mutation\\s*\\{"
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "operation": "string",
+        "protocol": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "GRAPHQL",
+        "path": "Mutation.{{field}}",
+        "operation": "Mutation.{{field}}",
+        "protocol": "graphql",
+        "framework": "graphql-server"
+      },
+      "source": "lens:graphql-server",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "graphql-schema-subscription-field",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.graphql",
+        "*.gql"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "^\\s*(?P<field>[A-Za-z_][A-Za-z0-9_]*)\\s*(?:\\([^)]*\\))?\\s*:\\s*[A-Za-z_!\\[\\]]+",
+          "per_line": true,
+          "gate": "type\\s+Subscription\\s*\\{"
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "operation": "string",
+        "protocol": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "GRAPHQL",
+        "path": "Subscription.{{field}}",
+        "operation": "Subscription.{{field}}",
+        "protocol": "graphql",
+        "framework": "graphql-server"
+      },
+      "source": "lens:graphql-server",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "graphql-resolver-tagged-template",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts",
+        "*.tsx",
+        "*.js",
+        "*.jsx"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "extractor": "query",
+        "query": "(call_expression function: (identifier) @fn (#eq? @fn \"gql\") arguments: (template_string) @body)",
+        "anchor": "body"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "kind": "string",
+        "framework": "string",
+        "protocol": "string",
+        "gql_body": "string"
+      },
+      "values": {
+        "kind": "graphql-typedef",
+        "framework": "graphql-server",
+        "protocol": "graphql",
+        "gql_body": "{{body}}"
+      },
+      "source": "lens:graphql-server",
+      "confidence": "medium"
+    }
+  }
+]

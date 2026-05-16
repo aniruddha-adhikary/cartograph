@@ -1,0 +1,170 @@
+[
+  {
+    "name": "typeorm-entity",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts",
+        "*.js"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "@Entity\\s*\\(\\s*(?:\\{[^}]*\\bname\\s*:\\s*['\"`](?P<obj_table>[^'\"`]+)['\"`]|['\"`](?P<str_table>[^'\"`]+)['\"`])?\\s*\\)?\\s*(?:export\\s+)?(?:class\\s+(?P<inline_class>\\w+))?",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Entity",
+      "schema": {
+        "name": "string",
+        "table": "string",
+        "framework": "string",
+        "dialect": "string"
+      },
+      "values": {
+        "name": "{{inline_class|}}",
+        "table": "{{obj_table|str_table|inline_class|}}",
+        "framework": "typeorm",
+        "dialect": "typeorm"
+      },
+      "source": "lens:typeorm",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "typeorm-entity-class",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts",
+        "*.js"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "^\\s*(?:export\\s+)?class\\s+(?P<class_name>\\w+)\\s+extends\\s+BaseEntity\\b",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Entity",
+      "schema": {
+        "name": "string",
+        "table": "string",
+        "framework": "string",
+        "dialect": "string",
+        "base_class": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "table": "{{class_name}}",
+        "framework": "typeorm",
+        "dialect": "typeorm",
+        "base_class": "BaseEntity"
+      },
+      "source": "lens:typeorm",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "typeorm-repository-call",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts",
+        "*.js"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\b(?:getRepository|getManager|getCustomRepository|getTreeRepository)\\s*\\(\\s*(?P<entity>\\w+)\\s*\\)",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "kind": "string",
+        "entity": "string",
+        "framework": "string"
+      },
+      "values": {
+        "kind": "typeorm-repository",
+        "entity": "{{entity}}",
+        "framework": "typeorm"
+      },
+      "source": "lens:typeorm",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "typeorm-repo-query",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts",
+        "*.js"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\b(?P<repo>\\w+(?:Repo|Repository|repository))\\.(?P<op>find|findOne|findOneBy|findBy|findAndCount|findOneOrFail|save|insert|update|delete|remove|softDelete|softRemove|restore|count|increment|decrement|query|createQueryBuilder)\\s*\\(",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "repository": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "{{op}}",
+        "repository": "{{repo}}",
+        "dialect": "typeorm",
+        "framework": "typeorm"
+      },
+      "source": "lens:typeorm",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "typeorm-querybuilder",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts",
+        "*.js"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".createQueryBuilder("
+      ],
+      "extract": "\\.createQueryBuilder\\s*\\(\\s*['\"`](?P<alias>[^'\"`]+)['\"`]"
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "alias": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "queryBuilder",
+        "alias": "{{alias|}}",
+        "dialect": "typeorm",
+        "framework": "typeorm"
+      },
+      "source": "lens:typeorm",
+      "confidence": "medium"
+    }
+  }
+]

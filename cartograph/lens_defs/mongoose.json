@@ -1,0 +1,110 @@
+[
+  {
+    "name": "mongoose-model",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "(?:mongoose|db)\\.model\\s*\\(\\s*['\"`](?P<name>[A-Za-z_][\\w]*)['\"`]\\s*,",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Entity",
+      "schema": {
+        "name": "string",
+        "collection": "string",
+        "framework": "string",
+        "dialect": "string"
+      },
+      "values": {
+        "name": "{{name}}",
+        "collection": "{{name}}",
+        "framework": "mongoose",
+        "dialect": "mongodb"
+      },
+      "source": "lens:mongoose",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "mongoose-schema",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "(?:const|let|var)\\s+(?P<schema_name>\\w+)\\s*[:=][^=]*new\\s+(?:mongoose\\.)?Schema\\s*\\(",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{schema_name}}",
+        "kind": "mongoose-schema",
+        "framework": "mongoose"
+      },
+      "source": "lens:mongoose",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "mongoose-query",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\b(?P<model>[A-Z]\\w*Model|[A-Z]\\w+)\\.(?P<op>find|findOne|findById|findByIdAndUpdate|findByIdAndDelete|findOneAndUpdate|findOneAndDelete|create|insertMany|updateOne|updateMany|deleteOne|deleteMany|countDocuments|aggregate|distinct|save)\\s*\\(",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "collection": "string",
+        "model": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "{{op}}",
+        "collection": "{{model}}",
+        "model": "{{model}}",
+        "dialect": "mongodb",
+        "framework": "mongoose"
+      },
+      "source": "lens:mongoose",
+      "confidence": "medium"
+    }
+  }
+]

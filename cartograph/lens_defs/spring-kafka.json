@@ -3,7 +3,9 @@
     "name": "spring-kafka-consumer",
     "scope": "source",
     "match": {
-      "files": ["*.java"],
+      "files": [
+        "*.java"
+      ],
       "strategy": "regex",
       "patterns": [
         {
@@ -24,7 +26,9 @@
         "message_role": "consumer",
         "bus": "kafka",
         "topic": "{{topic}}",
-        "topics": ["{{topic}}"]
+        "topics": [
+          "{{topic}}"
+        ]
       },
       "source": "lens:spring-kafka",
       "confidence": "high"
@@ -34,10 +38,21 @@
     "name": "spring-kafka-producer",
     "scope": "source",
     "match": {
-      "files": ["*.java"],
-      "strategy": "token-line",
-      "tokens": [".send("],
-      "extract": "\"(?P<topic>[^\"]+)\""
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "send",
+        "arg_index": 0,
+        "capture_as": "topic",
+        "receiver_types": [
+          "KafkaTemplate",
+          "ReactiveKafkaProducerTemplate"
+        ]
+      }
     },
     "emit": {
       "label": "KafkaProducer",

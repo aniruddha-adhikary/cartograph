@@ -11,75 +11,30 @@
     ],
     "node_count": 20,
     "edge_count": 8,
-    "lens_count": 298,
+    "lens_count": 483,
     "schema": {
       "node_labels": {
-        "HttpCall": {
-          "framework": "string",
-          "protocol": "string",
-          "http_method": "string",
-          "host_var": "string",
-          "gql_body": "string",
-          "url": "string",
-          "path": "string",
-          "feign_args": "string"
-        },
-        "MessageConsumer": {
-          "message_role": "string",
-          "bus": "string",
-          "topic": "string",
-          "framework": "string",
-          "handler": "string",
-          "owner_class": "string",
-          "method_name": "string",
-          "args_text": "string",
-          "field_name": "string",
-          "topic_text": "string",
-          "transport": "string",
-          "topics": "list",
-          "aggregate_type": "string",
-          "aggregate_const": "string",
-          "channel": "string",
-          "channel_const": "string",
-          "destination_const": "string",
-          "activation_config_text": "string",
-          "topic_const": "string",
+        "MessageDestination": {
+          "name": "string",
           "kind": "string",
-          "queue_const": "string"
-        },
-        "MessageProducer": {
-          "message_role": "string",
           "bus": "string",
+          "queue": "string",
+          "framework": "string",
           "topic": "string",
-          "framework": "string",
-          "owner_class": "string",
-          "method_name": "string",
-          "delivery_edge": "string",
-          "args_text": "string",
-          "field_name": "string",
-          "topic_text": "string",
-          "transport": "string",
-          "aggregate_type": "string",
-          "publisher_class": "string",
-          "channel": "string",
-          "channel_const": "string",
-          "destination_const": "string",
-          "topic_const": "string",
-          "handler": "string",
-          "exchange_const": "string"
-        },
-        "EndpointReference": {
-          "kind": "string",
-          "target_class": "string",
-          "field_name": "string",
-          "uri": "string",
-          "framework": "string",
-          "args_text": "string"
+          "exchange": "string"
         },
         "Component": {
           "name": "string",
           "kind": "string",
+          "bus": "string",
+          "broker_url": "string",
           "framework": "string",
+          "selector": "string",
+          "provided_in": "string",
+          "bucket": "string",
+          "operation": "string",
+          "protocol": "string",
+          "gql_body": "string",
           "scope": "string",
           "el_name": "string",
           "method_name": "string",
@@ -90,22 +45,216 @@
           "for_class": "string",
           "validator_id": "string",
           "base_url": "string",
+          "broker": "string",
+          "provider": "string",
           "base_class": "string",
           "entity_type": "string",
           "base_interface": "string",
-          "base_repository": "string"
+          "table": "string",
+          "base_repository": "string",
+          "keyspace": "string",
+          "args_text": "string",
+          "channel": "string",
+          "entity": "string"
+        },
+        "MessageProducer": {
+          "message_role": "string",
+          "bus": "string",
+          "topic": "string",
+          "destination_const": "string",
+          "framework": "string",
+          "delivery_edge": "string",
+          "exchange": "string",
+          "routing_key": "string",
+          "queue": "string",
+          "queue_url": "string",
+          "topic_arn": "string",
+          "command_type": "string",
+          "operation": "string",
+          "event_type": "string",
+          "destination": "string",
+          "job_type": "string",
+          "owner_class": "string",
+          "method_name": "string",
+          "args_text": "string",
+          "field_name": "string",
+          "topic_text": "string",
+          "transport": "string",
+          "aggregate_type": "string",
+          "publisher_class": "string",
+          "channel": "string",
+          "channel_const": "string",
+          "topic_const": "string",
+          "queue_var": "string",
+          "stream": "string",
+          "handler": "string",
+          "exchange_const": "string"
+        },
+        "MessageConsumer": {
+          "message_role": "string",
+          "bus": "string",
+          "topic": "string",
+          "topics": "list",
+          "destination_const": "string",
+          "framework": "string",
+          "queue": "string",
+          "queue_url": "string",
+          "subscription": "string",
+          "destination": "string",
+          "handler": "string",
+          "owner_class": "string",
+          "method_name": "string",
+          "args_text": "string",
+          "field_name": "string",
+          "topic_text": "string",
+          "transport": "string",
+          "aggregate_type": "string",
+          "aggregate_const": "string",
+          "channel": "string",
+          "channel_const": "string",
+          "stream": "string",
+          "activation_config_text": "string",
+          "topic_const": "string",
+          "kind": "string",
+          "listener_class": "string",
+          "namespace": "string",
+          "queue_const": "string",
+          "delivery_edge": "string",
+          "operation": "string"
         },
         "Endpoint": {
           "http_method": "string",
           "path": "string",
           "handler": "string",
           "framework": "string",
+          "operation": "string",
+          "protocol": "string",
           "_path_raw": "string",
           "raw_method_args": "string",
           "soap_operation": "string",
-          "operation": "string",
-          "protocol": "string",
           "router": "string"
+        },
+        "HttpCall": {
+          "framework": "string",
+          "protocol": "string",
+          "http_method": "string",
+          "host_var": "string",
+          "gql_body": "string",
+          "url": "string",
+          "path": "string",
+          "feign_args": "string"
+        },
+        "DataStore": {
+          "kind": "string",
+          "bus": "string",
+          "bucket": "string",
+          "object_key": "string",
+          "operation": "string",
+          "framework": "string"
+        },
+        "DatabaseQuery": {
+          "kind": "string",
+          "bus": "string",
+          "table": "string",
+          "framework": "string",
+          "query_name": "string",
+          "operation": "string",
+          "dialect": "string",
+          "query": "string",
+          "index": "string",
+          "owner_class": "string",
+          "collection": "string",
+          "model": "string",
+          "result_type": "string",
+          "class_name": "string",
+          "method_name": "string",
+          "args_text": "string",
+          "count_query": "string",
+          "native_query": "string",
+          "query_id": "string",
+          "repository": "string",
+          "alias": "string"
+        },
+        "CommandHandler": {
+          "class_name": "string",
+          "method_name": "string",
+          "handler": "string",
+          "framework": "string",
+          "bus": "string"
+        },
+        "EventHandler": {
+          "class_name": "string",
+          "method_name": "string",
+          "handler": "string",
+          "event_type": "string",
+          "annotation": "string",
+          "framework": "string",
+          "bus": "string"
+        },
+        "Aggregate": {
+          "name": "string",
+          "framework": "string",
+          "kind": "string"
+        },
+        "ScheduledJob": {
+          "name": "string",
+          "framework": "string",
+          "kind": "string",
+          "cron": "string",
+          "second": "string",
+          "minute": "string",
+          "hour": "string",
+          "day_of_month": "string",
+          "month": "string",
+          "day_of_week": "string",
+          "year": "string",
+          "owner_class": "string",
+          "method_name": "string",
+          "args_text": "string",
+          "class_name": "string",
+          "fixed_delay": "string",
+          "fixed_rate": "string",
+          "initial_delay": "string",
+          "zone": "string"
+        },
+        "EndpointReference": {
+          "kind": "string",
+          "target_class": "string",
+          "field_name": "string",
+          "uri": "string",
+          "framework": "string",
+          "args_text": "string"
+        },
+        "DatabaseTable": {
+          "name": "string",
+          "keyspace": "string",
+          "dialect": "string",
+          "framework": "string",
+          "table": "string",
+          "class_name": "string",
+          "kind": "string"
+        },
+        "ManagedComponent": {
+          "name": "string",
+          "kind": "string",
+          "framework": "string"
+        },
+        "HealthCheck": {
+          "name": "string",
+          "kind": "string",
+          "framework": "string"
+        },
+        "Filter": {
+          "name": "string",
+          "kind": "string",
+          "framework": "string",
+          "class_name": "string",
+          "url_pattern": "string"
+        },
+        "AdminTask": {
+          "name": "string",
+          "kind": "string",
+          "framework": "string"
         },
         "EntityBehavior": {
           "kind": "string",
@@ -161,25 +310,17 @@
           "args_text": "string",
           "framework": "string"
         },
-        "DatabaseQuery": {
-          "query_name": "string",
-          "query": "string",
-          "kind": "string",
-          "framework": "string",
-          "owner_class": "string",
-          "result_type": "string",
-          "class_name": "string",
-          "method_name": "string",
-          "args_text": "string",
-          "count_query": "string",
-          "native_query": "string",
-          "operation": "string",
-          "collection": "string",
-          "query_id": "string"
-        },
         "EntityFilterDef": {
           "filter_name": "string",
           "framework": "string"
+        },
+        "EntitySearchIndex": {
+          "class_name": "string",
+          "framework": "string",
+          "args_text": "string",
+          "index_name": "string",
+          "field_name": "string",
+          "kind": "string"
         },
         "EventConsumer": {
           "event_type": "string",
@@ -222,12 +363,6 @@
           "class_name": "string",
           "framework": "string"
         },
-        "Filter": {
-          "name": "string",
-          "class_name": "string",
-          "framework": "string",
-          "url_pattern": "string"
-        },
         "Listener": {
           "name": "string",
           "framework": "string"
@@ -259,25 +394,6 @@
           "read_only": "string",
           "isolation": "string",
           "timeout": "string"
-        },
-        "ScheduledJob": {
-          "cron": "string",
-          "second": "string",
-          "minute": "string",
-          "hour": "string",
-          "day_of_month": "string",
-          "month": "string",
-          "day_of_week": "string",
-          "year": "string",
-          "owner_class": "string",
-          "method_name": "string",
-          "args_text": "string",
-          "framework": "string",
-          "class_name": "string",
-          "fixed_delay": "string",
-          "fixed_rate": "string",
-          "initial_delay": "string",
-          "zone": "string"
         },
         "EjbAsync": {
           "level": "string",
@@ -343,12 +459,6 @@
           "wsdl_location": "string",
           "file": "string"
         },
-        "MessageDestination": {
-          "name": "string",
-          "bus": "string",
-          "framework": "string",
-          "kind": "string"
-        },
         "EntityRelation": {
           "kind": "string",
           "owner_class": "string",
@@ -369,12 +479,11 @@
         "Entity": {
           "name": "string",
           "framework": "string",
-          "kind": "string"
-        },
-        "DatabaseTable": {
+          "kind": "string",
+          "collection": "string",
+          "dialect": "string",
           "table": "string",
-          "class_name": "string",
-          "framework": "string"
+          "base_class": "string"
         },
         "PersistenceUnitClass": {
           "persistence_unit_name": "string",
@@ -435,6 +544,20 @@
           "binding": "string",
           "framework": "string"
         },
+        "StoredProcedureCall": {
+          "proc_name": "string",
+          "framework": "string",
+          "kind": "string",
+          "delivery_edge": "string",
+          "target_label": "string",
+          "query_name": "string",
+          "args": "string",
+          "args_text": "string"
+        },
+        "StoredProcedure": {
+          "name": "string",
+          "framework": "string"
+        },
         "JsfNavigation": {
           "from_view_id": "string",
           "to_view_id": "string",
@@ -480,6 +603,27 @@
           "framework": "string",
           "args_text": "string"
         },
+        "BatchJob": {
+          "name": "string",
+          "framework": "string",
+          "delivery_edge": "string"
+        },
+        "BatchStep": {
+          "name": "string",
+          "framework": "string"
+        },
+        "BatchReader": {
+          "reader": "string",
+          "framework": "string"
+        },
+        "BatchWriter": {
+          "writer": "string",
+          "framework": "string"
+        },
+        "BatchProcessor": {
+          "processor": "string",
+          "framework": "string"
+        },
         "CacheOperation": {
           "kind": "string",
           "cache": "string",
@@ -488,7 +632,8 @@
           "key": "string",
           "condition": "string",
           "framework": "string",
-          "args_text": "string"
+          "args_text": "string",
+          "ops_method": "string"
         },
         "StreamFunction": {
           "kind": "string",

@@ -1,23 +1,121 @@
-{
-  "name": "spring-http-call",
-  "scope": "source",
-  "match": {
-    "files": ["*.java"],
-    "strategy": "token-line",
-    "tokens": ["RestTemplate", "getForObject", "postForEntity", "exchange(", ".uri("],
-    "extract": "\"(?P<url>https?://[^\"]+|/[A-Za-z0-9_./{}-]+)\""
+[
+  {
+    "name": "spring-http-call-get",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "token-line",
+      "tokens": ["getForObject", "getForEntity"],
+      "extract": "\\.(?:getForObject|getForEntity)\\s*\\(\\s*\"(?P<url>[^\"]+)\""
+    },
+    "emit": {
+      "label": "HttpCall",
+      "schema": {"url": "string", "http_method": "string"},
+      "values": {"url": "{{url}}", "http_method": "GET"},
+      "source": "lens:spring-http-call",
+      "confidence": "high"
+    }
   },
-  "emit": {
-    "label": "HttpCall",
-    "schema": {
-      "url": "string",
-      "http_method": "string"
+  {
+    "name": "spring-http-call-post",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "token-line",
+      "tokens": ["postForObject", "postForEntity", "postForLocation"],
+      "extract": "\\.(?:postForObject|postForEntity|postForLocation)\\s*\\(\\s*\"(?P<url>[^\"]+)\""
     },
-    "values": {
-      "url": "{{url}}",
-      "http_method": "GET"
+    "emit": {
+      "label": "HttpCall",
+      "schema": {"url": "string", "http_method": "string"},
+      "values": {"url": "{{url}}", "http_method": "POST"},
+      "source": "lens:spring-http-call",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-http-call-put",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "token-line",
+      "tokens": [".put("],
+      "extract": "\\.put\\s*\\(\\s*\"(?P<url>https?://[^\"]+|/[A-Za-z0-9_./{}-]+)\""
     },
-    "source": "lens:spring-http-call",
-    "confidence": "high"
+    "emit": {
+      "label": "HttpCall",
+      "schema": {"url": "string", "http_method": "string"},
+      "values": {"url": "{{url}}", "http_method": "PUT"},
+      "source": "lens:spring-http-call",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "spring-http-call-delete",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "token-line",
+      "tokens": [".delete("],
+      "extract": "\\.delete\\s*\\(\\s*\"(?P<url>https?://[^\"]+|/[A-Za-z0-9_./{}-]+)\""
+    },
+    "emit": {
+      "label": "HttpCall",
+      "schema": {"url": "string", "http_method": "string"},
+      "values": {"url": "{{url}}", "http_method": "DELETE"},
+      "source": "lens:spring-http-call",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "spring-http-call-patch",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "token-line",
+      "tokens": ["patchForObject"],
+      "extract": "\\.patchForObject\\s*\\(\\s*\"(?P<url>[^\"]+)\""
+    },
+    "emit": {
+      "label": "HttpCall",
+      "schema": {"url": "string", "http_method": "string"},
+      "values": {"url": "{{url}}", "http_method": "PATCH"},
+      "source": "lens:spring-http-call",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-http-call-exchange",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "token-line",
+      "tokens": ["exchange("],
+      "extract": "\\.exchange\\s*\\(\\s*\"(?P<url>[^\"]+)\"\\s*,\\s*HttpMethod\\.(?P<http_method>GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)"
+    },
+    "emit": {
+      "label": "HttpCall",
+      "schema": {"url": "string", "http_method": "string"},
+      "values": {"url": "{{url}}", "http_method": "{{http_method}}"},
+      "source": "lens:spring-http-call",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-webclient-method",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "token-line",
+      "tokens": [".method(HttpMethod."],
+      "extract": "\\.method\\s*\\(\\s*HttpMethod\\.(?P<http_method>GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\\s*\\)"
+    },
+    "emit": {
+      "label": "HttpCall",
+      "schema": {"url": "string", "http_method": "string"},
+      "values": {"url": "", "http_method": "{{http_method}}"},
+      "source": "lens:spring-http-call",
+      "confidence": "medium"
+    }
   }
-}
+]

@@ -1,0 +1,126 @@
+[
+  {
+    "name": "dropwizard-managed-component",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "environment\\s*\\.\\s*lifecycle\\s*\\(\\s*\\)\\s*\\.\\s*manage\\s*\\(\\s*(?:new\\s+(?P<component_type>[A-Z]\\w+)\\s*\\(|(?P<component_ref>[a-zA-Z_]\\w*))",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "ManagedComponent",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{component_type|component_ref|}}",
+        "kind": "dropwizard-managed",
+        "framework": "dropwizard"
+      },
+      "source": "lens:dropwizard",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "dropwizard-healthcheck-register",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "environment\\s*\\.\\s*healthChecks\\s*\\(\\s*\\)\\s*\\.\\s*register\\s*\\(\\s*\"(?P<name>[^\"]+)\"\\s*,",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "HealthCheck",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{name}}",
+        "kind": "dropwizard-healthcheck",
+        "framework": "dropwizard"
+      },
+      "source": "lens:dropwizard",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "dropwizard-add-filter",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "environment\\s*\\.\\s*servlets\\s*\\(\\s*\\)\\s*\\.\\s*addFilter\\s*\\(\\s*\"(?P<filter_name>[^\"]+)\"",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Filter",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{filter_name}}",
+        "kind": "dropwizard-filter",
+        "framework": "dropwizard"
+      },
+      "source": "lens:dropwizard",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "dropwizard-admin-task",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "environment\\s*\\.\\s*admin\\s*\\(\\s*\\)\\s*\\.\\s*addTask\\s*\\(\\s*new\\s+\\w*Task\\s*\\(\\s*\"(?P<name>[^\"]+)\"",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "AdminTask",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{name}}",
+        "kind": "dropwizard-admin-task",
+        "framework": "dropwizard"
+      },
+      "source": "lens:dropwizard",
+      "confidence": "high"
+    }
+  }
+]

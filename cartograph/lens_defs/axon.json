@@ -1,0 +1,185 @@
+[
+  {
+    "name": "axon-command-handler",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"CommandHandler\"))) name: (identifier) @method_name) @anchor)) (class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"CommandHandler\"))) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "CommandHandler",
+      "schema": {
+        "class_name": "string",
+        "method_name": "string",
+        "handler": "string",
+        "framework": "string",
+        "bus": "string"
+      },
+      "values": {
+        "class_name": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "handler": "{{class_name}}.{{method_name}}",
+        "framework": "axon",
+        "bus": "axon-command-bus"
+      },
+      "source": "lens:axon",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "axon-event-handler",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (marker_annotation name: (identifier) @ann (#match? @ann \"^(EventHandler|EventSourcingHandler|SagaEventHandler)$\"))) name: (identifier) @method_name parameters: (formal_parameters (formal_parameter type: (type_identifier) @event_type))) @anchor)) (class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (annotation name: (identifier) @ann (#match? @ann \"^(EventHandler|EventSourcingHandler|SagaEventHandler)$\"))) name: (identifier) @method_name parameters: (formal_parameters (formal_parameter type: (type_identifier) @event_type))) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "EventHandler",
+      "schema": {
+        "class_name": "string",
+        "method_name": "string",
+        "handler": "string",
+        "event_type": "string",
+        "annotation": "string",
+        "framework": "string",
+        "bus": "string"
+      },
+      "values": {
+        "class_name": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "handler": "{{class_name}}.{{method_name}}",
+        "event_type": "{{event_type}}",
+        "annotation": "{{ann}}",
+        "framework": "axon",
+        "bus": "axon-event-bus"
+      },
+      "source": "lens:axon",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "axon-aggregate",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Aggregate\"))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Aggregate\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Aggregate",
+      "schema": {
+        "name": "string",
+        "framework": "string",
+        "kind": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "framework": "axon",
+        "kind": "axon-aggregate"
+      },
+      "source": "lens:axon",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "axon-command-gateway-send",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "commandGateway\\s*\\.\\s*(?P<gw_op>send|sendAndWait)\\s*\\(\\s*new\\s+(?P<command_type>[A-Z]\\w+)\\s*\\(",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "command_type": "string",
+        "operation": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "axon-command-bus",
+        "topic": "{{command_type}}",
+        "command_type": "{{command_type}}",
+        "operation": "{{gw_op}}",
+        "framework": "axon",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:axon",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "axon-event-bus-publish",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "(?:eventBus|eventGateway)\\s*\\.\\s*(?P<eb_op>publish|publishEvent)\\s*\\(\\s*new\\s+(?P<event_type>[A-Z]\\w+)\\s*\\(",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "event_type": "string",
+        "operation": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "axon-event-bus",
+        "topic": "{{event_type}}",
+        "event_type": "{{event_type}}",
+        "operation": "{{eb_op}}",
+        "framework": "axon",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:axon",
+      "confidence": "medium"
+    }
+  }
+]

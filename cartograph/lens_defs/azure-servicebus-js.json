@@ -1,0 +1,163 @@
+[
+  {
+    "name": "azure-servicebus-create-sender",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".createSender("
+      ],
+      "extract": "\\.createSender\\s*\\(\\s*['\"`](?P<destination>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "@azure/service-bus",
+        "azure/service-bus"
+      ]
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "destination": "string",
+        "topic": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "azure-servicebus",
+        "destination": "{{destination}}",
+        "topic": "{{destination}}",
+        "framework": "azure-service-bus",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:azure-servicebus-js",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "azure-servicebus-send-messages",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".sendMessages("
+      ],
+      "extract": "(?P<sentinel>sendMessages)",
+      "import_gate": [
+        "@azure/service-bus",
+        "azure/service-bus"
+      ]
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "azure-servicebus",
+        "framework": "azure-service-bus",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:azure-servicebus-js",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "azure-servicebus-create-receiver",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".createReceiver("
+      ],
+      "extract": "\\.createReceiver\\s*\\(\\s*['\"`](?P<destination>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "@azure/service-bus",
+        "azure/service-bus"
+      ]
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "destination": "string",
+        "topic": "string",
+        "topics": "list",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "azure-servicebus",
+        "destination": "{{destination}}",
+        "topic": "{{destination}}",
+        "topics": [
+          "{{destination}}"
+        ],
+        "framework": "azure-service-bus"
+      },
+      "source": "lens:azure-servicebus-js",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "azure-servicebus-subscribe",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        "receiver.subscribe(",
+        ".subscribe("
+      ],
+      "extract": "(?P<sentinel>processMessage|processError)",
+      "import_gate": [
+        "@azure/service-bus",
+        "azure/service-bus"
+      ]
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "azure-servicebus",
+        "framework": "azure-service-bus"
+      },
+      "source": "lens:azure-servicebus-js",
+      "confidence": "medium"
+    }
+  }
+]

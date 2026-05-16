@@ -1,0 +1,144 @@
+[
+  {
+    "name": "vertx-router-method",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "router\\s*\\.\\s*(?P<http_verb>get|post|put|delete|patch|head|options)\\s*\\(\\s*\"(?P<path>[^\"]+)\"\\s*\\)",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "framework": "string",
+        "handler": "string"
+      },
+      "values": {
+        "http_method": "{{http_verb}}",
+        "path": "{{path}}",
+        "framework": "vertx",
+        "handler": ""
+      },
+      "source": "lens:vertx",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "vertx-router-route-with-method",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "router\\s*\\.\\s*route\\s*\\(\\s*HttpMethod\\.(?P<http_method>GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\\s*,\\s*\"(?P<path>[^\"]+)\"\\s*\\)",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "framework": "string",
+        "handler": "string"
+      },
+      "values": {
+        "http_method": "{{http_method}}",
+        "path": "{{path}}",
+        "framework": "vertx",
+        "handler": ""
+      },
+      "source": "lens:vertx",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "vertx-eventbus-send",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\.eventBus\\s*\\(\\s*\\)\\s*\\.\\s*(?P<eb_op>send|publish|request)\\s*\\(\\s*\"(?P<address>[^\"]+)\"",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "operation": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "vertx-eventbus",
+        "topic": "{{address}}",
+        "operation": "{{eb_op}}",
+        "framework": "vertx",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:vertx",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "vertx-eventbus-consumer",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\.eventBus\\s*\\(\\s*\\)\\s*\\.\\s*(?P<eb_op>consumer|localConsumer)\\s*\\(\\s*\"(?P<address>[^\"]+)\"",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "operation": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "vertx-eventbus",
+        "topic": "{{address}}",
+        "topics": [
+          "{{address}}"
+        ],
+        "operation": "{{eb_op}}",
+        "framework": "vertx"
+      },
+      "source": "lens:vertx",
+      "confidence": "medium"
+    }
+  }
+]

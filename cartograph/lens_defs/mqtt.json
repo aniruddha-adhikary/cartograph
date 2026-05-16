@@ -1,0 +1,121 @@
+[
+  {
+    "name": "mqtt-publish",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".publish("
+      ],
+      "extract": "\\.publish\\s*\\(\\s*['\"`](?P<topic>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "mqtt"
+      ]
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "mqtt",
+        "topic": "{{topic}}",
+        "framework": "mqtt",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:mqtt",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "mqtt-subscribe",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".subscribe("
+      ],
+      "extract": "\\.subscribe\\s*\\(\\s*['\"`](?P<topic>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "mqtt"
+      ]
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "mqtt",
+        "topic": "{{topic}}",
+        "topics": [
+          "{{topic}}"
+        ],
+        "framework": "mqtt"
+      },
+      "source": "lens:mqtt",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "mqtt-connect",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        "mqtt.connect("
+      ],
+      "extract": "mqtt\\.connect\\s*\\(\\s*['\"`](?P<broker>mqtts?://[^'\"`]+)['\"`]",
+      "import_gate": [
+        "mqtt"
+      ]
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "kind": "string",
+        "bus": "string",
+        "broker": "string",
+        "name": "string",
+        "framework": "string"
+      },
+      "values": {
+        "kind": "mqtt-client",
+        "bus": "mqtt",
+        "broker": "{{broker}}",
+        "name": "{{broker}}",
+        "framework": "mqtt"
+      },
+      "source": "lens:mqtt",
+      "confidence": "high"
+    }
+  }
+]

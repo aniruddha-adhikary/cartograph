@@ -1,0 +1,146 @@
+[
+  {
+    "name": "gcp-pubsub-java-publisher-topicname",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "of",
+        "arg_index": 1,
+        "capture_as": "topic"
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topic_const": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "gcp-pubsub",
+        "topic": "{{topic|topic_const|topic_class|}}",
+        "topic_const": "{{topic_const}}",
+        "framework": "gcp-pubsub-java",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:gcp-pubsub-java",
+      "confidence": "low"
+    }
+  },
+  {
+    "name": "gcp-pubsub-java-publish-call",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "TopicName\\.of\\s*\\(\\s*[^,]+,\\s*\"(?P<topic>[^\"]+)\"\\s*\\)",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "gcp-pubsub",
+        "topic": "{{topic}}",
+        "framework": "gcp-pubsub-java",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:gcp-pubsub-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "gcp-pubsub-java-subscription",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "ProjectSubscriptionName\\.of\\s*\\(\\s*[^,]+,\\s*\"(?P<subscription>[^\"]+)\"\\s*\\)",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "subscription": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "gcp-pubsub",
+        "topic": "{{subscription}}",
+        "topics": [
+          "{{subscription}}"
+        ],
+        "subscription": "{{subscription}}",
+        "framework": "gcp-pubsub-java"
+      },
+      "source": "lens:gcp-pubsub-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "gcp-pubsub-java-publisher-publish",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "publish",
+        "arg_index": 0,
+        "capture_as": "message"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "kind": "string",
+        "framework": "string",
+        "name": "string"
+      },
+      "values": {
+        "kind": "gcp-pubsub-publisher-call",
+        "framework": "gcp-pubsub-java",
+        "name": "{{message|message_const|message_class|}}"
+      },
+      "source": "lens:gcp-pubsub-java",
+      "confidence": "low"
+    }
+  }
+]

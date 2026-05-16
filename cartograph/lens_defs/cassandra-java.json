@@ -1,0 +1,168 @@
+[
+  {
+    "name": "cassandra-java-session-execute",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".execute(\""
+      ],
+      "extract": "\\.execute\\(\\s*\"(?P<query>(?P<operation>SELECT|INSERT|UPDATE|DELETE)\\b[^\"]*?\\bFROM\\s+(?P<table>[\\w.]+)[^\"]*)\""
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "table": "string",
+        "query": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "{{operation}}",
+        "table": "{{table}}",
+        "query": "{{query}}",
+        "dialect": "cql",
+        "framework": "cassandra-java"
+      },
+      "source": "lens:cassandra-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "cassandra-java-session-execute-write",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".execute(\""
+      ],
+      "extract": "\\.execute\\(\\s*\"(?P<query>(?P<operation>INSERT|UPDATE|DELETE)\\s+(?:INTO\\s+)?(?P<table>[\\w.]+)[^\"]*)\""
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "table": "string",
+        "query": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "{{operation}}",
+        "table": "{{table}}",
+        "query": "{{query}}",
+        "dialect": "cql",
+        "framework": "cassandra-java"
+      },
+      "source": "lens:cassandra-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "cassandra-java-session-prepare",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".prepare(\""
+      ],
+      "extract": "\\.prepare\\(\\s*\"(?P<query>(?P<operation>SELECT|INSERT|UPDATE|DELETE)\\b[^\"]*?(?:FROM|INTO)\\s+(?P<table>[\\w.]+)[^\"]*)\""
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "table": "string",
+        "query": "string",
+        "dialect": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "{{operation}}",
+        "table": "{{table}}",
+        "query": "{{query}}",
+        "dialect": "cql",
+        "kind": "prepared",
+        "framework": "cassandra-java"
+      },
+      "source": "lens:cassandra-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "cassandra-java-table-annotation",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "@Table\\s*\\(\\s*(?:keyspace\\s*=\\s*\"(?P<keyspace>[^\"]+)\"\\s*,\\s*)?name\\s*=\\s*\"(?P<table>[^\"]+)\"",
+          "per_line": false,
+          "gate": "(?:com\\.datastax|driver\\.api\\.mapper|\\bMappedClass\\b)"
+        }
+      ]
+    },
+    "emit": {
+      "label": "DatabaseTable",
+      "schema": {
+        "name": "string",
+        "keyspace": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{table}}",
+        "keyspace": "{{keyspace|}}",
+        "dialect": "cql",
+        "framework": "cassandra-java"
+      },
+      "source": "lens:cassandra-java",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "cassandra-cql-create-table",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.cql"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "CREATE\\s+TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?(?P<table>[\\w.]+)",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "DatabaseTable",
+      "schema": {
+        "name": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{table}}",
+        "dialect": "cql",
+        "framework": "cassandra-java"
+      },
+      "source": "lens:cassandra-java",
+      "confidence": "high"
+    }
+  }
+]

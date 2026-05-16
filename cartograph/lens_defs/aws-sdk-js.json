@@ -1,0 +1,356 @@
+[
+  {
+    "name": "aws-sqs-send-message-v3",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "new\\s+SendMessage(?:Batch)?Command\\s*\\(\\s*\\{[^}]*QueueUrl\\s*:\\s*['\"`](?P<queue_url>[^'\"`]+)['\"`]",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "queue_url": "string",
+        "topic": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "aws-sqs",
+        "queue_url": "{{queue_url}}",
+        "topic": "{{queue_url}}",
+        "framework": "aws-sdk-js-v3",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:aws-sdk-js",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "aws-sqs-send-message-v2",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\bsqs(?:Client)?\\.sendMessage\\s*\\(\\s*\\{[^}]*QueueUrl\\s*:\\s*['\"`](?P<queue_url>[^'\"`]+)['\"`]",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "queue_url": "string",
+        "topic": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "aws-sqs",
+        "queue_url": "{{queue_url}}",
+        "topic": "{{queue_url}}",
+        "framework": "aws-sdk-js-v2",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:aws-sdk-js",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "aws-sqs-receive-message",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "(?:new\\s+ReceiveMessageCommand|sqs(?:Client)?\\.receiveMessage)\\s*\\(\\s*\\{[^}]*QueueUrl\\s*:\\s*['\"`](?P<queue_url>[^'\"`]+)['\"`]",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "queue_url": "string",
+        "topic": "string",
+        "topics": "list",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "aws-sqs",
+        "queue_url": "{{queue_url}}",
+        "topic": "{{queue_url}}",
+        "topics": [
+          "{{queue_url}}"
+        ],
+        "framework": "aws-sdk-js"
+      },
+      "source": "lens:aws-sdk-js",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "aws-sns-publish-v3",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "new\\s+PublishCommand\\s*\\(\\s*\\{[^}]*TopicArn\\s*:\\s*['\"`](?P<topic_arn>[^'\"`]+)['\"`]",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic_arn": "string",
+        "topic": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "aws-sns",
+        "topic_arn": "{{topic_arn}}",
+        "topic": "{{topic_arn}}",
+        "framework": "aws-sdk-js-v3",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:aws-sdk-js",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "aws-sns-publish-v2",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\bsns(?:Client)?\\.publish\\s*\\(\\s*\\{[^}]*TopicArn\\s*:\\s*['\"`](?P<topic_arn>[^'\"`]+)['\"`]",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic_arn": "string",
+        "topic": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "aws-sns",
+        "topic_arn": "{{topic_arn}}",
+        "topic": "{{topic_arn}}",
+        "framework": "aws-sdk-js-v2",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:aws-sdk-js",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "aws-s3-object-v3",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "new\\s+(?P<op>PutObject|GetObject|DeleteObject|HeadObject|ListObjects(?:V2)?)Command\\s*\\(\\s*\\{[^}]*Bucket\\s*:\\s*['\"`](?P<bucket>[^'\"`]+)['\"`]",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "kind": "string",
+        "bus": "string",
+        "bucket": "string",
+        "name": "string",
+        "operation": "string",
+        "framework": "string"
+      },
+      "values": {
+        "kind": "s3-bucket",
+        "bus": "aws-s3",
+        "bucket": "{{bucket}}",
+        "name": "{{bucket}}",
+        "operation": "{{op}}",
+        "framework": "aws-sdk-js-v3"
+      },
+      "source": "lens:aws-sdk-js",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "aws-s3-object-v2",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\bs3(?:Client)?\\.(?P<op>putObject|getObject|deleteObject|headObject|listObjects(?:V2)?)\\s*\\(\\s*\\{[^}]*Bucket\\s*:\\s*['\"`](?P<bucket>[^'\"`]+)['\"`]",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "kind": "string",
+        "bus": "string",
+        "bucket": "string",
+        "name": "string",
+        "operation": "string",
+        "framework": "string"
+      },
+      "values": {
+        "kind": "s3-bucket",
+        "bus": "aws-s3",
+        "bucket": "{{bucket}}",
+        "name": "{{bucket}}",
+        "operation": "{{op}}",
+        "framework": "aws-sdk-js-v2"
+      },
+      "source": "lens:aws-sdk-js",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "aws-dynamodb-command-v3",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "new\\s+(?P<op>PutItem|GetItem|UpdateItem|DeleteItem|Query|Scan|BatchGetItem|BatchWriteItem)Command\\s*\\(\\s*\\{[^}]*TableName\\s*:\\s*['\"`](?P<table>[^'\"`]+)['\"`]",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "table": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "{{op}}",
+        "table": "{{table}}",
+        "dialect": "dynamodb",
+        "framework": "aws-sdk-js-v3"
+      },
+      "source": "lens:aws-sdk-js",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "aws-dynamodb-call-v2",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\b(?:dynamo|dynamodb|docClient|ddb)\\.(?P<op>put|get|update|delete|query|scan|batchGet|batchWrite)\\s*\\(\\s*\\{[^}]*TableName\\s*:\\s*['\"`](?P<table>[^'\"`]+)['\"`]",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "table": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "{{op}}",
+        "table": "{{table}}",
+        "dialect": "dynamodb",
+        "framework": "aws-sdk-js-v2"
+      },
+      "source": "lens:aws-sdk-js",
+      "confidence": "high"
+    }
+  }
+]

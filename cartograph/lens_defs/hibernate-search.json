@@ -1,0 +1,80 @@
+[
+  {
+    "name": "hibernate-search-indexed-entity",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)Indexed$\") arguments: (annotation_argument_list)? @args_text)) name: (identifier) @class_name) @anchor (class_declaration (modifiers (marker_annotation name: (_) @ann (#match? @ann \"(^|\\\\.)Indexed$\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "EntitySearchIndex",
+      "schema": {
+        "class_name": "string",
+        "framework": "string",
+        "args_text": "string",
+        "index_name": "string"
+      },
+      "values": {
+        "class_name": "{{class_name}}",
+        "framework": "hibernate-search",
+        "args_text": "{{args_text}}",
+        "index_name": ""
+      },
+      "source": "lens:hibernate-search",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-search-resolve-index-name",
+    "scope": "resolve",
+    "match": {
+      "label": "EntitySearchIndex",
+      "field": "args_text",
+      "pattern": "index\\s*=\\s*\"(?P<idx>[^\"]+)\""
+    },
+    "set": {
+      "index_name": "{{idx}}"
+    }
+  },
+  {
+    "name": "hibernate-search-field",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(field_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)(FullTextField|KeywordField|GenericField|ScaledNumberField|NonStandardField|IndexedEmbedded)$\") arguments: (annotation_argument_list)? @args_text)) declarator: (variable_declarator name: (identifier) @field_name)) @anchor (field_declaration (modifiers (marker_annotation name: (_) @ann (#match? @ann \"(^|\\\\.)(FullTextField|KeywordField|GenericField|ScaledNumberField|NonStandardField|IndexedEmbedded)$\"))) declarator: (variable_declarator name: (identifier) @field_name)) @anchor"
+      }
+    },
+    "emit": {
+      "label": "EntitySearchIndex",
+      "schema": {
+        "field_name": "string",
+        "kind": "string",
+        "framework": "string",
+        "args_text": "string"
+      },
+      "values": {
+        "field_name": "{{field_name}}",
+        "kind": "{{ann}}",
+        "framework": "hibernate-search",
+        "args_text": "{{args_text}}"
+      },
+      "source": "lens:hibernate-search",
+      "confidence": "high"
+    }
+  }
+]

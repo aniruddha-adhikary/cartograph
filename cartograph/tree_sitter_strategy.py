@@ -81,7 +81,11 @@ def run_tree_sitter_strategy(
     if extractor == "walk":
         return _ts_walk_extract(lens, tree.root_node, rel_path, content, service)
     if extractor == "method-call":
-        return _ts_method_call(lens, tree.root_node, rel_path, content, service)
+        if lang_name == "java":
+            return _ts_method_call(lens, tree.root_node, rel_path, content, service)
+        if lang_name in ("javascript", "js", "typescript", "ts", "tsx", "typescript-tsx"):
+            return _ts_method_call_js(lens, tree.root_node, rel_path, content, service, lang_name)
+        raise ValueError(f"method-call extractor not supported for language: {lang_name}")
     if extractor == "class-extends-typearg":
         # Back-compat alias: delegate to the more general class-supertype-typearg
         # extractor. The original semantics required `extends` (superclass) only;
@@ -254,7 +258,14 @@ def _ts_method_call(
         raise ValueError("method-call extractor requires tree_sitter.method_name")
     arg_index = int(ts_config.get("arg_index", 0))
     capture_as = ts_config.get("capture_as", "value")
-    receiver_type = ts_config.get("receiver_type")
+    # receiver_type accepts either a single string (legacy) or, via the
+    # plural `receiver_types`, a list of accepted simple-name types. Both forms
+    # are unioned into a set; if neither is present the filter is disabled.
+    accepted_receiver_types: set[str] | None = None
+    if ts_config.get("receiver_types"):
+        accepted_receiver_types = set(ts_config["receiver_types"])
+    elif ts_config.get("receiver_type"):
+        accepted_receiver_types = {ts_config["receiver_type"]}
     parent_class_extends = ts_config.get("parent_class_extends")
     if parent_class_extends is not None:
         parent_class_extends = set(parent_class_extends)
@@ -277,10 +288,11 @@ def _ts_method_call(
             if parent_class_extends.isdisjoint(supertypes):
                 continue
 
-        # A1 filter: receiver_type — must be inferable and equal to configured value.
-        if receiver_type is not None:
+        # A1 filter: receiver_type — must be inferable and equal to one of the
+        # configured values. Fail-closed on unresolvable receivers.
+        if accepted_receiver_types is not None:
             inferred = _infer_receiver_type(call_node)
-            if inferred is None or inferred != receiver_type:
+            if inferred is None or inferred not in accepted_receiver_types:
                 continue
 
         args_node = call_node.child_by_field_name("arguments")
@@ -773,4 +785,362 @@ def _field_text(node: Any, field_name: str) -> str | None:
     child = node.child_by_field_name(field_name)
     if child:
         return child.text.decode("utf-8")
+    return None
+
+
+# ---------------------------------------------------------------------------
+# JS/TS method-call extractor with type-binding resolution.
+#
+# Parallels the Java _ts_method_call but uses JS/TS tree-sitter node shapes:
+#   call_expression
+#     ├── member_expression (object=receiver, property=method name)
+#     │     └── object: identifier | member_expression | this | new_expression | call_expression | ...
+#     └── arguments
+#
+# receiver_type matches the *static* type of the receiver identifier. Inference
+# sources (fail-closed in this order):
+#   1. TypeScript `type_annotation` on the variable_declarator (`const x: Foo = ...`)
+#   2. TypeScript `type_annotation` on a required/optional_parameter (`function f(x: Foo)`)
+#   3. `new T(...)` initializer in the variable_declarator (works for both JS and TS;
+#       captures `T` from `const x = new T(...)`)
+#   4. Class field — TS `public_field_definition` / `property_signature` with a
+#      type annotation, OR `this.x = new T()` assignments inside the constructor.
+#
+# Chained receivers (`a.b().method(...)`), call-expression receivers, parenthesized
+# expressions, casts, and untyped JS variables without `new` initializer all return
+# None — fail-closed, the lens does NOT fire.
+# ---------------------------------------------------------------------------
+
+
+def _ts_method_call_js(
+    lens: dict[str, Any],
+    root: Any,
+    rel: str,
+    content: str,
+    service: str,
+    lang_name: str,
+) -> tuple[list[Node], list[Edge]]:
+    """JS/TS variant of method-call. See module-level docstring for receiver
+    inference rules. Lens config mirrors the Java extractor:
+
+      method_name:    str (required) — property name on the receiver
+      arg_index:      int (default 0) — which argument to capture
+      capture_as:     str (default "value") — base name for capture groups
+      receiver_type:  str (optional) — required simple-name type of the receiver
+      receiver_types: list[str] (optional) — any of these types accepted (alternative to receiver_type)
+
+    Capture shapes (parallel to Java):
+      <capture_as>          — string-literal value
+      <capture_as>_text     — raw argument text
+      <capture_as>_const    — identifier or member_expression text (for non-string args)
+    """
+    from .engine import _emit_node
+
+    match = lens["match"]
+    emit = lens["emit"]
+    ts_config = match.get("tree_sitter", {})
+    target_name = ts_config.get("method_name")
+    if not target_name:
+        raise ValueError("method-call extractor requires tree_sitter.method_name")
+    arg_index = int(ts_config.get("arg_index", 0))
+    capture_as = ts_config.get("capture_as", "value")
+
+    accepted_types: set[str] | None = None
+    if ts_config.get("receiver_types"):
+        accepted_types = set(ts_config["receiver_types"])
+    elif ts_config.get("receiver_type"):
+        accepted_types = {ts_config["receiver_type"]}
+
+    nodes: list[Node] = []
+    edges: list[Edge] = []
+
+    for call_node in _find_nodes(root, "call_expression"):
+        # Must be a member access: receiver.property(...)
+        func = call_node.child_by_field_name("function")
+        if func is None or func.type != "member_expression":
+            continue
+
+        prop = func.child_by_field_name("property")
+        if prop is None or prop.text.decode("utf-8") != target_name:
+            continue
+
+        # Receiver-type filter — fail-closed.
+        if accepted_types is not None:
+            obj = func.child_by_field_name("object")
+            inferred = _js_infer_receiver_type(obj, call_node)
+            if inferred is None or inferred not in accepted_types:
+                continue
+
+        args_node = call_node.child_by_field_name("arguments")
+        if args_node is None:
+            continue
+        positional = [c for c in args_node.children if c.type not in (",", "(", ")")]
+        if arg_index >= len(positional):
+            continue
+        arg = positional[arg_index]
+        captures = _js_capture_argument(arg, capture_as)
+        if not any(captures.values()):
+            continue
+        line_no = call_node.start_point[0] + 1
+        nodes.append(_emit_node(emit, captures, rel, line_no, service))
+
+    return nodes, edges
+
+
+def _js_capture_argument(arg_node: Any, base: str) -> dict[str, str]:
+    """Extract string / identifier / member-expression forms from a JS/TS argument."""
+    captures: dict[str, str] = {
+        base: "",
+        f"{base}_const": "",
+        f"{base}_text": arg_node.text.decode("utf-8"),
+    }
+    if arg_node.type == "string":
+        # JS `string` wraps a string_fragment; TS uses the same shape.
+        for ch in arg_node.children:
+            if ch.type == "string_fragment":
+                captures[base] = ch.text.decode("utf-8")
+                break
+    elif arg_node.type == "template_string":
+        # Capture the template body only if it has no substitutions (otherwise
+        # the value is dynamic and shouldn't masquerade as a literal).
+        if not any(c.type == "template_substitution" for c in arg_node.children):
+            for ch in arg_node.children:
+                if ch.type == "string_fragment":
+                    captures[base] = ch.text.decode("utf-8")
+                    break
+    elif arg_node.type in ("identifier", "member_expression"):
+        captures[f"{base}_const"] = arg_node.text.decode("utf-8")
+    return captures
+
+
+def _js_infer_receiver_type(receiver: Any, call_node: Any) -> str | None:
+    """Infer the simple-name static type of a JS/TS call receiver.
+
+    Returns None on any uncertainty. Receiver shapes handled:
+
+      identifier                           -> resolve via locals -> params -> fields
+      member_expression `this.x`           -> resolve x against the enclosing class
+      anything else (call_expression chain,
+        parenthesized_expression, cast,
+        new_expression as receiver, etc.)  -> None
+    """
+    if receiver is None:
+        return None
+
+    # `this.x` shape.
+    if receiver.type == "member_expression":
+        obj = receiver.child_by_field_name("object")
+        prop = receiver.child_by_field_name("property")
+        if obj is not None and obj.type == "this" and prop is not None:
+            return _js_lookup_field_type(call_node, prop.text.decode("utf-8"))
+        return None
+
+    if receiver.type == "identifier":
+        ident = receiver.text.decode("utf-8")
+        # Innermost first: locals & parameters in the enclosing function, then
+        # class fields, then module-level lexical declarations.
+        local = _js_lookup_local_or_param_type(call_node, ident)
+        if local is not None:
+            return local
+        field = _js_lookup_field_type(call_node, ident)
+        if field is not None:
+            return field
+        return _js_lookup_module_level_type(call_node, ident)
+
+    return None
+
+
+def _js_enclosing_function(node: Any) -> Any:
+    """Walk parents to find the nearest enclosing JS/TS function-like node."""
+    targets = {
+        "function_declaration",
+        "function_expression",
+        "arrow_function",
+        "method_definition",
+        "generator_function_declaration",
+        "generator_function",
+    }
+    cur = node.parent
+    while cur is not None:
+        if cur.type in targets:
+            return cur
+        cur = cur.parent
+    return None
+
+
+def _js_enclosing_class(node: Any) -> Any:
+    """Walk parents to find the nearest enclosing class_declaration or class_body."""
+    cur = node.parent
+    while cur is not None:
+        if cur.type in ("class_declaration", "class"):
+            return cur
+        cur = cur.parent
+    return None
+
+
+def _js_type_annotation_text(parent: Any) -> str | None:
+    """If `parent` has a `type_annotation` child, return its inner type's simple
+    name (generics stripped). TS-only — JS files won't have this node."""
+    for ch in parent.children:
+        if ch.type == "type_annotation":
+            # type_annotation : <type>
+            for inner in ch.children:
+                if inner.type in (":",):
+                    continue
+                return _strip_generics(inner.text.decode("utf-8")).rsplit(".", 1)[-1]
+    return None
+
+
+def _js_new_expression_type(initializer: Any) -> str | None:
+    """If `initializer` is `new T(...)` or `new T<...>(...)`, return T's simple name."""
+    if initializer is None or initializer.type != "new_expression":
+        return None
+    # In tree-sitter JS, the constructor is a `constructor` field; fallback to
+    # the first identifier child for older grammar versions.
+    ctor = initializer.child_by_field_name("constructor")
+    if ctor is None:
+        for ch in initializer.children:
+            if ch.type in ("identifier", "member_expression"):
+                ctor = ch
+                break
+    if ctor is None:
+        return None
+    text = ctor.text.decode("utf-8")
+    # `pkg.Foo` -> `Foo`; `Foo<Bar>` already stripped at this layer because
+    # type_arguments live as a sibling, not in the ctor text.
+    return _strip_generics(text).rsplit(".", 1)[-1]
+
+
+def _js_lookup_local_or_param_type(node: Any, ident: str) -> str | None:
+    """Find a local lexical_declaration / variable_declaration or function
+    parameter named `ident` in the enclosing function. Returns the declared
+    type, or None.
+
+    Lookup order inside the function:
+      1. Required/optional parameters with TS type annotations
+      2. Local declarations: prefer TS type annotation, fall back to `new T(...)`
+    """
+    func = _js_enclosing_function(node)
+    if func is None:
+        return None
+
+    # Parameters.
+    params = func.child_by_field_name("parameters")
+    if params is not None:
+        for p in params.children:
+            if p.type in ("required_parameter", "optional_parameter"):
+                name_node = p.child_by_field_name("pattern")
+                if name_node is None:
+                    # Some grammar versions name it `name`.
+                    name_node = p.child_by_field_name("name")
+                if name_node is not None and name_node.text.decode("utf-8") == ident:
+                    typed = _js_type_annotation_text(p)
+                    if typed:
+                        return typed
+            elif p.type == "identifier" and p.text.decode("utf-8") == ident:
+                # Plain JS parameter — no static type available.
+                return None
+
+    # Locals.
+    body = func.child_by_field_name("body")
+    if body is None:
+        return None
+    for decl in _find_nodes(body, "lexical_declaration") + _find_nodes(body, "variable_declaration"):
+        for fc in decl.children:
+            if fc.type != "variable_declarator":
+                continue
+            name_node = fc.child_by_field_name("name")
+            if name_node is None or name_node.text.decode("utf-8") != ident:
+                continue
+            # TS type annotation wins if present.
+            typed = _js_type_annotation_text(fc)
+            if typed:
+                return typed
+            # Fall back to `new T(...)` initializer.
+            init = fc.child_by_field_name("value")
+            new_t = _js_new_expression_type(init)
+            if new_t:
+                return new_t
+            return None
+    return None
+
+
+def _js_lookup_field_type(node: Any, ident: str) -> str | None:
+    """Find a class-level field named `ident` in the enclosing class. Returns
+    its declared type, or None.
+
+    Two sources, in order:
+      1. `public_field_definition` / `property_signature` with a type annotation
+         (TS classes: `private client: SolrClient;`)
+      2. `this.<ident> = new T(...)` assignments inside the constructor.
+    """
+    cls = _js_enclosing_class(node)
+    if cls is None:
+        return None
+    body = cls.child_by_field_name("body")
+    if body is None:
+        return None
+    # 1. Typed class fields.
+    for ch in body.children:
+        if ch.type in ("public_field_definition", "property_signature", "field_definition"):
+            name_node = ch.child_by_field_name("name")
+            if name_node is None or name_node.text.decode("utf-8") != ident:
+                continue
+            typed = _js_type_annotation_text(ch)
+            if typed:
+                return typed
+            # Field-level `= new T(...)` initializer.
+            init = ch.child_by_field_name("value")
+            new_t = _js_new_expression_type(init)
+            if new_t:
+                return new_t
+    # 2. Constructor `this.x = new T(...)` assignments.
+    for method in _find_nodes(body, "method_definition"):
+        name_node = method.child_by_field_name("name")
+        if name_node is None or name_node.text.decode("utf-8") != "constructor":
+            continue
+        for assign in _find_nodes(method, "assignment_expression"):
+            left = assign.child_by_field_name("left")
+            right = assign.child_by_field_name("right")
+            if left is None or left.type != "member_expression":
+                continue
+            obj = left.child_by_field_name("object")
+            prop = left.child_by_field_name("property")
+            if (
+                obj is not None
+                and obj.type == "this"
+                and prop is not None
+                and prop.text.decode("utf-8") == ident
+            ):
+                new_t = _js_new_expression_type(right)
+                if new_t:
+                    return new_t
+    return None
+
+
+def _js_lookup_module_level_type(node: Any, ident: str) -> str | None:
+    """Walk up to the program root and look for a module-level lexical_declaration
+    or variable_declaration with the given name. Returns the inferred type or None."""
+    cur = node
+    while cur is not None and cur.parent is not None:
+        cur = cur.parent
+    if cur is None:
+        return None
+    for decl in cur.children:
+        if decl.type not in ("lexical_declaration", "variable_declaration"):
+            continue
+        for fc in decl.children:
+            if fc.type != "variable_declarator":
+                continue
+            name_node = fc.child_by_field_name("name")
+            if name_node is None or name_node.text.decode("utf-8") != ident:
+                continue
+            typed = _js_type_annotation_text(fc)
+            if typed:
+                return typed
+            init = fc.child_by_field_name("value")
+            new_t = _js_new_expression_type(init)
+            if new_t:
+                return new_t
+            return None
     return None

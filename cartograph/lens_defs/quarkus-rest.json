@@ -1,0 +1,110 @@
+[
+  {
+    "name": "quarkus-rest-panache-repository-interface",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "class-extends-typearg",
+        "superclass": "PanacheRepository",
+        "typearg_index": 0,
+        "capture_as": "entity"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string",
+        "entity_type": "string",
+        "base_interface": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "panache-repo",
+        "framework": "quarkus",
+        "entity_type": "{{entity}}",
+        "base_interface": "PanacheRepository"
+      },
+      "source": "lens:quarkus-rest",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "quarkus-rest-panache-repository-base-interface",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "class-extends-typearg",
+        "superclass": "PanacheRepositoryBase",
+        "typearg_index": 0,
+        "capture_as": "entity"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string",
+        "entity_type": "string",
+        "base_interface": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "panache-repo",
+        "framework": "quarkus",
+        "entity_type": "{{entity}}",
+        "base_interface": "PanacheRepositoryBase"
+      },
+      "source": "lens:quarkus-rest",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "quarkus-rest-panache-mongo-repository",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "class-extends-typearg",
+        "superclass": "PanacheMongoRepository",
+        "typearg_index": 0,
+        "capture_as": "entity"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string",
+        "entity_type": "string",
+        "base_interface": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "panache-mongo-repo",
+        "framework": "quarkus",
+        "entity_type": "{{entity}}",
+        "base_interface": "PanacheMongoRepository"
+      },
+      "source": "lens:quarkus-rest",
+      "confidence": "high"
+    }
+  }
+]

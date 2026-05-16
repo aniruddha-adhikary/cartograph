@@ -1,0 +1,36 @@
+[
+  {
+    "name": "play-framework-route",
+    "scope": "source",
+    "match": {
+      "files": [
+        "routes",
+        "*.routes"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "^\\s*(?P<http_method>GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\\s+(?P<path>\\S+)\\s+(?P<handler>[\\w.$]+(?:\\s*\\([^)]*\\))?)",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "{{http_method}}",
+        "path": "{{path}}",
+        "handler": "{{handler}}",
+        "framework": "play-framework"
+      },
+      "source": "lens:play-framework",
+      "confidence": "high"
+    }
+  }
+]
