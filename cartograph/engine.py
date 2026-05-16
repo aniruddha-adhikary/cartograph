@@ -136,6 +136,18 @@ def _token_line_strategy(
     tokens = match.get("tokens", [])
     extract_regex = match.get("extract")
 
+    # Optional import gate: skip this file entirely unless at least one of the
+    # configured import substrings appears somewhere in the content. This is a
+    # cheap, generic disambiguator for lenses whose tokens collide across
+    # multiple libraries that share a common call shape — each lens declares
+    # the library-identifying substring (a module name, header, or URL prefix)
+    # and only fires when the file actually mentions it. Plain substring match;
+    # the substring itself is owned by the lens JSON, not the engine.
+    import_gate = match.get("import_gate", [])
+    if import_gate:
+        if not any(sub in content for sub in import_gate):
+            return nodes, edges
+
     for idx, line in enumerate(content.splitlines(), 1):
         if not any(token in line for token in tokens):
             continue
