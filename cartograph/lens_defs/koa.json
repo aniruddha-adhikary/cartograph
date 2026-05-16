@@ -1,0 +1,70 @@
+[
+  {
+    "name": "koa-router-route",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\brouter\\.(?P<method>get|post|put|delete|patch|head|options|all)\\s*\\(\\s*['\"`](?P<path>[^'\"`]+)['\"`]",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "{{method}}",
+        "path": "{{path}}",
+        "handler": "{{_file_stem}}:line{{_line}}",
+        "framework": "koa"
+      },
+      "source": "lens:koa",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "koa-app-use-middleware",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\bapp\\.use\\s*\\(\\s*async\\s*(?:\\(?\\s*(?P<arg>ctx|context)\\s*\\)?|function)",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{_file_stem}}:line{{_line}}",
+        "kind": "koa-middleware",
+        "framework": "koa"
+      },
+      "source": "lens:koa",
+      "confidence": "low"
+    }
+  }
+]

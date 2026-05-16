@@ -1,0 +1,107 @@
+[
+  {
+    "name": "hapi-server-route-method-first",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\bserver\\.route\\s*\\(\\s*\\{[^}]*\\bmethod\\s*:\\s*['\"`](?P<method>[A-Za-z*]+)['\"`][^}]*\\bpath\\s*:\\s*['\"`](?P<path>[^'\"`]+)['\"`]",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "{{method}}",
+        "path": "{{path}}",
+        "handler": "{{_file_stem}}:line{{_line}}",
+        "framework": "hapi"
+      },
+      "source": "lens:hapi",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hapi-server-route-path-first",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\bserver\\.route\\s*\\(\\s*\\{[^}]*\\bpath\\s*:\\s*['\"`](?P<path>[^'\"`]+)['\"`][^}]*\\bmethod\\s*:\\s*['\"`](?P<method>[A-Za-z*]+)['\"`]",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "{{method}}",
+        "path": "{{path}}",
+        "handler": "{{_file_stem}}:line{{_line}}",
+        "framework": "hapi"
+      },
+      "source": "lens:hapi",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hapi-server-route-array-element",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\{\\s*method\\s*:\\s*['\"`](?P<method>[A-Za-z*]+)['\"`]\\s*,\\s*path\\s*:\\s*['\"`](?P<path>[^'\"`]+)['\"`]",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "{{method}}",
+        "path": "{{path}}",
+        "handler": "{{_file_stem}}:line{{_line}}",
+        "framework": "hapi"
+      },
+      "source": "lens:hapi",
+      "confidence": "medium"
+    }
+  }
+]

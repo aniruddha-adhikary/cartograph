@@ -1,0 +1,160 @@
+[
+  {
+    "name": "solrj-client-builder-url",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "new\\s+(?:HttpSolrClient|Http2SolrClient|CloudSolrClient|CloudHttp2SolrClient|ConcurrentUpdateSolrClient|LBHttpSolrClient)\\.Builder\\s*\\(\\s*\"https?://[^\"/]+(?::\\d+)?/solr/(?P<collection>[\\w.-]+)\"",
+          "per_line": false,
+          "gate": "(?:org\\.apache\\.solr\\.client|solrj)"
+        }
+      ]
+    },
+    "emit": {
+      "label": "DatabaseTable",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{collection}}",
+        "kind": "solr-collection",
+        "dialect": "solr",
+        "framework": "solr-java"
+      },
+      "source": "lens:solr-java",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "solrj-client-add",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".add("
+      ],
+      "extract": "\\.add\\(\\s*\"(?P<collection>[\\w.-]+)\"\\s*,"
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "collection": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "INSERT",
+        "collection": "{{collection}}",
+        "dialect": "solr",
+        "framework": "solr-java"
+      },
+      "source": "lens:solr-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "solrj-client-query",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".query("
+      ],
+      "extract": "\\.query\\(\\s*\"(?P<collection>[\\w.-]+)\"\\s*,"
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "collection": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "SELECT",
+        "collection": "{{collection}}",
+        "dialect": "solr",
+        "framework": "solr-java"
+      },
+      "source": "lens:solr-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "solrj-client-delete-by-id",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".deleteById("
+      ],
+      "extract": "\\.deleteById\\(\\s*\"(?P<collection>[\\w.-]+)\"\\s*,"
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "collection": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "DELETE",
+        "collection": "{{collection}}",
+        "dialect": "solr",
+        "framework": "solr-java"
+      },
+      "source": "lens:solr-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "solrj-client-delete-by-query",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".deleteByQuery("
+      ],
+      "extract": "\\.deleteByQuery\\(\\s*\"(?P<collection>[\\w.-]+)\"\\s*,"
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "collection": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "DELETE",
+        "collection": "{{collection}}",
+        "dialect": "solr",
+        "framework": "solr-java"
+      },
+      "source": "lens:solr-java",
+      "confidence": "medium"
+    }
+  }
+]

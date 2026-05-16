@@ -1,0 +1,165 @@
+[
+  {
+    "name": "prisma-model",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.prisma"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "^\\s*model\\s+(?P<name>\\w+)\\s*\\{",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Entity",
+      "schema": {
+        "name": "string",
+        "framework": "string",
+        "dialect": "string"
+      },
+      "values": {
+        "name": "{{name}}",
+        "framework": "prisma",
+        "dialect": "prisma"
+      },
+      "source": "lens:prisma",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "prisma-enum",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.prisma"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "^\\s*enum\\s+(?P<name>\\w+)\\s*\\{",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{name}}",
+        "kind": "prisma-enum",
+        "framework": "prisma"
+      },
+      "source": "lens:prisma",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "prisma-datasource",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.prisma"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "^\\s*provider\\s*=\\s*\"(?P<provider>postgresql|mysql|sqlite|mongodb|sqlserver|cockroachdb)\"",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "kind": "string",
+        "provider": "string",
+        "framework": "string"
+      },
+      "values": {
+        "kind": "prisma-datasource",
+        "provider": "{{provider}}",
+        "framework": "prisma"
+      },
+      "source": "lens:prisma",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "prisma-client-query",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\bprisma\\.(?P<model>[a-z]\\w*)\\.(?P<op>findUnique|findFirst|findMany|create|createMany|update|updateMany|upsert|delete|deleteMany|count|aggregate|groupBy)\\s*\\(",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "model": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "{{op}}",
+        "model": "{{model}}",
+        "dialect": "prisma",
+        "framework": "prisma"
+      },
+      "source": "lens:prisma",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "prisma-raw-query",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\bprisma\\.\\$(?P<op>queryRaw|queryRawUnsafe|executeRaw|executeRawUnsafe)\\s*[`(]",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "{{op}}",
+        "dialect": "sql",
+        "framework": "prisma"
+      },
+      "source": "lens:prisma",
+      "confidence": "medium"
+    }
+  }
+]

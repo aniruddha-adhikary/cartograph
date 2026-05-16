@@ -1,0 +1,113 @@
+[
+  {
+    "name": "trpc-query-procedure",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts",
+        "*.tsx",
+        "*.js"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "(?P<procedure>[A-Za-z_][A-Za-z0-9_]*)\\s*:\\s*(?:t\\.|publicProcedure|protectedProcedure|procedure)[^,;]*?\\.query\\s*\\(",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "operation": "string",
+        "protocol": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "tRPC-QUERY",
+        "path": "{{procedure}}",
+        "operation": "{{procedure}}",
+        "protocol": "trpc",
+        "framework": "trpc"
+      },
+      "source": "lens:trpc",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "trpc-mutation-procedure",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts",
+        "*.tsx",
+        "*.js"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "(?P<procedure>[A-Za-z_][A-Za-z0-9_]*)\\s*:\\s*(?:t\\.|publicProcedure|protectedProcedure|procedure)[^,;]*?\\.mutation\\s*\\(",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "operation": "string",
+        "protocol": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "tRPC-MUTATION",
+        "path": "{{procedure}}",
+        "operation": "{{procedure}}",
+        "protocol": "trpc",
+        "framework": "trpc"
+      },
+      "source": "lens:trpc",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "trpc-subscription-procedure",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts",
+        "*.tsx",
+        "*.js"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "(?P<procedure>[A-Za-z_][A-Za-z0-9_]*)\\s*:\\s*(?:t\\.|publicProcedure|protectedProcedure|procedure)[^,;]*?\\.subscription\\s*\\(",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "operation": "string",
+        "protocol": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "tRPC-SUBSCRIPTION",
+        "path": "{{procedure}}",
+        "operation": "{{procedure}}",
+        "protocol": "trpc",
+        "framework": "trpc"
+      },
+      "source": "lens:trpc",
+      "confidence": "medium"
+    }
+  }
+]

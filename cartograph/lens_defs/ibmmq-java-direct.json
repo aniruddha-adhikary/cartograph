@@ -1,0 +1,107 @@
+[
+  {
+    "name": "ibmmq-java-direct-access-queue",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".accessQueue("
+      ],
+      "extract": "\\.accessQueue\\(\\s*\"(?P<queue>[^\"]+)\""
+    },
+    "emit": {
+      "label": "MessageDestination",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "bus": "string",
+        "queue": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{queue}}",
+        "kind": "queue",
+        "bus": "ibm-mq",
+        "queue": "{{queue}}",
+        "framework": "ibmmq-java-direct"
+      },
+      "source": "lens:ibmmq-java-direct",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "ibmmq-java-direct-access-topic",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".accessTopic("
+      ],
+      "extract": "\\.accessTopic\\(\\s*\"(?P<topic>[^\"]+)\""
+    },
+    "emit": {
+      "label": "MessageDestination",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "bus": "string",
+        "topic": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{topic}}",
+        "kind": "topic",
+        "bus": "ibm-mq",
+        "topic": "{{topic}}",
+        "framework": "ibmmq-java-direct"
+      },
+      "source": "lens:ibmmq-java-direct",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "ibmmq-java-direct-mqqueue-put",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "MQQueue\\s+(?P<queue_var>\\w+)\\s*=\\s*\\w+\\.accessQueue\\(\\s*\"(?P<queue>[^\"]+)\"",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "queue": "string",
+        "queue_var": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "ibm-mq",
+        "topic": "{{queue}}",
+        "queue": "{{queue}}",
+        "queue_var": "{{queue_var}}",
+        "framework": "ibmmq-java-direct",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:ibmmq-java-direct",
+      "confidence": "low"
+    }
+  }
+]

@@ -1,0 +1,179 @@
+[
+  {
+    "name": "activemq-java-direct-create-queue",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".createQueue("
+      ],
+      "extract": "\\.createQueue\\(\\s*\"(?P<queue>[^\"]+)\""
+    },
+    "emit": {
+      "label": "MessageDestination",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "bus": "string",
+        "queue": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{queue}}",
+        "kind": "queue",
+        "bus": "activemq",
+        "queue": "{{queue}}",
+        "framework": "activemq-java-direct"
+      },
+      "source": "lens:activemq-java-direct",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "activemq-java-direct-create-topic",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".createTopic("
+      ],
+      "extract": "\\.createTopic\\(\\s*\"(?P<topic>[^\"]+)\""
+    },
+    "emit": {
+      "label": "MessageDestination",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "bus": "string",
+        "topic": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{topic}}",
+        "kind": "topic",
+        "bus": "activemq",
+        "topic": "{{topic}}",
+        "framework": "activemq-java-direct"
+      },
+      "source": "lens:activemq-java-direct",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "activemq-java-direct-connection-factory",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        "new ActiveMQConnectionFactory("
+      ],
+      "extract": "new ActiveMQConnectionFactory\\(\\s*\"(?P<broker_url>[^\"]+)\""
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "bus": "string",
+        "broker_url": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "ActiveMQConnectionFactory",
+        "kind": "message-broker-connection",
+        "bus": "activemq",
+        "broker_url": "{{broker_url}}",
+        "framework": "activemq-java-direct"
+      },
+      "source": "lens:activemq-java-direct",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "activemq-java-direct-create-producer",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "createProducer",
+        "arg_index": 0,
+        "capture_as": "destination"
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "destination_const": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "activemq",
+        "topic": "{{destination|destination_const|destination_class|}}",
+        "destination_const": "{{destination_const}}",
+        "framework": "activemq-java-direct",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:activemq-java-direct",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "activemq-java-direct-create-consumer",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "createConsumer",
+        "arg_index": 0,
+        "capture_as": "destination"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "destination_const": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "activemq",
+        "topic": "{{destination|destination_const|destination_class|}}",
+        "topics": [
+          "{{destination|destination_const|destination_class|}}"
+        ],
+        "destination_const": "{{destination_const}}",
+        "framework": "activemq-java-direct"
+      },
+      "source": "lens:activemq-java-direct",
+      "confidence": "medium"
+    }
+  }
+]

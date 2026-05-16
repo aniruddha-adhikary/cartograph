@@ -1,0 +1,159 @@
+[
+  {
+    "name": "ioredis-publish",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".publish("
+      ],
+      "extract": "\\.publish\\s*\\(\\s*['\"`](?P<channel>[^'\"`]+)['\"`]"
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "channel": "string",
+        "topic": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "redis-pubsub",
+        "channel": "{{channel}}",
+        "topic": "{{channel}}",
+        "framework": "ioredis",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:ioredis",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "ioredis-subscribe",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".subscribe("
+      ],
+      "extract": "\\.subscribe\\s*\\(\\s*['\"`](?P<channel>[^'\"`]+)['\"`]"
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "channel": "string",
+        "topic": "string",
+        "topics": "list",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "redis-pubsub",
+        "channel": "{{channel}}",
+        "topic": "{{channel}}",
+        "topics": [
+          "{{channel}}"
+        ],
+        "framework": "ioredis"
+      },
+      "source": "lens:ioredis",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "ioredis-xadd",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".xadd("
+      ],
+      "extract": "\\.xadd\\s*\\(\\s*['\"`](?P<stream>[^'\"`]+)['\"`]"
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "stream": "string",
+        "topic": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "redis-streams",
+        "stream": "{{stream}}",
+        "topic": "{{stream}}",
+        "framework": "ioredis",
+        "delivery_edge": "WRITES_STREAM"
+      },
+      "source": "lens:ioredis",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "ioredis-xread",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".xread(",
+        ".xreadgroup("
+      ],
+      "extract": "['\"`](?P<stream>[A-Za-z_][\\w:.-]*)['\"`]"
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "stream": "string",
+        "topic": "string",
+        "topics": "list",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "redis-streams",
+        "stream": "{{stream}}",
+        "topic": "{{stream}}",
+        "topics": [
+          "{{stream}}"
+        ],
+        "framework": "ioredis"
+      },
+      "source": "lens:ioredis",
+      "confidence": "medium"
+    }
+  }
+]

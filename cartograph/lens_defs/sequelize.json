@@ -1,0 +1,184 @@
+[
+  {
+    "name": "sequelize-define",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts",
+        "*.js",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\bsequelize\\.define\\s*\\(\\s*['\"`](?P<name>[A-Za-z_]\\w*)['\"`]",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Entity",
+      "schema": {
+        "name": "string",
+        "table": "string",
+        "framework": "string",
+        "dialect": "string"
+      },
+      "values": {
+        "name": "{{name}}",
+        "table": "{{name}}",
+        "framework": "sequelize",
+        "dialect": "sequelize"
+      },
+      "source": "lens:sequelize",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "sequelize-model-class",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts",
+        "*.js",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "^\\s*(?:export\\s+)?class\\s+(?P<class_name>\\w+)\\s+extends\\s+(?:Sequelize\\.)?Model\\b",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Entity",
+      "schema": {
+        "name": "string",
+        "table": "string",
+        "framework": "string",
+        "dialect": "string",
+        "base_class": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "table": "{{class_name}}",
+        "framework": "sequelize",
+        "dialect": "sequelize",
+        "base_class": "Model"
+      },
+      "source": "lens:sequelize",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "sequelize-init",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts",
+        "*.js",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\bmodelName\\s*:\\s*['\"`](?P<model_name>\\w+)['\"`](?:\\s*,\\s*tableName\\s*:\\s*['\"`](?P<table_name>[^'\"`]+)['\"`])?",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "kind": "string",
+        "name": "string",
+        "table": "string",
+        "framework": "string"
+      },
+      "values": {
+        "kind": "sequelize-model-init",
+        "name": "{{model_name}}",
+        "table": "{{table_name|model_name}}",
+        "framework": "sequelize"
+      },
+      "source": "lens:sequelize",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "sequelize-model-query",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts",
+        "*.js",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\b(?P<model>[A-Z]\\w*)\\.(?P<op>findAll|findOne|findByPk|findAndCountAll|findOrCreate|findCreateFind|create|bulkCreate|update|destroy|count|max|min|sum|increment|decrement|upsert|restore)\\s*\\(",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "model": "string",
+        "table": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "{{op}}",
+        "model": "{{model}}",
+        "table": "{{model}}",
+        "dialect": "sequelize",
+        "framework": "sequelize"
+      },
+      "source": "lens:sequelize",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "sequelize-raw-query",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts",
+        "*.js",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        "sequelize.query("
+      ],
+      "extract": "sequelize\\.query\\s*\\(\\s*[`'\"](?P<sql>[^`'\"]+)[`'\"]"
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "query": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "raw",
+        "query": "{{sql|}}",
+        "dialect": "sql",
+        "framework": "sequelize"
+      },
+      "source": "lens:sequelize",
+      "confidence": "medium"
+    }
+  }
+]

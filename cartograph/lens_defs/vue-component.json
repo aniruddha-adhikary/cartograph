@@ -1,0 +1,164 @@
+[
+  {
+    "name": "vue-sfc-options-api",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.vue"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "export\\s+default\\s+(?:Vue\\.extend\\(|defineComponent\\(|\\{)[^}]*?\\bname\\s*:\\s*['\"`](?P<name>[A-Za-z_][\\w-]*)['\"`]",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{name}}",
+        "kind": "sfc",
+        "framework": "vue"
+      },
+      "source": "lens:vue-component",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "vue-sfc-composition-define",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.vue",
+        "*.ts",
+        "*.js"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\bdefineComponent\\s*\\(\\s*\\{[^}]*?\\bname\\s*:\\s*['\"`](?P<name>[A-Za-z_][\\w-]*)['\"`]",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{name}}",
+        "kind": "sfc-composition",
+        "framework": "vue"
+      },
+      "source": "lens:vue-component",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "vue-sfc-script-setup",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.vue"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "<script\\s+setup[^>]*>",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{_file_stem}}",
+        "kind": "sfc-script-setup",
+        "framework": "vue"
+      },
+      "source": "lens:vue-component",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "vue-router-link",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.vue"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "<router-link[^>]*\\bto\\s*=\\s*['\"`](?P<path>[^'\"`]+)['\"`]",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "ROUTE",
+        "path": "{{path}}",
+        "handler": "{{_file_stem}}:line{{_line}}",
+        "framework": "vue-router"
+      },
+      "source": "lens:vue-component",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "vue-router-route-config",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts",
+        "*.js"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\{\\s*path\\s*:\\s*['\"`](?P<path>[^'\"`]+)['\"`]\\s*,\\s*(?:name\\s*:\\s*['\"`][^'\"`]+['\"`]\\s*,\\s*)?component\\s*:\\s*(?P<component>[A-Z][\\w]+)",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "ROUTE",
+        "path": "{{path}}",
+        "handler": "{{component}}",
+        "framework": "vue-router"
+      },
+      "source": "lens:vue-component",
+      "confidence": "medium"
+    }
+  }
+]

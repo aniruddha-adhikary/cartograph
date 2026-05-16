@@ -1,0 +1,193 @@
+[
+  {
+    "name": "redis-pubsub-java-publish",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        "jedis.publish(",
+        "Jedis.publish(",
+        "redisCommands.publish(",
+        "RedisCommands.publish(",
+        "redisAsyncCommands.publish(",
+        "redisReactiveCommands.publish(",
+        "sync.publish(",
+        "async.publish(",
+        "reactive.publish("
+      ],
+      "extract": "\\.publish\\(\\s*\"(?P<channel>[^\"]+)\""
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "channel": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "redis-pubsub",
+        "topic": "{{channel}}",
+        "channel": "{{channel}}",
+        "framework": "redis-pubsub-java",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:redis-pubsub-java",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "redis-pubsub-java-jedis-subscribe",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        "jedis.subscribe(",
+        "Jedis.subscribe("
+      ],
+      "extract": "\\.subscribe\\([^,]+,\\s*\"(?P<channel>[^\"]+)\""
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "channel": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "redis-pubsub",
+        "topic": "{{channel}}",
+        "topics": [
+          "{{channel}}"
+        ],
+        "channel": "{{channel}}",
+        "framework": "redis-pubsub-java"
+      },
+      "source": "lens:redis-pubsub-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "redis-pubsub-java-lettuce-add-listener",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "addListener",
+        "arg_index": 0,
+        "capture_as": "listener"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "listener_class": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "redis-pubsub",
+        "topic": "{{listener|listener_const|listener_class|}}",
+        "listener_class": "{{listener_class}}",
+        "framework": "redis-pubsub-java"
+      },
+      "source": "lens:redis-pubsub-java",
+      "confidence": "low"
+    }
+  },
+  {
+    "name": "redis-streams-java-xadd",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".xadd("
+      ],
+      "extract": "\\.xadd\\(\\s*\"(?P<stream>[^\"]+)\""
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "stream": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "redis-streams",
+        "topic": "{{stream}}",
+        "stream": "{{stream}}",
+        "framework": "redis-streams-java",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:redis-pubsub-java",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "redis-streams-java-xread",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".xread(",
+        ".xreadGroup(",
+        ".xreadgroup("
+      ],
+      "extract": "\"(?P<stream>[^\"]+)\""
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "stream": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "redis-streams",
+        "topic": "{{stream}}",
+        "topics": [
+          "{{stream}}"
+        ],
+        "stream": "{{stream}}",
+        "framework": "redis-streams-java"
+      },
+      "source": "lens:redis-pubsub-java",
+      "confidence": "medium"
+    }
+  }
+]

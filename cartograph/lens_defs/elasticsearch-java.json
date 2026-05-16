@@ -1,0 +1,157 @@
+[
+  {
+    "name": "elasticsearch-java-index-call",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".index("
+      ],
+      "extract": "\\.index\\(\\s*\"(?P<index>[^\"]+)\""
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "index": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "SEARCH",
+        "index": "{{index}}",
+        "dialect": "elasticsearch",
+        "framework": "elasticsearch-java"
+      },
+      "source": "lens:elasticsearch-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "elasticsearch-java-search-request-indices",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        "new SearchRequest("
+      ],
+      "extract": "new\\s+SearchRequest\\(\\s*\"(?P<index>[^\"]+)\""
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "index": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "SEARCH",
+        "index": "{{index}}",
+        "dialect": "elasticsearch",
+        "framework": "elasticsearch-java"
+      },
+      "source": "lens:elasticsearch-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "elasticsearch-java-index-request",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        "new IndexRequest("
+      ],
+      "extract": "new\\s+IndexRequest\\(\\s*\"(?P<index>[^\"]+)\""
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "index": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "INDEX",
+        "index": "{{index}}",
+        "dialect": "elasticsearch",
+        "framework": "elasticsearch-java"
+      },
+      "source": "lens:elasticsearch-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "elasticsearch-java-delete-request",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        "new DeleteRequest("
+      ],
+      "extract": "new\\s+DeleteRequest\\(\\s*\"(?P<index>[^\"]+)\""
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "index": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "DELETE",
+        "index": "{{index}}",
+        "dialect": "elasticsearch",
+        "framework": "elasticsearch-java"
+      },
+      "source": "lens:elasticsearch-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "elasticsearch-java-get-request",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        "new GetRequest("
+      ],
+      "extract": "new\\s+GetRequest\\(\\s*\"(?P<index>[^\"]+)\""
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "operation": "string",
+        "index": "string",
+        "dialect": "string",
+        "framework": "string"
+      },
+      "values": {
+        "operation": "GET",
+        "index": "{{index}}",
+        "dialect": "elasticsearch",
+        "framework": "elasticsearch-java"
+      },
+      "source": "lens:elasticsearch-java",
+      "confidence": "medium"
+    }
+  }
+]

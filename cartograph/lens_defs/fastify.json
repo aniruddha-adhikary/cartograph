@@ -1,0 +1,107 @@
+[
+  {
+    "name": "fastify-route-verb",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\b(?:fastify|app|server|instance)\\.(?P<method>get|post|put|delete|patch|head|options)\\s*\\(\\s*['\"`](?P<path>[^'\"`]+)['\"`]",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "{{method}}",
+        "path": "{{path}}",
+        "handler": "{{_file_stem}}:line{{_line}}",
+        "framework": "fastify"
+      },
+      "source": "lens:fastify",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "fastify-route-object",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\b(?:fastify|app|server|instance)\\.route\\s*\\(\\s*\\{[^}]*\\bmethod\\s*:\\s*['\"`](?P<method>[A-Za-z]+)['\"`][^}]*\\burl\\s*:\\s*['\"`](?P<path>[^'\"`]+)['\"`]",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "{{method}}",
+        "path": "{{path}}",
+        "handler": "{{_file_stem}}:line{{_line}}",
+        "framework": "fastify"
+      },
+      "source": "lens:fastify",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "fastify-route-object-reversed",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\b(?:fastify|app|server|instance)\\.route\\s*\\(\\s*\\{[^}]*\\burl\\s*:\\s*['\"`](?P<path>[^'\"`]+)['\"`][^}]*\\bmethod\\s*:\\s*['\"`](?P<method>[A-Za-z]+)['\"`]",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "{{method}}",
+        "path": "{{path}}",
+        "handler": "{{_file_stem}}:line{{_line}}",
+        "framework": "fastify"
+      },
+      "source": "lens:fastify",
+      "confidence": "high"
+    }
+  }
+]

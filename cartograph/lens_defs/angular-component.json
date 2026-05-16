@@ -1,0 +1,199 @@
+[
+  {
+    "name": "angular-component",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "@Component\\s*\\(\\s*\\{[^}]*?\\bselector\\s*:\\s*['\"`](?P<selector>[^'\"`]+)['\"`]",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string",
+        "selector": "string"
+      },
+      "values": {
+        "name": "{{_file_stem}}",
+        "kind": "component",
+        "framework": "angular",
+        "selector": "{{selector}}"
+      },
+      "source": "lens:angular-component",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "angular-directive",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "@Directive\\s*\\(\\s*\\{[^}]*?\\bselector\\s*:\\s*['\"`](?P<selector>[^'\"`]+)['\"`]",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string",
+        "selector": "string"
+      },
+      "values": {
+        "name": "{{_file_stem}}",
+        "kind": "directive",
+        "framework": "angular",
+        "selector": "{{selector}}"
+      },
+      "source": "lens:angular-component",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "angular-injectable",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "@Injectable\\s*\\(\\s*(?:\\{[^}]*?\\bprovidedIn\\s*:\\s*['\"`]?(?P<provided_in>[^'\"`,}\\s]+)['\"`]?)?[^)]*\\)\\s*(?:export\\s+)?class\\s+(?P<class_name>[A-Z]\\w+)",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string",
+        "provided_in": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "service",
+        "framework": "angular",
+        "provided_in": "{{provided_in|}}"
+      },
+      "source": "lens:angular-component",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "angular-ngmodule",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "@NgModule\\s*\\([^)]*\\)\\s*(?:export\\s+)?class\\s+(?P<class_name>[A-Z]\\w+)",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "module",
+        "framework": "angular"
+      },
+      "source": "lens:angular-component",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "angular-pipe",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.ts"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "@Pipe\\s*\\(\\s*\\{[^}]*?\\bname\\s*:\\s*['\"`](?P<pipe_name>[^'\"`]+)['\"`]",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{pipe_name}}",
+        "kind": "pipe",
+        "framework": "angular"
+      },
+      "source": "lens:angular-component",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "angular-route-config",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*-routing.module.ts",
+        "*.routes.ts",
+        "*-routes.ts",
+        "*routing*.ts"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\{\\s*path\\s*:\\s*['\"`](?P<path>[^'\"`]*)['\"`]\\s*,\\s*(?:[^}]*?\\bcomponent\\s*:\\s*(?P<component>[A-Z]\\w+))",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "ROUTE",
+        "path": "{{path}}",
+        "handler": "{{component}}",
+        "framework": "angular-router"
+      },
+      "source": "lens:angular-component",
+      "confidence": "medium"
+    }
+  }
+]

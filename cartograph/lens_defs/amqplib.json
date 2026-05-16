@@ -1,0 +1,192 @@
+[
+  {
+    "name": "amqplib-publish",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".publish("
+      ],
+      "extract": "\\.publish\\s*\\(\\s*['\"`](?P<exchange>[^'\"`]+)['\"`]\\s*,\\s*['\"`](?P<routing_key>[^'\"`]*)['\"`]"
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "exchange": "string",
+        "routing_key": "string",
+        "topic": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "amqp",
+        "exchange": "{{exchange}}",
+        "routing_key": "{{routing_key}}",
+        "topic": "{{exchange}}",
+        "framework": "amqplib",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:amqplib",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "amqplib-send-to-queue",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".sendToQueue("
+      ],
+      "extract": "\\.sendToQueue\\s*\\(\\s*['\"`](?P<queue>[^'\"`]+)['\"`]"
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "queue": "string",
+        "topic": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "amqp",
+        "queue": "{{queue}}",
+        "topic": "{{queue}}",
+        "framework": "amqplib",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:amqplib",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "amqplib-consume",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".consume("
+      ],
+      "extract": "\\.consume\\s*\\(\\s*['\"`](?P<queue>[^'\"`]+)['\"`]"
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "queue": "string",
+        "topic": "string",
+        "topics": "list",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "amqp",
+        "queue": "{{queue}}",
+        "topic": "{{queue}}",
+        "topics": [
+          "{{queue}}"
+        ],
+        "framework": "amqplib"
+      },
+      "source": "lens:amqplib",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "amqplib-assert-queue",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".assertQueue("
+      ],
+      "extract": "\\.assertQueue\\s*\\(\\s*['\"`](?P<queue>[^'\"`]+)['\"`]"
+    },
+    "emit": {
+      "label": "MessageDestination",
+      "schema": {
+        "kind": "string",
+        "bus": "string",
+        "queue": "string",
+        "name": "string",
+        "framework": "string"
+      },
+      "values": {
+        "kind": "queue",
+        "bus": "amqp",
+        "queue": "{{queue}}",
+        "name": "{{queue}}",
+        "framework": "amqplib"
+      },
+      "source": "lens:amqplib",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "amqplib-assert-exchange",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".assertExchange("
+      ],
+      "extract": "\\.assertExchange\\s*\\(\\s*['\"`](?P<exchange>[^'\"`]+)['\"`]"
+    },
+    "emit": {
+      "label": "MessageDestination",
+      "schema": {
+        "kind": "string",
+        "bus": "string",
+        "exchange": "string",
+        "name": "string",
+        "framework": "string"
+      },
+      "values": {
+        "kind": "exchange",
+        "bus": "amqp",
+        "exchange": "{{exchange}}",
+        "name": "{{exchange}}",
+        "framework": "amqplib"
+      },
+      "source": "lens:amqplib",
+      "confidence": "high"
+    }
+  }
+]

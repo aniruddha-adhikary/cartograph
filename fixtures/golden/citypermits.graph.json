@@ -1,499 +1,706 @@
 {
+  "edges": [
+    {
+      "confidence": "high",
+      "cross_repo": true,
+      "from": "inspections-api:src/main/java/example/InspectionListener.java:11:26f1b70c7e",
+      "from_service": "inspections-api",
+      "to": "permits-api:src/main/java/example/PermitController.java:27:97f29bab1a",
+      "to_service": "permits-api",
+      "type": "KAFKA_DELIVERS"
+    },
+    {
+      "confidence": "high",
+      "cross_repo": true,
+      "from": "inspections-api:src/main/java/example/InspectionListener.java:12:e9518baa4d",
+      "from_service": "inspections-api",
+      "to": "permits-api:src/main/java/example/PermitController.java:30:d3f5c1935c",
+      "to_service": "permits-api",
+      "type": "KAFKA_DELIVERS"
+    },
+    {
+      "confidence": "high",
+      "cross_repo": true,
+      "from": "permits-api:src/main/java/example/PermitController.java:13:7697edee86",
+      "from_service": "permits-api",
+      "to": "inspections-api:src/main/java/example/InspectionListener.java:9:1fef79657e",
+      "to_service": "inspections-api",
+      "type": "KAFKA_DELIVERS"
+    },
+    {
+      "confidence": "high",
+      "cross_repo": true,
+      "from": "web:src/app/PermitButton.tsx:4:796d579940",
+      "from_service": "web",
+      "to": "permits-api:src/main/java/example/PermitController.java:12:2ecd929fd2",
+      "to_service": "permits-api",
+      "type": "CROSSES_TIER"
+    },
+    {
+      "confidence": "high",
+      "cross_repo": true,
+      "from": "web:src/app/PermitButton.tsx:5:b474d0731e",
+      "from_service": "web",
+      "to": "permits-api:src/main/java/example/PermitController.java:15:8e5ed929e4",
+      "to_service": "permits-api",
+      "type": "CROSSES_TIER"
+    },
+    {
+      "confidence": "high",
+      "cross_repo": true,
+      "from": "web:src/app/PermitButton.tsx:6:5a6dbed166",
+      "from_service": "web",
+      "to": "permits-api:src/main/java/example/PermitController.java:18:f4b62f77e6",
+      "to_service": "permits-api",
+      "type": "CROSSES_TIER"
+    },
+    {
+      "confidence": "high",
+      "cross_repo": true,
+      "from": "web:src/app/PermitButton.tsx:7:bf0bc62a87",
+      "from_service": "web",
+      "to": "permits-api:src/main/java/example/PermitController.java:21:99d2ebb560",
+      "to_service": "permits-api",
+      "type": "CROSSES_TIER"
+    },
+    {
+      "confidence": "high",
+      "cross_repo": true,
+      "from": "web:src/app/PermitButton.tsx:8:bd88536d5f",
+      "from_service": "web",
+      "to": "permits-api:src/main/java/example/PermitController.java:24:0a18cb0d77",
+      "to_service": "permits-api",
+      "type": "CROSSES_TIER"
+    }
+  ],
   "meta": {
-    "version": 2,
-    "workspace": "<workspace>",
-    "java_constants": {},
-    "unresolved": [],
-    "services": [
-      "inspections-api",
-      "permits-api",
-      "web"
-    ],
-    "node_count": 20,
     "edge_count": 8,
-    "lens_count": 298,
+    "java_constants": {},
+    "lens_count": 472,
+    "node_count": 20,
     "schema": {
+      "edge_types": {},
       "node_labels": {
-        "HttpCall": {
-          "framework": "string",
-          "protocol": "string",
-          "http_method": "string",
-          "host_var": "string",
-          "gql_body": "string",
-          "url": "string",
-          "path": "string",
-          "feign_args": "string"
-        },
-        "MessageConsumer": {
-          "message_role": "string",
-          "bus": "string",
-          "topic": "string",
-          "framework": "string",
-          "handler": "string",
-          "owner_class": "string",
-          "method_name": "string",
-          "args_text": "string",
-          "field_name": "string",
-          "topic_text": "string",
-          "transport": "string",
-          "topics": "list",
-          "aggregate_type": "string",
-          "aggregate_const": "string",
-          "channel": "string",
-          "channel_const": "string",
-          "destination_const": "string",
-          "activation_config_text": "string",
-          "topic_const": "string",
-          "kind": "string",
-          "queue_const": "string"
-        },
-        "MessageProducer": {
-          "message_role": "string",
-          "bus": "string",
-          "topic": "string",
-          "framework": "string",
-          "owner_class": "string",
-          "method_name": "string",
-          "delivery_edge": "string",
-          "args_text": "string",
-          "field_name": "string",
-          "topic_text": "string",
-          "transport": "string",
-          "aggregate_type": "string",
-          "publisher_class": "string",
-          "channel": "string",
-          "channel_const": "string",
-          "destination_const": "string",
-          "topic_const": "string",
-          "handler": "string",
-          "exchange_const": "string"
-        },
-        "EndpointReference": {
-          "kind": "string",
-          "target_class": "string",
-          "field_name": "string",
-          "uri": "string",
-          "framework": "string",
-          "args_text": "string"
-        },
-        "Component": {
-          "name": "string",
-          "kind": "string",
-          "framework": "string",
-          "scope": "string",
-          "el_name": "string",
-          "method_name": "string",
-          "field_name": "string",
+        "Action": {
           "class_name": "string",
-          "raw_args": "string",
-          "converter_id": "string",
-          "for_class": "string",
-          "validator_id": "string",
-          "base_url": "string",
-          "base_class": "string",
-          "entity_type": "string",
-          "base_interface": "string",
-          "base_repository": "string"
+          "method": "string",
+          "name": "string"
         },
-        "Endpoint": {
-          "http_method": "string",
-          "path": "string",
-          "handler": "string",
+        "AdminTask": {
           "framework": "string",
-          "_path_raw": "string",
-          "raw_method_args": "string",
-          "soap_operation": "string",
-          "operation": "string",
-          "protocol": "string",
-          "router": "string"
-        },
-        "EntityBehavior": {
           "kind": "string",
-          "owner_class": "string",
-          "framework": "string"
+          "name": "string"
         },
-        "EntityCache": {
-          "strategy": "string",
-          "region": "string",
-          "owner_class": "string",
+        "Aggregate": {
           "framework": "string",
-          "args_text": "string"
-        },
-        "EntityConverter": {
-          "converter_class": "string",
-          "owner_class": "string",
-          "applies_to_field": "string",
-          "args_text": "string",
-          "framework": "string"
-        },
-        "EntityField": {
           "kind": "string",
-          "value": "string",
-          "owner_class": "string",
-          "field_name": "string",
-          "args_text": "string",
-          "framework": "string",
-          "target_type": "string"
+          "name": "string"
         },
-        "EntityInheritance": {
-          "strategy": "string",
-          "discriminator_column": "string",
-          "discriminator_value": "string",
-          "owner_class": "string",
+        "AopAdvice": {
           "args_text": "string",
-          "framework": "string"
-        },
-        "EntityFilter": {
-          "kind": "string",
-          "name": "string",
-          "condition": "string",
-          "clause": "string",
-          "owner_class": "string",
-          "args_text": "string",
-          "framework": "string",
-          "field_name": "string",
-          "filter_name": "string"
-        },
-        "EntityOnDelete": {
-          "action": "string",
-          "owner_class": "string",
-          "field_name": "string",
-          "args_text": "string",
-          "framework": "string"
-        },
-        "DatabaseQuery": {
-          "query_name": "string",
-          "query": "string",
-          "kind": "string",
-          "framework": "string",
-          "owner_class": "string",
-          "result_type": "string",
           "class_name": "string",
-          "method_name": "string",
-          "args_text": "string",
-          "count_query": "string",
-          "native_query": "string",
-          "operation": "string",
-          "collection": "string",
-          "query_id": "string"
-        },
-        "EntityFilterDef": {
-          "filter_name": "string",
-          "framework": "string"
-        },
-        "EventConsumer": {
-          "event_type": "string",
-          "handler": "string",
-          "param_name": "string",
-          "kind": "string",
-          "bus": "string",
-          "framework": "string",
-          "delivery_edge": "string"
-        },
-        "EventProducer": {
-          "event_type": "string",
-          "owner_class": "string",
-          "field_name": "string",
-          "bus": "string",
-          "framework": "string",
-          "delivery_edge": "string"
-        },
-        "EventFire": {
-          "payload_text": "string",
-          "payload": "string",
-          "payload_class": "string",
-          "bus": "string",
-          "framework": "string"
-        },
-        "Injection": {
-          "kind": "string",
-          "target_class": "string",
-          "injected_type": "string",
-          "injected_name": "string",
-          "framework": "string",
-          "unit_name": "string"
-        },
-        "CdiQualifier": {
-          "name": "string",
-          "framework": "string"
-        },
-        "Servlet": {
-          "name": "string",
-          "class_name": "string",
-          "framework": "string"
-        },
-        "Filter": {
-          "name": "string",
-          "class_name": "string",
-          "framework": "string",
-          "url_pattern": "string"
-        },
-        "Listener": {
-          "name": "string",
-          "framework": "string"
-        },
-        "EarModule": {
-          "module_type": "string",
-          "archive": "string",
-          "context_root": "string",
-          "framework": "string"
-        },
-        "PersistenceUnit": {
-          "name": "string",
-          "transaction_type": "string",
-          "data_source": "string",
-          "provider": "string",
-          "framework": "string"
-        },
-        "Transaction": {
-          "level": "string",
-          "attribute": "string",
-          "management_type": "string",
-          "owner_class": "string",
-          "method_name": "string",
-          "args_text": "string",
-          "framework": "string",
-          "class_name": "string",
-          "propagation": "string",
-          "rollback_for": "string",
-          "read_only": "string",
-          "isolation": "string",
-          "timeout": "string"
-        },
-        "ScheduledJob": {
-          "cron": "string",
-          "second": "string",
-          "minute": "string",
-          "hour": "string",
-          "day_of_month": "string",
-          "month": "string",
-          "day_of_week": "string",
-          "year": "string",
-          "owner_class": "string",
-          "method_name": "string",
-          "args_text": "string",
-          "framework": "string",
-          "class_name": "string",
-          "fixed_delay": "string",
-          "fixed_rate": "string",
-          "initial_delay": "string",
-          "zone": "string"
-        },
-        "EjbAsync": {
-          "level": "string",
-          "owner_class": "string",
-          "method_name": "string",
-          "framework": "string"
-        },
-        "EjbLock": {
-          "type": "string",
-          "owner_class": "string",
-          "method_name": "string",
-          "args_text": "string",
-          "framework": "string"
-        },
-        "SecurityRule": {
-          "kind": "string",
-          "roles": "string",
-          "level": "string",
-          "owner_class": "string",
-          "method_name": "string",
-          "framework": "string",
           "expression": "string",
-          "class_name": "string",
-          "args_text": "string"
-        },
-        "LifecycleHook": {
-          "kind": "string",
-          "owner_class": "string",
-          "method_name": "string",
-          "framework": "string"
-        },
-        "EjbInterface": {
-          "name": "string",
-          "scope": "string",
-          "framework": "string"
-        },
-        "EndpointParam": {
-          "kind": "string",
-          "name": "string",
-          "type": "string",
-          "parameter_name": "string",
-          "owner_class": "string",
-          "owner_method": "string",
-          "framework": "string"
-        },
-        "EndpointParamDefault": {
-          "value": "string",
-          "parameter_name": "string",
-          "owner_class": "string",
-          "owner_method": "string",
-          "framework": "string"
-        },
-        "Service": {
-          "name": "string",
-          "kind": "string",
           "framework": "string",
-          "base_path": "string",
-          "endpoint_interface": "string",
-          "service_name": "string",
-          "port_name": "string",
-          "raw_args": "string",
-          "client_name": "string",
-          "wsdl_location": "string",
-          "file": "string"
-        },
-        "MessageDestination": {
-          "name": "string",
-          "bus": "string",
-          "framework": "string",
-          "kind": "string"
-        },
-        "EntityRelation": {
           "kind": "string",
-          "owner_class": "string",
-          "target_type": "string",
-          "field_name": "string",
-          "framework": "string",
-          "annotation_text": "string"
-        },
-        "EntityJoin": {
-          "kind": "string",
-          "owner_class": "string",
-          "target_type": "string",
-          "field_name": "string",
-          "column": "string",
-          "framework": "string",
-          "table": "string"
-        },
-        "Entity": {
-          "name": "string",
-          "framework": "string",
-          "kind": "string"
-        },
-        "DatabaseTable": {
-          "table": "string",
-          "class_name": "string",
-          "framework": "string"
-        },
-        "PersistenceUnitClass": {
-          "persistence_unit_name": "string",
-          "class_name": "string",
-          "framework": "string"
-        },
-        "PersistenceProperty": {
-          "persistence_unit_name": "string",
-          "name": "string",
-          "value": "string",
-          "framework": "string"
-        },
-        "PersistenceUnitOption": {
-          "persistence_unit_name": "string",
-          "kind": "string",
-          "value": "string",
-          "framework": "string"
-        },
-        "SecurityConstraint": {
-          "web_resource_name": "string",
-          "url_pattern": "string",
-          "http_method": "string",
-          "role_name": "string",
-          "framework": "string"
-        },
-        "ContextParam": {
-          "name": "string",
-          "value": "string",
-          "framework": "string"
-        },
-        "WelcomeFile": {
-          "path": "string",
-          "framework": "string"
-        },
-        "ErrorPage": {
-          "location": "string",
-          "error_code": "string",
-          "exception_type": "string",
-          "framework": "string"
-        },
-        "SessionConfig": {
-          "timeout": "string",
-          "framework": "string"
-        },
-        "WebSocketHandler": {
-          "event": "string",
-          "class_name": "string",
-          "method_name": "string",
-          "framework": "string"
-        },
-        "WsdlDocument": {
-          "name": "string",
-          "service_name": "string",
-          "framework": "string"
-        },
-        "WsdlPort": {
-          "name": "string",
-          "binding": "string",
-          "framework": "string"
-        },
-        "JsfNavigation": {
-          "from_view_id": "string",
-          "to_view_id": "string",
-          "framework": "string"
-        },
-        "JsfPage": {
-          "name": "string",
-          "framework": "string"
-        },
-        "KafkaProducer": {
-          "message_role": "string",
-          "bus": "string",
-          "topic": "string"
-        },
-        "KafkaConsumer": {
-          "message_role": "string",
-          "bus": "string",
-          "topic": "string",
-          "topics": "list"
-        },
-        "ChannelBinding": {
-          "channel": "string",
-          "topic": "string",
-          "direction": "string",
-          "framework": "string",
-          "connector": "string"
-        },
-        "ConfigBinding": {
-          "key": "string",
-          "field_name": "string",
-          "class_name": "string",
-          "framework": "string"
+          "method_name": "string"
         },
         "Aspect": {
           "class_name": "string",
           "framework": "string"
         },
-        "AopAdvice": {
-          "kind": "string",
-          "expression": "string",
-          "class_name": "string",
-          "method_name": "string",
+        "BatchJob": {
+          "delivery_edge": "string",
           "framework": "string",
-          "args_text": "string"
+          "name": "string"
+        },
+        "BatchProcessor": {
+          "framework": "string",
+          "processor": "string"
+        },
+        "BatchReader": {
+          "framework": "string",
+          "reader": "string"
+        },
+        "BatchStep": {
+          "framework": "string",
+          "name": "string"
+        },
+        "BatchWriter": {
+          "framework": "string",
+          "writer": "string"
         },
         "CacheOperation": {
-          "kind": "string",
+          "args_text": "string",
           "cache": "string",
           "class_name": "string",
-          "method_name": "string",
-          "key": "string",
           "condition": "string",
           "framework": "string",
-          "args_text": "string"
-        },
-        "StreamFunction": {
+          "key": "string",
           "kind": "string",
-          "bean_name": "string",
+          "method_name": "string",
+          "ops_method": "string"
+        },
+        "CdiQualifier": {
+          "framework": "string",
+          "name": "string"
+        },
+        "ChannelBinding": {
+          "channel": "string",
+          "connector": "string",
+          "direction": "string",
+          "framework": "string",
+          "topic": "string"
+        },
+        "CommandHandler": {
+          "bus": "string",
+          "class_name": "string",
+          "framework": "string",
+          "handler": "string",
+          "method_name": "string"
+        },
+        "Component": {
+          "args_text": "string",
+          "base_class": "string",
+          "base_interface": "string",
+          "base_repository": "string",
+          "base_url": "string",
+          "broker": "string",
+          "broker_url": "string",
+          "bucket": "string",
+          "bus": "string",
+          "channel": "string",
+          "class_name": "string",
+          "converter_id": "string",
+          "el_name": "string",
+          "entity": "string",
+          "entity_type": "string",
+          "field_name": "string",
+          "for_class": "string",
+          "framework": "string",
+          "gql_body": "string",
+          "keyspace": "string",
+          "kind": "string",
+          "method_name": "string",
+          "name": "string",
+          "operation": "string",
+          "protocol": "string",
+          "provided_in": "string",
+          "provider": "string",
+          "raw_args": "string",
+          "scope": "string",
+          "selector": "string",
+          "table": "string",
+          "validator_id": "string"
+        },
+        "ConfigBinding": {
+          "class_name": "string",
+          "field_name": "string",
+          "framework": "string",
+          "key": "string"
+        },
+        "ConfigProperty": {
+          "key": "string",
+          "value": "string"
+        },
+        "ContextParam": {
+          "framework": "string",
+          "name": "string",
+          "value": "string"
+        },
+        "DataStore": {
+          "bucket": "string",
+          "bus": "string",
+          "framework": "string",
+          "kind": "string",
+          "object_key": "string",
+          "operation": "string"
+        },
+        "DatabaseQuery": {
+          "alias": "string",
+          "args_text": "string",
+          "bus": "string",
+          "class_name": "string",
+          "collection": "string",
+          "count_query": "string",
+          "dialect": "string",
+          "framework": "string",
+          "index": "string",
+          "kind": "string",
+          "method_name": "string",
+          "model": "string",
+          "native_query": "string",
+          "operation": "string",
+          "owner_class": "string",
+          "query": "string",
+          "query_id": "string",
+          "query_name": "string",
+          "repository": "string",
+          "result_type": "string",
+          "table": "string"
+        },
+        "DatabaseTable": {
+          "class_name": "string",
+          "dialect": "string",
+          "framework": "string",
+          "keyspace": "string",
+          "kind": "string",
+          "name": "string",
+          "table": "string"
+        },
+        "EarModule": {
+          "archive": "string",
+          "context_root": "string",
+          "framework": "string",
+          "module_type": "string"
+        },
+        "EjbAsync": {
+          "framework": "string",
+          "level": "string",
+          "method_name": "string",
+          "owner_class": "string"
+        },
+        "EjbInterface": {
+          "framework": "string",
+          "name": "string",
+          "scope": "string"
+        },
+        "EjbLock": {
+          "args_text": "string",
+          "framework": "string",
+          "method_name": "string",
+          "owner_class": "string",
+          "type": "string"
+        },
+        "Endpoint": {
+          "_path_raw": "string",
+          "framework": "string",
+          "handler": "string",
+          "http_method": "string",
+          "operation": "string",
+          "path": "string",
+          "protocol": "string",
+          "raw_method_args": "string",
+          "router": "string",
+          "soap_operation": "string"
+        },
+        "EndpointParam": {
+          "framework": "string",
+          "kind": "string",
+          "name": "string",
+          "owner_class": "string",
+          "owner_method": "string",
+          "parameter_name": "string",
+          "type": "string"
+        },
+        "EndpointParamDefault": {
+          "framework": "string",
+          "owner_class": "string",
+          "owner_method": "string",
+          "parameter_name": "string",
+          "value": "string"
+        },
+        "EndpointReference": {
+          "args_text": "string",
+          "field_name": "string",
+          "framework": "string",
+          "kind": "string",
+          "target_class": "string",
+          "uri": "string"
+        },
+        "Entity": {
+          "base_class": "string",
+          "collection": "string",
+          "dialect": "string",
+          "framework": "string",
+          "kind": "string",
+          "name": "string",
+          "table": "string"
+        },
+        "EntityBehavior": {
+          "framework": "string",
+          "kind": "string",
+          "owner_class": "string"
+        },
+        "EntityCache": {
+          "args_text": "string",
+          "framework": "string",
+          "owner_class": "string",
+          "region": "string",
+          "strategy": "string"
+        },
+        "EntityConverter": {
+          "applies_to_field": "string",
+          "args_text": "string",
+          "converter_class": "string",
+          "framework": "string",
+          "owner_class": "string"
+        },
+        "EntityField": {
+          "args_text": "string",
+          "field_name": "string",
+          "framework": "string",
+          "kind": "string",
+          "owner_class": "string",
+          "target_type": "string",
+          "value": "string"
+        },
+        "EntityFilter": {
+          "args_text": "string",
+          "clause": "string",
+          "condition": "string",
+          "field_name": "string",
+          "filter_name": "string",
+          "framework": "string",
+          "kind": "string",
+          "name": "string",
+          "owner_class": "string"
+        },
+        "EntityFilterDef": {
+          "filter_name": "string",
           "framework": "string"
+        },
+        "EntityGraph": {
+          "args_text": "string",
+          "attribute_paths": "string",
+          "class_name": "string",
+          "framework": "string",
+          "graph_name": "string",
+          "method_name": "string"
+        },
+        "EntityInheritance": {
+          "args_text": "string",
+          "discriminator_column": "string",
+          "discriminator_value": "string",
+          "framework": "string",
+          "owner_class": "string",
+          "strategy": "string"
+        },
+        "EntityJoin": {
+          "column": "string",
+          "field_name": "string",
+          "framework": "string",
+          "kind": "string",
+          "owner_class": "string",
+          "table": "string",
+          "target_type": "string"
+        },
+        "EntityOnDelete": {
+          "action": "string",
+          "args_text": "string",
+          "field_name": "string",
+          "framework": "string",
+          "owner_class": "string"
+        },
+        "EntityRelation": {
+          "annotation_text": "string",
+          "field_name": "string",
+          "framework": "string",
+          "kind": "string",
+          "owner_class": "string",
+          "target_type": "string"
+        },
+        "EntitySearchIndex": {
+          "args_text": "string",
+          "class_name": "string",
+          "field_name": "string",
+          "framework": "string",
+          "index_name": "string",
+          "kind": "string"
+        },
+        "ErrorPage": {
+          "error_code": "string",
+          "exception_type": "string",
+          "framework": "string",
+          "location": "string"
+        },
+        "EventConsumer": {
+          "bus": "string",
+          "delivery_edge": "string",
+          "event_type": "string",
+          "framework": "string",
+          "handler": "string",
+          "kind": "string",
+          "param_name": "string"
+        },
+        "EventFire": {
+          "bus": "string",
+          "framework": "string",
+          "payload": "string",
+          "payload_class": "string",
+          "payload_text": "string"
+        },
+        "EventHandler": {
+          "annotation": "string",
+          "bus": "string",
+          "class_name": "string",
+          "event_type": "string",
+          "framework": "string",
+          "handler": "string",
+          "method_name": "string"
+        },
+        "EventProducer": {
+          "bus": "string",
+          "delivery_edge": "string",
+          "event_type": "string",
+          "field_name": "string",
+          "framework": "string",
+          "owner_class": "string"
+        },
+        "Filter": {
+          "class_name": "string",
+          "framework": "string",
+          "kind": "string",
+          "name": "string",
+          "url_pattern": "string"
+        },
+        "HealthCheck": {
+          "framework": "string",
+          "kind": "string",
+          "name": "string"
+        },
+        "HttpCall": {
+          "feign_args": "string",
+          "framework": "string",
+          "gql_body": "string",
+          "host_var": "string",
+          "http_method": "string",
+          "path": "string",
+          "protocol": "string",
+          "url": "string"
+        },
+        "Injection": {
+          "framework": "string",
+          "injected_name": "string",
+          "injected_type": "string",
+          "kind": "string",
+          "target_class": "string",
+          "unit_name": "string"
+        },
+        "JsfNavigation": {
+          "framework": "string",
+          "from_view_id": "string",
+          "to_view_id": "string"
+        },
+        "JsfPage": {
+          "framework": "string",
+          "name": "string"
+        },
+        "KafkaConsumer": {
+          "bus": "string",
+          "message_role": "string",
+          "topic": "string",
+          "topics": "list"
+        },
+        "KafkaProducer": {
+          "bus": "string",
+          "message_role": "string",
+          "topic": "string"
+        },
+        "LifecycleHook": {
+          "framework": "string",
+          "kind": "string",
+          "method_name": "string",
+          "owner_class": "string"
+        },
+        "Listener": {
+          "framework": "string",
+          "name": "string"
+        },
+        "ManagedComponent": {
+          "framework": "string",
+          "kind": "string",
+          "name": "string"
+        },
+        "MessageConsumer": {
+          "activation_config_text": "string",
+          "aggregate_const": "string",
+          "aggregate_type": "string",
+          "args_text": "string",
+          "bus": "string",
+          "channel": "string",
+          "channel_const": "string",
+          "destination": "string",
+          "destination_const": "string",
+          "field_name": "string",
+          "framework": "string",
+          "handler": "string",
+          "kind": "string",
+          "listener_class": "string",
+          "message_role": "string",
+          "method_name": "string",
+          "namespace": "string",
+          "operation": "string",
+          "owner_class": "string",
+          "queue": "string",
+          "queue_const": "string",
+          "queue_url": "string",
+          "stream": "string",
+          "subscription": "string",
+          "topic": "string",
+          "topic_const": "string",
+          "topic_text": "string",
+          "topics": "list",
+          "transport": "string"
+        },
+        "MessageDestination": {
+          "bus": "string",
+          "exchange": "string",
+          "framework": "string",
+          "kind": "string",
+          "name": "string",
+          "queue": "string",
+          "topic": "string"
+        },
+        "MessageProducer": {
+          "aggregate_type": "string",
+          "args_text": "string",
+          "bus": "string",
+          "channel": "string",
+          "channel_const": "string",
+          "command_type": "string",
+          "delivery_edge": "string",
+          "destination": "string",
+          "destination_const": "string",
+          "event_type": "string",
+          "exchange": "string",
+          "exchange_const": "string",
+          "field_name": "string",
+          "framework": "string",
+          "handler": "string",
+          "job_type": "string",
+          "message_role": "string",
+          "method_name": "string",
+          "operation": "string",
+          "owner_class": "string",
+          "publisher_class": "string",
+          "queue": "string",
+          "queue_url": "string",
+          "queue_var": "string",
+          "routing_key": "string",
+          "stream": "string",
+          "topic": "string",
+          "topic_arn": "string",
+          "topic_const": "string",
+          "topic_text": "string",
+          "transport": "string"
+        },
+        "PersistenceProperty": {
+          "framework": "string",
+          "name": "string",
+          "persistence_unit_name": "string",
+          "value": "string"
+        },
+        "PersistenceUnit": {
+          "data_source": "string",
+          "framework": "string",
+          "name": "string",
+          "provider": "string",
+          "transaction_type": "string"
+        },
+        "PersistenceUnitClass": {
+          "class_name": "string",
+          "framework": "string",
+          "persistence_unit_name": "string"
+        },
+        "PersistenceUnitOption": {
+          "framework": "string",
+          "kind": "string",
+          "persistence_unit_name": "string",
+          "value": "string"
+        },
+        "ProfileBinding": {
+          "args_text": "string",
+          "framework": "string",
+          "profile": "string",
+          "target_class": "string"
+        },
+        "ProfileConfig": {
+          "format": "string",
+          "framework": "string",
+          "path": "string",
+          "profile": "string",
+          "stem": "string"
+        },
+        "ScheduledJob": {
+          "args_text": "string",
+          "class_name": "string",
+          "cron": "string",
+          "day_of_month": "string",
+          "day_of_week": "string",
+          "fixed_delay": "string",
+          "fixed_rate": "string",
+          "framework": "string",
+          "hour": "string",
+          "initial_delay": "string",
+          "kind": "string",
+          "method_name": "string",
+          "minute": "string",
+          "month": "string",
+          "name": "string",
+          "owner_class": "string",
+          "second": "string",
+          "year": "string",
+          "zone": "string"
+        },
+        "SecurityConfig": {
+          "class_name": "string",
+          "framework": "string",
+          "kind": "string",
+          "method_name": "string"
+        },
+        "SecurityConstraint": {
+          "framework": "string",
+          "http_method": "string",
+          "role_name": "string",
+          "url_pattern": "string",
+          "web_resource_name": "string"
+        },
+        "SecurityRule": {
+          "args_text": "string",
+          "class_name": "string",
+          "expression": "string",
+          "framework": "string",
+          "kind": "string",
+          "level": "string",
+          "method_name": "string",
+          "owner_class": "string",
+          "roles": "string"
+        },
+        "Service": {
+          "base_path": "string",
+          "client_name": "string",
+          "endpoint_interface": "string",
+          "file": "string",
+          "framework": "string",
+          "kind": "string",
+          "name": "string",
+          "port_name": "string",
+          "raw_args": "string",
+          "service_name": "string",
+          "wsdl_location": "string"
+        },
+        "Servlet": {
+          "class_name": "string",
+          "framework": "string",
+          "name": "string"
+        },
+        "SessionConfig": {
+          "framework": "string",
+          "timeout": "string"
+        },
+        "StoredProcedure": {
+          "framework": "string",
+          "name": "string"
+        },
+        "StoredProcedureCall": {
+          "args": "string",
+          "args_text": "string",
+          "delivery_edge": "string",
+          "framework": "string",
+          "kind": "string",
+          "proc_name": "string",
+          "query_name": "string",
+          "target_label": "string"
         },
         "StreamBinding": {
           "binding_name": "string",
@@ -501,374 +708,311 @@
           "framework": "string",
           "group": "string"
         },
-        "ConfigProperty": {
-          "key": "string",
-          "value": "string"
-        },
-        "EntityGraph": {
-          "class_name": "string",
-          "method_name": "string",
+        "StreamFunction": {
+          "bean_name": "string",
           "framework": "string",
+          "kind": "string"
+        },
+        "Transaction": {
           "args_text": "string",
-          "attribute_paths": "string",
-          "graph_name": "string"
-        },
-        "ProfileBinding": {
-          "profile": "string",
-          "target_class": "string",
-          "framework": "string",
-          "args_text": "string"
-        },
-        "ProfileConfig": {
-          "profile": "string",
-          "path": "string",
-          "framework": "string",
-          "format": "string",
-          "stem": "string"
-        },
-        "SecurityConfig": {
+          "attribute": "string",
           "class_name": "string",
-          "kind": "string",
+          "framework": "string",
+          "isolation": "string",
+          "level": "string",
+          "management_type": "string",
+          "method_name": "string",
+          "owner_class": "string",
+          "propagation": "string",
+          "read_only": "string",
+          "rollback_for": "string",
+          "timeout": "string"
+        },
+        "WebSocketHandler": {
+          "class_name": "string",
+          "event": "string",
           "framework": "string",
           "method_name": "string"
         },
-        "Action": {
+        "WelcomeFile": {
+          "framework": "string",
+          "path": "string"
+        },
+        "WsdlDocument": {
+          "framework": "string",
           "name": "string",
-          "class_name": "string",
-          "method": "string"
+          "service_name": "string"
+        },
+        "WsdlPort": {
+          "binding": "string",
+          "framework": "string",
+          "name": "string"
         }
-      },
-      "edge_types": {}
-    }
+      }
+    },
+    "services": [
+      "inspections-api",
+      "permits-api",
+      "web"
+    ],
+    "unresolved": [],
+    "version": 2,
+    "workspace": "<workspace>"
   },
   "nodes": [
     {
+      "bus": "kafka",
+      "confidence": "high",
+      "file": "src/main/java/example/InspectionListener.java",
       "id": "inspections-api:src/main/java/example/InspectionListener.java:9:1fef79657e",
       "label": "KafkaConsumer",
-      "service": "inspections-api",
-      "file": "src/main/java/example/InspectionListener.java",
       "line": 9,
-      "source": "lens:spring-kafka",
-      "confidence": "high",
       "message_role": "consumer",
-      "bus": "kafka",
+      "service": "inspections-api",
+      "source": "lens:spring-kafka",
       "topic": "permit.approved",
       "topics": [
         "permit.approved"
       ]
     },
     {
+      "bus": "kafka",
+      "confidence": "high",
+      "delivery_edge": "KAFKA_DELIVERS",
+      "file": "src/main/java/example/InspectionListener.java",
       "id": "inspections-api:src/main/java/example/InspectionListener.java:11:26f1b70c7e",
       "label": "KafkaProducer",
-      "service": "inspections-api",
-      "file": "src/main/java/example/InspectionListener.java",
       "line": 11,
-      "source": "lens:spring-kafka",
-      "confidence": "high",
       "message_role": "producer",
-      "bus": "kafka",
-      "topic": "inspection.completed",
-      "delivery_edge": "KAFKA_DELIVERS"
+      "service": "inspections-api",
+      "source": "lens:spring-kafka",
+      "topic": "inspection.completed"
     },
     {
+      "bus": "kafka",
+      "confidence": "high",
+      "delivery_edge": "KAFKA_DELIVERS",
+      "file": "src/main/java/example/InspectionListener.java",
       "id": "inspections-api:src/main/java/example/InspectionListener.java:12:e9518baa4d",
       "label": "KafkaProducer",
-      "service": "inspections-api",
-      "file": "src/main/java/example/InspectionListener.java",
       "line": 12,
-      "source": "lens:spring-kafka",
-      "confidence": "high",
       "message_role": "producer",
-      "bus": "kafka",
-      "topic": "inspection.cancelled",
-      "delivery_edge": "KAFKA_DELIVERS"
+      "service": "inspections-api",
+      "source": "lens:spring-kafka",
+      "topic": "inspection.cancelled"
     },
     {
-      "id": "inspections-api:src/main/resources/application.properties:1:48309f5de6",
-      "label": "ConfigProperty",
-      "service": "inspections-api",
-      "file": "src/main/resources/application.properties",
-      "line": 1,
-      "source": "lens:spring-config",
       "confidence": "high",
+      "file": "src/main/resources/application.properties",
+      "id": "inspections-api:src/main/resources/application.properties:1:48309f5de6",
       "key": "spring.application.name",
+      "label": "ConfigProperty",
+      "line": 1,
+      "service": "inspections-api",
+      "source": "lens:spring-config",
       "value": "inspections-api"
     },
     {
+      "bus": "kafka",
+      "confidence": "high",
+      "file": "src/main/java/example/PermitController.java",
       "id": "permits-api:src/main/java/example/PermitController.java:27:97f29bab1a",
       "label": "KafkaConsumer",
-      "service": "permits-api",
-      "file": "src/main/java/example/PermitController.java",
       "line": 27,
-      "source": "lens:spring-kafka",
-      "confidence": "high",
       "message_role": "consumer",
-      "bus": "kafka",
+      "service": "permits-api",
+      "source": "lens:spring-kafka",
       "topic": "inspection.completed",
       "topics": [
         "inspection.completed"
       ]
     },
     {
+      "bus": "kafka",
+      "confidence": "high",
+      "file": "src/main/java/example/PermitController.java",
       "id": "permits-api:src/main/java/example/PermitController.java:30:d3f5c1935c",
       "label": "KafkaConsumer",
-      "service": "permits-api",
-      "file": "src/main/java/example/PermitController.java",
       "line": 30,
-      "source": "lens:spring-kafka",
-      "confidence": "high",
       "message_role": "consumer",
-      "bus": "kafka",
+      "service": "permits-api",
+      "source": "lens:spring-kafka",
       "topic": "inspection.cancelled",
       "topics": [
         "inspection.cancelled"
       ]
     },
     {
+      "bus": "kafka",
+      "confidence": "high",
+      "delivery_edge": "KAFKA_DELIVERS",
+      "file": "src/main/java/example/PermitController.java",
       "id": "permits-api:src/main/java/example/PermitController.java:13:7697edee86",
       "label": "KafkaProducer",
-      "service": "permits-api",
-      "file": "src/main/java/example/PermitController.java",
       "line": 13,
-      "source": "lens:spring-kafka",
-      "confidence": "high",
       "message_role": "producer",
-      "bus": "kafka",
-      "topic": "permit.approved",
-      "delivery_edge": "KAFKA_DELIVERS"
+      "service": "permits-api",
+      "source": "lens:spring-kafka",
+      "topic": "permit.approved"
     },
     {
+      "confidence": "high",
+      "file": "src/main/java/example/PermitController.java",
+      "handler": "PermitController.motorVehicle",
+      "http_method": "POST",
       "id": "permits-api:src/main/java/example/PermitController.java:12:2ecd929fd2",
       "label": "Endpoint",
-      "service": "permits-api",
-      "file": "src/main/java/example/PermitController.java",
       "line": 12,
-      "source": "lens:spring-rest-endpoint",
-      "confidence": "high",
-      "http_method": "POST",
       "path": "/api/permits/motor-vehicle",
-      "handler": "PermitController.motorVehicle"
+      "service": "permits-api",
+      "source": "lens:spring-rest-endpoint"
     },
     {
+      "confidence": "high",
+      "file": "src/main/java/example/PermitController.java",
+      "handler": "PermitController.residential",
+      "http_method": "POST",
       "id": "permits-api:src/main/java/example/PermitController.java:15:8e5ed929e4",
       "label": "Endpoint",
-      "service": "permits-api",
-      "file": "src/main/java/example/PermitController.java",
       "line": 15,
-      "source": "lens:spring-rest-endpoint",
-      "confidence": "high",
-      "http_method": "POST",
       "path": "/api/permits/residential",
-      "handler": "PermitController.residential"
+      "service": "permits-api",
+      "source": "lens:spring-rest-endpoint"
     },
     {
+      "confidence": "high",
+      "file": "src/main/java/example/PermitController.java",
+      "handler": "PermitController.commercial",
+      "http_method": "POST",
       "id": "permits-api:src/main/java/example/PermitController.java:18:f4b62f77e6",
       "label": "Endpoint",
-      "service": "permits-api",
-      "file": "src/main/java/example/PermitController.java",
       "line": 18,
-      "source": "lens:spring-rest-endpoint",
-      "confidence": "high",
-      "http_method": "POST",
       "path": "/api/permits/commercial",
-      "handler": "PermitController.commercial"
+      "service": "permits-api",
+      "source": "lens:spring-rest-endpoint"
     },
     {
+      "confidence": "high",
+      "file": "src/main/java/example/PermitController.java",
+      "handler": "PermitController.renewal",
+      "http_method": "POST",
       "id": "permits-api:src/main/java/example/PermitController.java:21:99d2ebb560",
       "label": "Endpoint",
-      "service": "permits-api",
-      "file": "src/main/java/example/PermitController.java",
       "line": 21,
-      "source": "lens:spring-rest-endpoint",
-      "confidence": "high",
-      "http_method": "POST",
       "path": "/api/permits/renewal",
-      "handler": "PermitController.renewal"
+      "service": "permits-api",
+      "source": "lens:spring-rest-endpoint"
     },
     {
+      "confidence": "high",
+      "file": "src/main/java/example/PermitController.java",
+      "handler": "PermitController.status",
+      "http_method": "POST",
       "id": "permits-api:src/main/java/example/PermitController.java:24:0a18cb0d77",
       "label": "Endpoint",
-      "service": "permits-api",
-      "file": "src/main/java/example/PermitController.java",
       "line": 24,
-      "source": "lens:spring-rest-endpoint",
-      "confidence": "high",
-      "http_method": "POST",
       "path": "/api/permits/status",
-      "handler": "PermitController.status"
+      "service": "permits-api",
+      "source": "lens:spring-rest-endpoint"
     },
     {
-      "id": "permits-api:src/main/java/example/PermitController.java:8:e1f7385296",
-      "label": "Service",
-      "service": "permits-api",
+      "confidence": "high",
       "file": "src/main/java/example/PermitController.java",
-      "line": 8,
-      "source": "lens:spring-rest-endpoint",
-      "confidence": "high",
-      "kind": "rest-controller",
       "framework": "spring",
-      "name": ""
+      "id": "permits-api:src/main/java/example/PermitController.java:8:e1f7385296",
+      "kind": "rest-controller",
+      "label": "Service",
+      "line": 8,
+      "name": "",
+      "service": "permits-api",
+      "source": "lens:spring-rest-endpoint"
     },
     {
-      "id": "permits-api:src/main/resources/application.properties:1:9d5872922c",
-      "label": "ConfigProperty",
-      "service": "permits-api",
-      "file": "src/main/resources/application.properties",
-      "line": 1,
-      "source": "lens:spring-config",
       "confidence": "high",
+      "file": "src/main/resources/application.properties",
+      "id": "permits-api:src/main/resources/application.properties:1:9d5872922c",
       "key": "spring.application.name",
+      "label": "ConfigProperty",
+      "line": 1,
+      "service": "permits-api",
+      "source": "lens:spring-config",
       "value": "permits-api"
     },
     {
+      "confidence": "medium",
+      "file": "src/app/PermitButton.tsx",
+      "framework": "js-fetch",
+      "host_var": "PERMITS_API",
+      "http_method": "POST",
       "id": "web:src/app/PermitButton.tsx:4:796d579940",
       "label": "HttpCall",
-      "service": "web",
-      "file": "src/app/PermitButton.tsx",
       "line": 4,
-      "source": "lens:js-http-call",
-      "confidence": "medium",
-      "host_var": "PERMITS_API",
       "path": "/api/permits/motor-vehicle",
-      "http_method": "POST",
-      "framework": "js-fetch"
+      "service": "web",
+      "source": "lens:js-http-call"
     },
     {
+      "confidence": "medium",
+      "file": "src/app/PermitButton.tsx",
+      "framework": "js-fetch",
+      "host_var": "PERMITS_API",
+      "http_method": "POST",
       "id": "web:src/app/PermitButton.tsx:5:b474d0731e",
       "label": "HttpCall",
-      "service": "web",
-      "file": "src/app/PermitButton.tsx",
       "line": 5,
-      "source": "lens:js-http-call",
-      "confidence": "medium",
-      "host_var": "PERMITS_API",
       "path": "/api/permits/residential",
-      "http_method": "POST",
-      "framework": "js-fetch"
+      "service": "web",
+      "source": "lens:js-http-call"
     },
     {
+      "confidence": "medium",
+      "file": "src/app/PermitButton.tsx",
+      "framework": "js-fetch",
+      "host_var": "PERMITS_API",
+      "http_method": "POST",
       "id": "web:src/app/PermitButton.tsx:6:5a6dbed166",
       "label": "HttpCall",
-      "service": "web",
-      "file": "src/app/PermitButton.tsx",
       "line": 6,
-      "source": "lens:js-http-call",
-      "confidence": "medium",
-      "host_var": "PERMITS_API",
       "path": "/api/permits/commercial",
-      "http_method": "POST",
-      "framework": "js-fetch"
+      "service": "web",
+      "source": "lens:js-http-call"
     },
     {
+      "confidence": "medium",
+      "file": "src/app/PermitButton.tsx",
+      "framework": "js-fetch",
+      "host_var": "PERMITS_API",
+      "http_method": "POST",
       "id": "web:src/app/PermitButton.tsx:7:bf0bc62a87",
       "label": "HttpCall",
-      "service": "web",
-      "file": "src/app/PermitButton.tsx",
       "line": 7,
-      "source": "lens:js-http-call",
-      "confidence": "medium",
-      "host_var": "PERMITS_API",
       "path": "/api/permits/renewal",
-      "http_method": "POST",
-      "framework": "js-fetch"
+      "service": "web",
+      "source": "lens:js-http-call"
     },
     {
+      "confidence": "medium",
+      "file": "src/app/PermitButton.tsx",
+      "framework": "js-fetch",
+      "host_var": "PERMITS_API",
+      "http_method": "GET",
       "id": "web:src/app/PermitButton.tsx:8:bd88536d5f",
       "label": "HttpCall",
-      "service": "web",
-      "file": "src/app/PermitButton.tsx",
       "line": 8,
-      "source": "lens:js-http-call",
-      "confidence": "medium",
-      "host_var": "PERMITS_API",
       "path": "/api/permits/status",
-      "http_method": "GET",
-      "framework": "js-fetch"
-    },
-    {
-      "id": "web:src/app/PermitButton.tsx:3:0d44577d6d",
-      "label": "Component",
       "service": "web",
-      "file": "src/app/PermitButton.tsx",
-      "line": 3,
-      "source": "lens:react-component",
+      "source": "lens:js-http-call"
+    },
+    {
       "confidence": "medium",
+      "file": "src/app/PermitButton.tsx",
+      "id": "web:src/app/PermitButton.tsx:3:0d44577d6d",
+      "kind": "react-component",
+      "label": "Component",
+      "line": 3,
       "name": "PermitButton",
-      "kind": "react-component"
-    }
-  ],
-  "edges": [
-    {
-      "type": "KAFKA_DELIVERS",
-      "from": "inspections-api:src/main/java/example/InspectionListener.java:11:26f1b70c7e",
-      "to": "permits-api:src/main/java/example/PermitController.java:27:97f29bab1a",
-      "from_service": "inspections-api",
-      "to_service": "permits-api",
-      "cross_repo": true,
-      "confidence": "high"
-    },
-    {
-      "type": "KAFKA_DELIVERS",
-      "from": "inspections-api:src/main/java/example/InspectionListener.java:12:e9518baa4d",
-      "to": "permits-api:src/main/java/example/PermitController.java:30:d3f5c1935c",
-      "from_service": "inspections-api",
-      "to_service": "permits-api",
-      "cross_repo": true,
-      "confidence": "high"
-    },
-    {
-      "type": "KAFKA_DELIVERS",
-      "from": "permits-api:src/main/java/example/PermitController.java:13:7697edee86",
-      "to": "inspections-api:src/main/java/example/InspectionListener.java:9:1fef79657e",
-      "from_service": "permits-api",
-      "to_service": "inspections-api",
-      "cross_repo": true,
-      "confidence": "high"
-    },
-    {
-      "type": "CROSSES_TIER",
-      "from": "web:src/app/PermitButton.tsx:4:796d579940",
-      "to": "permits-api:src/main/java/example/PermitController.java:12:2ecd929fd2",
-      "from_service": "web",
-      "to_service": "permits-api",
-      "cross_repo": true,
-      "confidence": "high"
-    },
-    {
-      "type": "CROSSES_TIER",
-      "from": "web:src/app/PermitButton.tsx:5:b474d0731e",
-      "to": "permits-api:src/main/java/example/PermitController.java:15:8e5ed929e4",
-      "from_service": "web",
-      "to_service": "permits-api",
-      "cross_repo": true,
-      "confidence": "high"
-    },
-    {
-      "type": "CROSSES_TIER",
-      "from": "web:src/app/PermitButton.tsx:6:5a6dbed166",
-      "to": "permits-api:src/main/java/example/PermitController.java:18:f4b62f77e6",
-      "from_service": "web",
-      "to_service": "permits-api",
-      "cross_repo": true,
-      "confidence": "high"
-    },
-    {
-      "type": "CROSSES_TIER",
-      "from": "web:src/app/PermitButton.tsx:7:bf0bc62a87",
-      "to": "permits-api:src/main/java/example/PermitController.java:21:99d2ebb560",
-      "from_service": "web",
-      "to_service": "permits-api",
-      "cross_repo": true,
-      "confidence": "high"
-    },
-    {
-      "type": "CROSSES_TIER",
-      "from": "web:src/app/PermitButton.tsx:8:bd88536d5f",
-      "to": "permits-api:src/main/java/example/PermitController.java:24:0a18cb0d77",
-      "from_service": "web",
-      "to_service": "permits-api",
-      "cross_repo": true,
-      "confidence": "high"
+      "service": "web",
+      "source": "lens:react-component"
     }
   ]
 }

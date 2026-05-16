@@ -1,0 +1,178 @@
+[
+  {
+    "name": "azure-servicebus-sender-builder-queue",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\.queueName\\s*\\(\\s*\"(?P<queue>[^\"]+)\"\\s*\\)",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageDestination",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "bus": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{queue}}",
+        "kind": "queue",
+        "bus": "azure-servicebus",
+        "framework": "azure-servicebus-java"
+      },
+      "source": "lens:azure-servicebus-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "azure-servicebus-sender-builder-topic",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\.topicName\\s*\\(\\s*\"(?P<topic>[^\"]+)\"\\s*\\)",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageDestination",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "bus": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{topic}}",
+        "kind": "topic",
+        "bus": "azure-servicebus",
+        "framework": "azure-servicebus-java"
+      },
+      "source": "lens:azure-servicebus-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "azure-servicebus-send-message",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        "ServiceBusSenderClient",
+        "ServiceBusSenderAsyncClient"
+      ],
+      "extract": "\\.(?:queueName|topicName)\\s*\\(\\s*\"(?P<destination>[^\"]+)\""
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "azure-servicebus",
+        "topic": "{{destination}}",
+        "framework": "azure-servicebus-java",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:azure-servicebus-java",
+      "confidence": "low"
+    }
+  },
+  {
+    "name": "azure-servicebus-subscription",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "\\.subscriptionName\\s*\\(\\s*\"(?P<subscription>[^\"]+)\"\\s*\\)",
+          "per_line": false
+        }
+      ]
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "subscription": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "azure-servicebus",
+        "topic": "{{subscription}}",
+        "topics": [
+          "{{subscription}}"
+        ],
+        "subscription": "{{subscription}}",
+        "framework": "azure-servicebus-java"
+      },
+      "source": "lens:azure-servicebus-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "azure-servicebus-processor",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        "ServiceBusProcessorClient",
+        "ServiceBusReceiverClient",
+        "ServiceBusReceiverAsyncClient"
+      ],
+      "extract": "\\.(?:queueName|topicName)\\s*\\(\\s*\"(?P<destination>[^\"]+)\""
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "azure-servicebus",
+        "topic": "{{destination}}",
+        "topics": [
+          "{{destination}}"
+        ],
+        "framework": "azure-servicebus-java"
+      },
+      "source": "lens:azure-servicebus-java",
+      "confidence": "low"
+    }
+  }
+]

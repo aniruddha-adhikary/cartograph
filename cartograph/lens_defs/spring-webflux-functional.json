@@ -1,0 +1,66 @@
+[
+  {
+    "name": "spring-webflux-functional-route",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_invocation name: (identifier) @http_method (#match? @http_method \"^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)$\") arguments: (argument_list . (string_literal (string_fragment) @path) . (_) @handler)) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "{{http_method}}",
+        "path": "{{path}}",
+        "handler": "{{handler}}",
+        "framework": "spring-webflux-functional"
+      },
+      "source": "lens:spring-webflux-functional",
+      "confidence": "low"
+    }
+  },
+  {
+    "name": "spring-webflux-functional-route-predicate",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "RequestPredicates\\.(?P<http_method>GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\\s*\\(\\s*\"(?P<path>[^\"]+)\"",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "{{http_method}}",
+        "path": "{{path}}",
+        "framework": "spring-webflux-functional"
+      },
+      "source": "lens:spring-webflux-functional",
+      "confidence": "medium"
+    }
+  }
+]

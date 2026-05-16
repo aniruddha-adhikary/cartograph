@@ -1,0 +1,181 @@
+[
+  {
+    "name": "bullmq-queue",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        "new Queue("
+      ],
+      "extract": "new\\s+Queue\\s*\\(\\s*['\"`](?P<queue>[^'\"`]+)['\"`]"
+    },
+    "emit": {
+      "label": "MessageDestination",
+      "schema": {
+        "kind": "string",
+        "bus": "string",
+        "queue": "string",
+        "name": "string",
+        "framework": "string"
+      },
+      "values": {
+        "kind": "queue",
+        "bus": "bullmq",
+        "queue": "{{queue}}",
+        "name": "{{queue}}",
+        "framework": "bullmq"
+      },
+      "source": "lens:bullmq",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "bullmq-queue-add",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        ".add("
+      ],
+      "extract": "\\.add\\s*\\(\\s*['\"`](?P<job_type>[^'\"`]+)['\"`]"
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "job_type": "string",
+        "topic": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "bullmq",
+        "job_type": "{{job_type}}",
+        "topic": "{{job_type}}",
+        "framework": "bullmq",
+        "delivery_edge": "DISPATCHES_TASK"
+      },
+      "source": "lens:bullmq",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "bullmq-worker",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        "new Worker("
+      ],
+      "extract": "new\\s+Worker\\s*\\(\\s*['\"`](?P<queue>[^'\"`]+)['\"`]"
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "queue": "string",
+        "topic": "string",
+        "topics": "list",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "bullmq",
+        "queue": "{{queue}}",
+        "topic": "{{queue}}",
+        "topics": [
+          "{{queue}}"
+        ],
+        "framework": "bullmq"
+      },
+      "source": "lens:bullmq",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "agenda-define",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        "agenda.define("
+      ],
+      "extract": "agenda\\.define\\s*\\(\\s*['\"`](?P<job_name>[^'\"`]+)['\"`]"
+    },
+    "emit": {
+      "label": "ScheduledJob",
+      "schema": {
+        "name": "string",
+        "framework": "string",
+        "kind": "string"
+      },
+      "values": {
+        "name": "{{job_name}}",
+        "framework": "agenda",
+        "kind": "agenda-job"
+      },
+      "source": "lens:bullmq",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "node-cron-schedule",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.js",
+        "*.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "strategy": "token-line",
+      "tokens": [
+        "cron.schedule(",
+        "nodeCron.schedule("
+      ],
+      "extract": "\\.schedule\\s*\\(\\s*['\"`](?P<cron>[^'\"`]+)['\"`]"
+    },
+    "emit": {
+      "label": "ScheduledJob",
+      "schema": {
+        "cron": "string",
+        "framework": "string",
+        "kind": "string"
+      },
+      "values": {
+        "cron": "{{cron}}",
+        "framework": "node-cron",
+        "kind": "cron"
+      },
+      "source": "lens:bullmq",
+      "confidence": "high"
+    }
+  }
+]
