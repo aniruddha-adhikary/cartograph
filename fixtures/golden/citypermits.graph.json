@@ -11,7 +11,7 @@
     ],
     "node_count": 20,
     "edge_count": 8,
-    "lens_count": 473,
+    "lens_count": 483,
     "schema": {
       "node_labels": {
         "MessageDestination": {
@@ -119,6 +119,7 @@
           "listener_class": "string",
           "namespace": "string",
           "queue_const": "string",
+          "delivery_edge": "string",
           "operation": "string"
         },
         "Endpoint": {

@@ -1,0 +1,152 @@
+[
+  {
+    "name": "spring-jms-listener-literal",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"JmsListener\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @dkey (#eq? @dkey \"destination\") value: (string_literal (string_fragment) @destination))))) name: (identifier) @method_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "handler": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "jms",
+        "topic": "{{destination}}",
+        "topics": ["{{destination}}"],
+        "handler": "{{method_name}}",
+        "framework": "spring-jms",
+        "delivery_edge": "JMS_DELIVERS"
+      },
+      "source": "lens:spring-jms",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-jms-listener-const",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"JmsListener\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @dkey (#eq? @dkey \"destination\") value: [(identifier) @destination_const (field_access) @destination_const])))) name: (identifier) @method_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "destination_const": "string",
+        "handler": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "jms",
+        "topic": "{{destination_const}}",
+        "topics": ["{{destination_const}}"],
+        "destination_const": "{{destination_const}}",
+        "handler": "{{method_name}}",
+        "framework": "spring-jms",
+        "delivery_edge": "JMS_DELIVERS"
+      },
+      "source": "lens:spring-jms",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "spring-jms-template-convert-and-send",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "convertAndSend",
+        "arg_index": 0,
+        "capture_as": "destination",
+        "receiver_types": ["JmsTemplate"]
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "destination_const": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "jms",
+        "topic": "{{destination|destination_const|destination_class|}}",
+        "destination_const": "{{destination_const}}",
+        "framework": "spring-jms",
+        "delivery_edge": "JMS_DELIVERS"
+      },
+      "source": "lens:spring-jms",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "spring-jms-template-send",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "send",
+        "arg_index": 0,
+        "capture_as": "destination",
+        "receiver_types": ["JmsTemplate"]
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "destination_const": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "jms",
+        "topic": "{{destination|destination_const|destination_class|}}",
+        "destination_const": "{{destination_const}}",
+        "framework": "spring-jms",
+        "delivery_edge": "JMS_DELIVERS"
+      },
+      "source": "lens:spring-jms",
+      "confidence": "medium"
+    }
+  }
+]

@@ -39,6 +39,7 @@ PREFIXES = [
     "jdbc-stored-procedure",
     "spring-data-redis",
     "spring-kafka",
+    "spring-jms",
     "axon",
     # --- Java frameworks ---
     "spring-webflux-functional",
