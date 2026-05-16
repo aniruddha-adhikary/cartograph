@@ -1,0 +1,213 @@
+[
+  {
+    "name": "jaxws-webservice-class",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers [(annotation name: (identifier) @ann (#eq? @ann \"WebService\") arguments: (annotation_argument_list) @args) (marker_annotation name: (identifier) @ann (#eq? @ann \"WebService\"))]) name: (identifier) @class_name) @anchor (interface_declaration (modifiers [(annotation name: (identifier) @ann (#eq? @ann \"WebService\") arguments: (annotation_argument_list) @args) (marker_annotation name: (identifier) @ann (#eq? @ann \"WebService\"))]) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Service",
+      "schema": {
+        "name": "string", "kind": "string", "framework": "string",
+        "endpoint_interface": "string", "service_name": "string",
+        "port_name": "string", "raw_args": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "jaxws-endpoint",
+        "framework": "jaxws",
+        "endpoint_interface": "",
+        "service_name": "",
+        "port_name": "",
+        "raw_args": "{{args|}}"
+      },
+      "source": "lens:jaxws",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "jaxws-resolve-endpoint-interface",
+    "scope": "resolve",
+    "match": {
+      "label": "Service",
+      "field": "raw_args",
+      "pattern": "endpointInterface\\s*=\\s*\"(?P<endpoint_interface>[^\"]+)\""
+    },
+    "set": {
+      "endpoint_interface": "{{endpoint_interface}}"
+    }
+  },
+  {
+    "name": "jaxws-resolve-service-name",
+    "scope": "resolve",
+    "match": {
+      "label": "Service",
+      "field": "raw_args",
+      "pattern": "serviceName\\s*=\\s*\"(?P<service_name>[^\"]+)\""
+    },
+    "set": {
+      "service_name": "{{service_name}}"
+    }
+  },
+  {
+    "name": "jaxws-resolve-port-name",
+    "scope": "resolve",
+    "match": {
+      "label": "Service",
+      "field": "raw_args",
+      "pattern": "portName\\s*=\\s*\"(?P<port_name>[^\"]+)\""
+    },
+    "set": {
+      "port_name": "{{port_name}}"
+    }
+  },
+  {
+    "name": "jaxws-webmethod",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers [(annotation name: (identifier) @cls_ann (#eq? @cls_ann \"WebService\")) (marker_annotation name: (identifier) @cls_ann (#eq? @cls_ann \"WebService\"))]) name: (identifier) @class_name body: (class_body (method_declaration (modifiers [(annotation name: (identifier) @ann (#eq? @ann \"WebMethod\") arguments: (annotation_argument_list) @method_args) (marker_annotation name: (identifier) @ann (#eq? @ann \"WebMethod\"))]) name: (identifier) @method_name) @anchor)) (interface_declaration (modifiers [(annotation name: (identifier) @cls_ann (#eq? @cls_ann \"WebService\")) (marker_annotation name: (identifier) @cls_ann (#eq? @cls_ann \"WebService\"))]) name: (identifier) @class_name body: (interface_body (method_declaration (modifiers [(annotation name: (identifier) @ann (#eq? @ann \"WebMethod\") arguments: (annotation_argument_list) @method_args) (marker_annotation name: (identifier) @ann (#eq? @ann \"WebMethod\"))]) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {"http_method": "string", "path": "string", "handler": "string", "framework": "string", "raw_method_args": "string", "soap_operation": "string"},
+      "values": {
+        "http_method": "SOAP",
+        "path": "{{method_name}}",
+        "handler": "{{class_name}}.{{method_name}}",
+        "framework": "jaxws",
+        "raw_method_args": "{{method_args|}}",
+        "soap_operation": ""
+      },
+      "source": "lens:jaxws",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "jaxws-resolve-operation-name",
+    "scope": "resolve",
+    "match": {
+      "label": "Endpoint",
+      "field": "raw_method_args",
+      "pattern": "operationName\\s*=\\s*\"(?P<op_name>[^\"]+)\""
+    },
+    "set": {
+      "soap_operation": "{{op_name}}"
+    }
+  },
+  {
+    "name": "jaxws-webserviceclient-class",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers [(annotation name: (identifier) @ann (#eq? @ann \"WebServiceClient\") arguments: (annotation_argument_list) @args) (marker_annotation name: (identifier) @ann (#eq? @ann \"WebServiceClient\"))]) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Service",
+      "schema": {
+        "name": "string", "kind": "string", "framework": "string",
+        "client_name": "string", "wsdl_location": "string", "raw_args": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "jaxws-client",
+        "framework": "jaxws",
+        "client_name": "",
+        "wsdl_location": "",
+        "raw_args": "{{args|}}"
+      },
+      "source": "lens:jaxws",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "jaxws-resolve-client-name",
+    "scope": "resolve",
+    "match": {
+      "label": "Service",
+      "field": "raw_args",
+      "pattern": "name\\s*=\\s*\"(?P<client_name>[^\"]+)\""
+    },
+    "set": {
+      "client_name": "{{client_name}}"
+    }
+  },
+  {
+    "name": "jaxws-resolve-wsdl-location",
+    "scope": "resolve",
+    "match": {
+      "label": "Service",
+      "field": "raw_args",
+      "pattern": "wsdlLocation\\s*=\\s*\"(?P<wsdl_location>[^\"]+)\""
+    },
+    "set": {
+      "wsdl_location": "{{wsdl_location}}"
+    }
+  },
+  {
+    "name": "jaxws-wsdl-service",
+    "scope": "source",
+    "match": {
+      "files": ["*.wsdl"],
+      "strategy": "xml-query",
+      "select": ".//service",
+      "captures": {
+        "service_name": "@name"
+      }
+    },
+    "emit": {
+      "label": "WsdlDocument",
+      "schema": {"name": "string", "service_name": "string", "framework": "string"},
+      "values": {
+        "name": "{{service_name}}",
+        "service_name": "{{service_name}}",
+        "framework": "jaxws"
+      },
+      "source": "lens:jaxws",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "jaxws-wsdl-port",
+    "scope": "source",
+    "match": {
+      "files": ["*.wsdl"],
+      "strategy": "xml-query",
+      "select": ".//service/port",
+      "captures": {
+        "port_name": "@name",
+        "binding": "@binding"
+      }
+    },
+    "emit": {
+      "label": "WsdlPort",
+      "schema": {"name": "string", "binding": "string", "framework": "string"},
+      "values": {
+        "name": "{{port_name}}",
+        "binding": "{{binding}}",
+        "framework": "jaxws"
+      },
+      "source": "lens:jaxws",
+      "confidence": "high"
+    }
+  }
+]

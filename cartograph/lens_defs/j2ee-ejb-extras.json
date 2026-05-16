@@ -1,0 +1,474 @@
+[
+  {
+    "name": "j2ee-ejb-tx-attribute-method",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"TransactionAttribute\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "Transaction",
+      "schema": {"level": "string", "attribute": "string", "management_type": "string", "owner_class": "string", "method_name": "string", "args_text": "string", "framework": "string"},
+      "values": {
+        "level": "method",
+        "attribute": "",
+        "management_type": "",
+        "owner_class": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "args_text": "{{args_text|}}",
+        "framework": "j2ee-ejb-tx"
+      },
+      "source": "lens:j2ee-ejb-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-ejb-tx-attribute-class",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"TransactionAttribute\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Transaction",
+      "schema": {"level": "string", "attribute": "string", "management_type": "string", "owner_class": "string", "method_name": "string", "args_text": "string", "framework": "string"},
+      "values": {
+        "level": "class",
+        "attribute": "",
+        "management_type": "",
+        "owner_class": "{{class_name}}",
+        "method_name": "",
+        "args_text": "{{args_text|}}",
+        "framework": "j2ee-ejb-tx"
+      },
+      "source": "lens:j2ee-ejb-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-ejb-tx-attribute-resolve",
+    "scope": "resolve",
+    "match": {
+      "label": "Transaction",
+      "where": {"framework": "j2ee-ejb-tx"},
+      "from": "args_text",
+      "patterns": [
+        {"regex": "(?:value\\s*=\\s*)?(?:[\\w.]*\\.)?(?P<attribute>REQUIRED|REQUIRES_NEW|MANDATORY|NOT_SUPPORTED|SUPPORTS|NEVER)"}
+      ]
+    },
+    "set": {
+      "attribute": "{{attribute}}"
+    }
+  },
+  {
+    "name": "j2ee-ejb-tx-management",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"TransactionManagement\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @class_name) @anchor (class_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"TransactionManagement\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Transaction",
+      "schema": {"level": "string", "attribute": "string", "management_type": "string", "owner_class": "string", "method_name": "string", "args_text": "string", "framework": "string"},
+      "values": {
+        "level": "class",
+        "attribute": "",
+        "management_type": "",
+        "owner_class": "{{class_name}}",
+        "method_name": "",
+        "args_text": "{{args_text|}}",
+        "framework": "j2ee-ejb-tx"
+      },
+      "source": "lens:j2ee-ejb-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-ejb-tx-management-resolve",
+    "scope": "resolve",
+    "match": {
+      "label": "Transaction",
+      "where": {"framework": "j2ee-ejb-tx"},
+      "from": "args_text",
+      "patterns": [
+        {"regex": "(?:value\\s*=\\s*)?(?:[\\w.]*\\.)?(?P<management_type>BEAN|CONTAINER)"}
+      ]
+    },
+    "set": {
+      "management_type": "{{management_type}}"
+    }
+  },
+  {
+    "name": "j2ee-ejb-schedule",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Schedule\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "ScheduledJob",
+      "schema": {
+        "cron": "string", "second": "string", "minute": "string", "hour": "string",
+        "day_of_month": "string", "month": "string", "day_of_week": "string", "year": "string",
+        "owner_class": "string", "method_name": "string", "args_text": "string", "framework": "string"
+      },
+      "values": {
+        "cron": "",
+        "second": "",
+        "minute": "",
+        "hour": "",
+        "day_of_month": "",
+        "month": "",
+        "day_of_week": "",
+        "year": "",
+        "owner_class": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "args_text": "{{args_text|}}",
+        "framework": "j2ee-ejb"
+      },
+      "source": "lens:j2ee-ejb-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-ejb-schedule-resolve",
+    "scope": "resolve",
+    "match": {
+      "label": "ScheduledJob",
+      "where": {"framework": "j2ee-ejb"},
+      "from": "args_text",
+      "patterns": [
+        {"regex": "cron\\s*=\\s*\"(?P<cron>[^\"]+)\""},
+        {"regex": "second\\s*=\\s*\"(?P<second>[^\"]+)\""},
+        {"regex": "minute\\s*=\\s*\"(?P<minute>[^\"]+)\""},
+        {"regex": "hour\\s*=\\s*\"(?P<hour>[^\"]+)\""},
+        {"regex": "dayOfMonth\\s*=\\s*\"(?P<day_of_month>[^\"]+)\""},
+        {"regex": "month\\s*=\\s*\"(?P<month>[^\"]+)\""},
+        {"regex": "dayOfWeek\\s*=\\s*\"(?P<day_of_week>[^\"]+)\""},
+        {"regex": "year\\s*=\\s*\"(?P<year>[^\"]+)\""}
+      ]
+    },
+    "set": {
+      "cron": "{{cron}}",
+      "second": "{{second}}",
+      "minute": "{{minute}}",
+      "hour": "{{hour}}",
+      "day_of_month": "{{day_of_month}}",
+      "month": "{{month}}",
+      "day_of_week": "{{day_of_week}}",
+      "year": "{{year}}"
+    }
+  },
+  {
+    "name": "j2ee-ejb-async-method",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Asynchronous\"))) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "EjbAsync",
+      "schema": {"level": "string", "owner_class": "string", "method_name": "string", "framework": "string"},
+      "values": {
+        "level": "method",
+        "owner_class": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "framework": "j2ee-ejb"
+      },
+      "source": "lens:j2ee-ejb-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-ejb-async-class",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Asynchronous\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "EjbAsync",
+      "schema": {"level": "string", "owner_class": "string", "method_name": "string", "framework": "string"},
+      "values": {
+        "level": "class",
+        "owner_class": "{{class_name}}",
+        "method_name": "",
+        "framework": "j2ee-ejb"
+      },
+      "source": "lens:j2ee-ejb-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-ejb-lock",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Lock\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "EjbLock",
+      "schema": {"type": "string", "owner_class": "string", "method_name": "string", "args_text": "string", "framework": "string"},
+      "values": {
+        "type": "",
+        "owner_class": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "args_text": "{{args_text|}}",
+        "framework": "j2ee-ejb"
+      },
+      "source": "lens:j2ee-ejb-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-ejb-lock-resolve",
+    "scope": "resolve",
+    "match": {
+      "label": "EjbLock",
+      "where": {"framework": "j2ee-ejb"},
+      "from": "args_text",
+      "patterns": [
+        {"regex": "(?:value\\s*=\\s*)?(?:[\\w.]*\\.)?(?P<type>READ|WRITE)"}
+      ]
+    },
+    "set": {
+      "type": "{{type}}"
+    }
+  },
+  {
+    "name": "j2ee-security-roles-allowed-method",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"RolesAllowed\") arguments: (annotation_argument_list) @roles)) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "SecurityRule",
+      "schema": {"kind": "string", "roles": "string", "level": "string", "owner_class": "string", "method_name": "string", "framework": "string"},
+      "values": {
+        "kind": "RolesAllowed",
+        "roles": "{{roles|}}",
+        "level": "method",
+        "owner_class": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "framework": "j2ee-security"
+      },
+      "source": "lens:j2ee-ejb-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-security-roles-allowed-class",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"RolesAllowed\") arguments: (annotation_argument_list) @roles)) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "SecurityRule",
+      "schema": {"kind": "string", "roles": "string", "level": "string", "owner_class": "string", "method_name": "string", "framework": "string"},
+      "values": {
+        "kind": "RolesAllowed",
+        "roles": "{{roles|}}",
+        "level": "class",
+        "owner_class": "{{class_name}}",
+        "method_name": "",
+        "framework": "j2ee-security"
+      },
+      "source": "lens:j2ee-ejb-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-security-permit-deny-method",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (marker_annotation name: (identifier) @ann (#match? @ann \"^(PermitAll|DenyAll)$\"))) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "SecurityRule",
+      "schema": {"kind": "string", "roles": "string", "level": "string", "owner_class": "string", "method_name": "string", "framework": "string"},
+      "values": {
+        "kind": "{{ann}}",
+        "roles": "",
+        "level": "method",
+        "owner_class": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "framework": "j2ee-security"
+      },
+      "source": "lens:j2ee-ejb-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-security-permit-deny-class",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (marker_annotation name: (identifier) @ann (#match? @ann \"^(PermitAll|DenyAll)$\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "SecurityRule",
+      "schema": {"kind": "string", "roles": "string", "level": "string", "owner_class": "string", "method_name": "string", "framework": "string"},
+      "values": {
+        "kind": "{{ann}}",
+        "roles": "",
+        "level": "class",
+        "owner_class": "{{class_name}}",
+        "method_name": "",
+        "framework": "j2ee-security"
+      },
+      "source": "lens:j2ee-ejb-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-security-declare-roles",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"DeclareRoles\") arguments: (annotation_argument_list) @roles)) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "SecurityRule",
+      "schema": {"kind": "string", "roles": "string", "level": "string", "owner_class": "string", "method_name": "string", "framework": "string"},
+      "values": {
+        "kind": "DeclareRoles",
+        "roles": "{{roles|}}",
+        "level": "class",
+        "owner_class": "{{class_name}}",
+        "method_name": "",
+        "framework": "j2ee-security"
+      },
+      "source": "lens:j2ee-ejb-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-security-run-as",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"RunAs\") arguments: (annotation_argument_list) @roles)) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "SecurityRule",
+      "schema": {"kind": "string", "roles": "string", "level": "string", "owner_class": "string", "method_name": "string", "framework": "string"},
+      "values": {
+        "kind": "RunAs",
+        "roles": "{{roles|}}",
+        "level": "class",
+        "owner_class": "{{class_name}}",
+        "method_name": "",
+        "framework": "j2ee-security"
+      },
+      "source": "lens:j2ee-ejb-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-ejb-lifecycle",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (marker_annotation name: (identifier) @ann (#match? @ann \"^(PostConstruct|PreDestroy)$\"))) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "LifecycleHook",
+      "schema": {"kind": "string", "owner_class": "string", "method_name": "string", "framework": "string"},
+      "values": {
+        "kind": "{{ann}}",
+        "owner_class": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "framework": "j2ee-ejb"
+      },
+      "source": "lens:j2ee-ejb-extras",
+      "confidence": "high"
+    }
+  }
+]

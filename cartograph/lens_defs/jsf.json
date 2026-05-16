@@ -1,0 +1,198 @@
+[
+  {
+    "name": "jsf-managed-bean",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"ManagedBean\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @key (#eq? @key \"name\") value: (string_literal (string_fragment) @bean_name))))) name: (identifier) @class_name) @anchor (class_declaration (modifiers [(marker_annotation name: (identifier) @ann (#eq? @ann \"ManagedBean\")) (annotation name: (identifier) @ann (#eq? @ann \"ManagedBean\") arguments: (annotation_argument_list))]) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {"name": "string", "kind": "string", "framework": "string", "class_name": "string"},
+      "values": {
+        "name": "{{bean_name|class_name}}",
+        "class_name": "{{class_name}}",
+        "kind": "jsf-managed-bean",
+        "framework": "jsf"
+      },
+      "source": "lens:jsf",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "jsf-faces-converter",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers [(annotation name: (identifier) @ann (#eq? @ann \"FacesConverter\") arguments: (annotation_argument_list) @args) (marker_annotation name: (identifier) @ann (#eq? @ann \"FacesConverter\"))]) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {"name": "string", "kind": "string", "framework": "string", "raw_args": "string", "converter_id": "string", "for_class": "string"},
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "jsf-converter",
+        "framework": "jsf",
+        "raw_args": "{{args|}}",
+        "converter_id": "",
+        "for_class": ""
+      },
+      "source": "lens:jsf",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "jsf-resolve-converter-value",
+    "scope": "resolve",
+    "match": {
+      "label": "Component",
+      "field": "raw_args",
+      "pattern": "value\\s*=\\s*\"(?P<converter_id>[^\"]+)\""
+    },
+    "set": {
+      "converter_id": "{{converter_id}}"
+    }
+  },
+  {
+    "name": "jsf-resolve-converter-forclass",
+    "scope": "resolve",
+    "match": {
+      "label": "Component",
+      "field": "raw_args",
+      "pattern": "forClass\\s*=\\s*(?P<for_class>[\\w.$]+\\.class)"
+    },
+    "set": {
+      "for_class": "{{for_class}}"
+    }
+  },
+  {
+    "name": "jsf-faces-validator",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers [(annotation name: (identifier) @ann (#eq? @ann \"FacesValidator\") arguments: (annotation_argument_list) @args) (marker_annotation name: (identifier) @ann (#eq? @ann \"FacesValidator\"))]) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {"name": "string", "kind": "string", "framework": "string", "raw_args": "string", "validator_id": "string"},
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "jsf-validator",
+        "framework": "jsf",
+        "raw_args": "{{args|}}",
+        "validator_id": ""
+      },
+      "source": "lens:jsf",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "jsf-resolve-validator-value",
+    "scope": "resolve",
+    "match": {
+      "label": "Component",
+      "field": "raw_args",
+      "pattern": "value\\s*=\\s*\"(?P<validator_id>[^\"]+)\""
+    },
+    "set": {
+      "validator_id": "{{validator_id}}"
+    }
+  },
+  {
+    "name": "jsf-faces-config-managed-bean",
+    "scope": "source",
+    "match": {
+      "files": ["faces-config.xml"],
+      "strategy": "xml-query",
+      "select": ".//managed-bean",
+      "captures": {
+        "bean_name": "managed-bean-name",
+        "class_name": "managed-bean-class",
+        "scope": "managed-bean-scope"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {"name": "string", "class_name": "string", "scope": "string", "kind": "string", "framework": "string"},
+      "values": {
+        "name": "{{bean_name}}",
+        "class_name": "{{class_name}}",
+        "scope": "{{scope}}",
+        "kind": "jsf-managed-bean",
+        "framework": "jsf-faces-config"
+      },
+      "source": "lens:jsf",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "jsf-faces-config-navigation",
+    "scope": "source",
+    "match": {
+      "files": ["faces-config.xml"],
+      "strategy": "xml-query",
+      "select": ".//navigation-rule",
+      "captures": {
+        "from_view": "from-view-id",
+        "to_view": "navigation-case/to-view-id"
+      }
+    },
+    "emit": {
+      "label": "JsfNavigation",
+      "schema": {"from_view_id": "string", "to_view_id": "string", "framework": "string"},
+      "values": {
+        "from_view_id": "{{from_view}}",
+        "to_view_id": "{{to_view}}",
+        "framework": "jsf-faces-config"
+      },
+      "source": "lens:jsf",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "jsf-facelet-page",
+    "scope": "source",
+    "match": {
+      "files": ["*.xhtml"],
+      "strategy": "regex",
+      "patterns": [
+        {
+          "regex": "^\\s*<(?:ui:composition|ui:component|f:view)\\b",
+          "per_line": true
+        },
+        {
+          "regex": "^\\s*<html\\b[^>]*xmlns:h\\s*=\\s*\"(?:https?://(?:xmlns\\.jcp\\.org|java\\.sun\\.com)/jsf/html|jakarta\\.faces\\.html)\"",
+          "per_line": true
+        }
+      ]
+    },
+    "emit": {
+      "label": "JsfPage",
+      "schema": {"name": "string", "framework": "string"},
+      "values": {
+        "name": "{{_file_stem}}",
+        "framework": "jsf"
+      },
+      "source": "lens:jsf",
+      "confidence": "medium"
+    }
+  }
+]

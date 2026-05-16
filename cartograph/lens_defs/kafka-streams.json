@@ -1,0 +1,146 @@
+[
+  {
+    "name": "kafka-streams-builder-stream",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "stream",
+        "arg_index": 0,
+        "capture_as": "topic"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "topic_const": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "kafka-streams",
+        "topic": "{{topic|topic_const|topic_class|}}",
+        "topics": ["{{topic|topic_const|topic_class|}}"],
+        "topic_const": "{{topic_const}}",
+        "framework": "kafka-streams"
+      },
+      "source": "lens:kafka-streams",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "kafka-streams-builder-table",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "table",
+        "arg_index": 0,
+        "capture_as": "topic"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "topic_const": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "kafka-streams",
+        "topic": "{{topic|topic_const|topic_class|}}",
+        "topics": ["{{topic|topic_const|topic_class|}}"],
+        "topic_const": "{{topic_const}}",
+        "framework": "kafka-streams"
+      },
+      "source": "lens:kafka-streams",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "kafka-streams-kstream-to",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "to",
+        "arg_index": 0,
+        "capture_as": "topic"
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topic_const": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "kafka-streams",
+        "topic": "{{topic|topic_const|topic_class|}}",
+        "topic_const": "{{topic_const}}",
+        "framework": "kafka-streams",
+        "delivery_edge": "KAFKA_DELIVERS"
+      },
+      "source": "lens:kafka-streams",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "kafka-streams-kstream-through",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "through",
+        "arg_index": 0,
+        "capture_as": "topic"
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topic_const": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "kafka-streams",
+        "topic": "{{topic|topic_const|topic_class|}}",
+        "topic_const": "{{topic_const}}",
+        "framework": "kafka-streams",
+        "delivery_edge": "KAFKA_DELIVERS"
+      },
+      "source": "lens:kafka-streams",
+      "confidence": "medium"
+    }
+  }
+]

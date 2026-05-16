@@ -1,0 +1,77 @@
+[
+  {
+    "name": "j2ee-persistence-unit-class",
+    "scope": "source",
+    "match": {
+      "files": ["persistence.xml"],
+      "strategy": "xml-query",
+      "select": ".//persistence-unit/class",
+      "captures": {
+        "persistence_unit_name": "^@name",
+        "class_name": "."
+      }
+    },
+    "emit": {
+      "label": "PersistenceUnitClass",
+      "schema": {"persistence_unit_name": "string", "class_name": "string", "framework": "string"},
+      "values": {
+        "persistence_unit_name": "{{persistence_unit_name}}",
+        "class_name": "{{class_name}}",
+        "framework": "j2ee-jpa"
+      },
+      "source": "lens:j2ee-persistence-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-persistence-property",
+    "scope": "source",
+    "match": {
+      "files": ["persistence.xml"],
+      "strategy": "xml-query",
+      "select": ".//persistence-unit/properties/property",
+      "captures": {
+        "persistence_unit_name": "^^@name",
+        "name": "@name",
+        "value": "@value"
+      }
+    },
+    "emit": {
+      "label": "PersistenceProperty",
+      "schema": {"persistence_unit_name": "string", "name": "string", "value": "string", "framework": "string"},
+      "values": {
+        "persistence_unit_name": "{{persistence_unit_name}}",
+        "name": "{{name}}",
+        "value": "{{value}}",
+        "framework": "j2ee-jpa"
+      },
+      "source": "lens:j2ee-persistence-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-persistence-exclude-unlisted-classes",
+    "scope": "source",
+    "match": {
+      "files": ["persistence.xml"],
+      "strategy": "xml-query",
+      "select": ".//persistence-unit/exclude-unlisted-classes",
+      "captures": {
+        "persistence_unit_name": "^@name",
+        "value": "."
+      }
+    },
+    "emit": {
+      "label": "PersistenceUnitOption",
+      "schema": {"persistence_unit_name": "string", "kind": "string", "value": "string", "framework": "string"},
+      "values": {
+        "persistence_unit_name": "{{persistence_unit_name}}",
+        "kind": "exclude-unlisted-classes",
+        "value": "{{value}}",
+        "framework": "j2ee-jpa"
+      },
+      "source": "lens:j2ee-persistence-extras",
+      "confidence": "high"
+    }
+  }
+]

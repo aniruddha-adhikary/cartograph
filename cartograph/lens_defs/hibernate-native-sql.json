@@ -1,0 +1,136 @@
+[
+  {
+    "name": "hibernate-sql-insert",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"SQLInsert\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @sk (#eq? @sk \"sql\") value: (string_literal (string_fragment) @sql))))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {"query_name": "string", "query": "string", "kind": "string", "framework": "string", "owner_class": "string"},
+      "values": {
+        "query_name": "{{class_name}}.insert",
+        "query": "{{sql}}",
+        "kind": "insert",
+        "framework": "hibernate-native",
+        "owner_class": "{{class_name}}"
+      },
+      "source": "lens:hibernate-native-sql",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-sql-update",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"SQLUpdate\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @sk (#eq? @sk \"sql\") value: (string_literal (string_fragment) @sql))))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {"query_name": "string", "query": "string", "kind": "string", "framework": "string", "owner_class": "string"},
+      "values": {
+        "query_name": "{{class_name}}.update",
+        "query": "{{sql}}",
+        "kind": "update",
+        "framework": "hibernate-native",
+        "owner_class": "{{class_name}}"
+      },
+      "source": "lens:hibernate-native-sql",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-sql-delete",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"SQLDelete\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @sk (#eq? @sk \"sql\") value: (string_literal (string_fragment) @sql))))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {"query_name": "string", "query": "string", "kind": "string", "framework": "string", "owner_class": "string"},
+      "values": {
+        "query_name": "{{class_name}}.delete",
+        "query": "{{sql}}",
+        "kind": "delete",
+        "framework": "hibernate-native",
+        "owner_class": "{{class_name}}"
+      },
+      "source": "lens:hibernate-native-sql",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-sql-delete-all",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"SQLDeleteAll\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @sk (#eq? @sk \"sql\") value: (string_literal (string_fragment) @sql))))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {"query_name": "string", "query": "string", "kind": "string", "framework": "string", "owner_class": "string"},
+      "values": {
+        "query_name": "{{class_name}}.deleteAll",
+        "query": "{{sql}}",
+        "kind": "delete-all",
+        "framework": "hibernate-native",
+        "owner_class": "{{class_name}}"
+      },
+      "source": "lens:hibernate-native-sql",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-named-native-query",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(annotation name: (identifier) @ann (#eq? @ann \"NamedNativeQuery\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @nk (#eq? @nk \"name\") value: (string_literal (string_fragment) @query_name)) (element_value_pair key: (identifier) @qk (#eq? @qk \"query\") value: (string_literal (string_fragment) @sql)))) @anchor"
+      }
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {"query_name": "string", "query": "string", "kind": "string", "framework": "string"},
+      "values": {
+        "query_name": "{{query_name}}",
+        "query": "{{sql}}",
+        "kind": "native-sql",
+        "framework": "hibernate-native"
+      },
+      "source": "lens:hibernate-native-sql",
+      "confidence": "high"
+    }
+  }
+]

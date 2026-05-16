@@ -5,7 +5,7 @@ from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
 
-from .engine import run_source_lens
+from .engine import _resolve_template, run_source_lens
 from .graph import Graph
 from .lens_schema import load_builtin_lenses, load_lens_dir
 from .models import Edge, Node, SchemaRegistry
@@ -66,23 +66,46 @@ def run_resolve_lenses(lenses: list[dict[str, Any]], graph: Graph) -> int:
             match = lens["match"]
             if node.get("label") != match.get("label"):
                 continue
-            field = match.get("field", "")
+            # A4: optional where: filter — AND across keys
+            where = match.get("where") or {}
+            if any(node.get(k) != v for k, v in where.items()):
+                continue
+            # Support both new "from" and legacy "field" key for the source prop.
+            field = match.get("from") or match.get("field", "")
             value = str(node.get(field, ""))
             if not value:
                 continue
-            if node.get(list(lens["set"].keys())[0]):
+            set_block = lens.get("set", {}) or {}
+            if not set_block:
                 continue
-            m = re.search(match["pattern"], value)
+            # Try patterns: list first (preferred), then fall back to a single pattern.
+            patterns = match.get("patterns")
+            if patterns is None:
+                single = match.get("pattern")
+                patterns = [{"regex": single}] if single else []
+            m = None
+            for pat in patterns:
+                regex = pat.get("regex") if isinstance(pat, dict) else pat
+                if not regex:
+                    continue
+                m = re.search(regex, value)
+                if m:
+                    break
             if not m:
                 continue
             captures = m.groupdict()
-            for key, template in lens["set"].items():
-                result = template
-                for cap_key, cap_val in captures.items():
-                    result = result.replace(f"{{{{{cap_key}}}}}", cap_val or "")
+            wrote_any = False
+            for key, template in set_block.items():
+                # A3: per-key skip — only skip keys that are already non-empty.
+                if node.get(key):
+                    continue
+                # A2: use engine._resolve_template for fallback chain support.
+                result = _resolve_template(template, captures)
                 if result:
                     node[key] = result
-            resolved += 1
+                    wrote_any = True
+            if wrote_any:
+                resolved += 1
     return resolved
 
 

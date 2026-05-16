@@ -33,8 +33,7 @@
         "lens:react-component": 1
       },
       "confidence_breakdown": {
-        "high": 1,
-        "medium": 5
+        "medium": 6
       },
       "pack_coverage_ratio": 0.0,
       "llm_ratio": 0.0

@@ -1,0 +1,116 @@
+[
+  {
+    "name": "j2ee-cdi-event-observer",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration name: (identifier) @method_name parameters: (formal_parameters (formal_parameter (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Observes\"))) type: (_) @event_type name: (identifier) @param_name) @anchor))))"
+      }
+    },
+    "emit": {
+      "label": "EventConsumer",
+      "schema": {"event_type": "string", "handler": "string", "param_name": "string", "kind": "string", "bus": "string", "framework": "string", "delivery_edge": "string"},
+      "values": {
+        "event_type": "{{event_type}}",
+        "handler": "{{class_name}}.{{method_name}}",
+        "param_name": "{{param_name}}",
+        "kind": "sync",
+        "bus": "cdi-event",
+        "framework": "j2ee-cdi",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:j2ee-cdi-events",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-cdi-event-observer-async",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration name: (identifier) @method_name parameters: (formal_parameters (formal_parameter (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"ObservesAsync\"))) type: (_) @event_type name: (identifier) @param_name) @anchor))))"
+      }
+    },
+    "emit": {
+      "label": "EventConsumer",
+      "schema": {"event_type": "string", "handler": "string", "param_name": "string", "kind": "string", "bus": "string", "framework": "string", "delivery_edge": "string"},
+      "values": {
+        "event_type": "{{event_type}}",
+        "handler": "{{class_name}}.{{method_name}}",
+        "param_name": "{{param_name}}",
+        "kind": "async",
+        "bus": "cdi-event",
+        "framework": "j2ee-cdi",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:j2ee-cdi-events",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-cdi-event-producer-field",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @owner_class body: (class_body (field_declaration type: (generic_type (type_identifier) @t (#eq? @t \"Event\") (type_arguments (type_identifier) @event_type)) declarator: (variable_declarator name: (identifier) @field_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "EventProducer",
+      "schema": {"event_type": "string", "owner_class": "string", "field_name": "string", "bus": "string", "framework": "string", "delivery_edge": "string"},
+      "values": {
+        "event_type": "{{event_type}}",
+        "owner_class": "{{owner_class}}",
+        "field_name": "{{field_name}}",
+        "bus": "cdi-event",
+        "framework": "j2ee-cdi",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:j2ee-cdi-events",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-cdi-event-fire",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "fire",
+        "arg_index": 0,
+        "capture_as": "payload"
+      }
+    },
+    "emit": {
+      "label": "EventFire",
+      "schema": {"payload_text": "string", "payload": "string", "payload_class": "string", "bus": "string", "framework": "string"},
+      "values": {
+        "payload_text": "{{payload_text}}",
+        "payload": "{{payload}}",
+        "payload_class": "{{payload_class}}",
+        "bus": "cdi-event",
+        "framework": "j2ee-cdi"
+      },
+      "source": "lens:j2ee-cdi-events",
+      "confidence": "low"
+    }
+  }
+]

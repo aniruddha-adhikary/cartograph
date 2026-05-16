@@ -71,5 +71,82 @@
       "source": "lens:j2ee-cdi",
       "confidence": "high"
     }
+  },
+  {
+    "name": "j2ee-cdi-singleton",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Singleton\"))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Singleton\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {"name": "string", "kind": "string", "framework": "string"},
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "inject-singleton",
+        "framework": "j2ee-cdi"
+      },
+      "source": "lens:j2ee-cdi",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "j2ee-cdi-producer-method",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Produces\"))) name: (identifier) @method_name) @anchor (method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Produces\"))) name: (identifier) @method_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {"name": "string", "kind": "string", "framework": "string", "method_name": "string"},
+      "values": {
+        "name": "{{method_name}}",
+        "kind": "produces-ambiguous",
+        "method_name": "{{method_name}}",
+        "framework": "j2ee-cdi-or-jaxrs"
+      },
+      "source": "lens:j2ee-cdi",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "j2ee-cdi-producer-field",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(field_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Produces\"))) declarator: (variable_declarator name: (identifier) @field_name)) @anchor (field_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Produces\"))) declarator: (variable_declarator name: (identifier) @field_name)) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {"name": "string", "kind": "string", "framework": "string", "field_name": "string"},
+      "values": {
+        "name": "{{field_name}}",
+        "kind": "cdi-producer-field",
+        "field_name": "{{field_name}}",
+        "framework": "j2ee-cdi"
+      },
+      "source": "lens:j2ee-cdi",
+      "confidence": "high"
+    }
   }
 ]

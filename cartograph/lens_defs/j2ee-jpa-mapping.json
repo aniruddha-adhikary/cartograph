@@ -1,0 +1,140 @@
+[
+  {
+    "name": "j2ee-jpa-relation-marker",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @owner_class body: (class_body (field_declaration (modifiers (marker_annotation name: (identifier) @kind (#match? @kind \"^(OneToMany|ManyToOne|OneToOne|ManyToMany)$\"))) type: (_) @target_type declarator: (variable_declarator name: (identifier) @field_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "EntityRelation",
+      "schema": {"kind": "string", "owner_class": "string", "target_type": "string", "field_name": "string", "framework": "string"},
+      "values": {
+        "kind": "{{kind}}",
+        "owner_class": "{{owner_class}}",
+        "target_type": "{{target_type}}",
+        "field_name": "{{field_name}}",
+        "framework": "j2ee-jpa"
+      },
+      "source": "lens:j2ee-jpa-mapping",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-jpa-relation-args",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @owner_class body: (class_body (field_declaration (modifiers (annotation name: (identifier) @kind (#match? @kind \"^(OneToMany|ManyToOne|OneToOne|ManyToMany)$\")) @ann_node) type: (_) @target_type declarator: (variable_declarator name: (identifier) @field_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "EntityRelation",
+      "schema": {"kind": "string", "owner_class": "string", "target_type": "string", "field_name": "string", "annotation_text": "string", "framework": "string"},
+      "values": {
+        "kind": "{{kind}}",
+        "owner_class": "{{owner_class}}",
+        "target_type": "{{target_type}}",
+        "field_name": "{{field_name}}",
+        "annotation_text": "{{ann_node}}",
+        "framework": "j2ee-jpa"
+      },
+      "source": "lens:j2ee-jpa-mapping",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-jpa-joincolumn",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @owner_class body: (class_body (field_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"JoinColumn\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @ck (#eq? @ck \"name\") value: (string_literal (string_fragment) @column))))) type: (_) @target_type declarator: (variable_declarator name: (identifier) @field_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "EntityJoin",
+      "schema": {"kind": "string", "owner_class": "string", "target_type": "string", "field_name": "string", "column": "string", "framework": "string"},
+      "values": {
+        "kind": "join-column",
+        "owner_class": "{{owner_class}}",
+        "target_type": "{{target_type}}",
+        "field_name": "{{field_name}}",
+        "column": "{{column}}",
+        "framework": "j2ee-jpa"
+      },
+      "source": "lens:j2ee-jpa-mapping",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-jpa-jointable",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @owner_class body: (class_body (field_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"JoinTable\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @tk (#eq? @tk \"name\") value: (string_literal (string_fragment) @table))))) type: (_) @target_type declarator: (variable_declarator name: (identifier) @field_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "EntityJoin",
+      "schema": {"kind": "string", "owner_class": "string", "target_type": "string", "field_name": "string", "table": "string", "framework": "string"},
+      "values": {
+        "kind": "join-table",
+        "owner_class": "{{owner_class}}",
+        "target_type": "{{target_type}}",
+        "field_name": "{{field_name}}",
+        "table": "{{table}}",
+        "framework": "j2ee-jpa"
+      },
+      "source": "lens:j2ee-jpa-mapping",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-jpa-embedded",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @owner_class body: (class_body (field_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Embedded\"))) type: (_) @target_type declarator: (variable_declarator name: (identifier) @field_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "EntityField",
+      "schema": {"kind": "string", "owner_class": "string", "target_type": "string", "field_name": "string", "framework": "string"},
+      "values": {
+        "kind": "embedded",
+        "owner_class": "{{owner_class}}",
+        "target_type": "{{target_type}}",
+        "field_name": "{{field_name}}",
+        "framework": "j2ee-jpa"
+      },
+      "source": "lens:j2ee-jpa-mapping",
+      "confidence": "high"
+    }
+  }
+]

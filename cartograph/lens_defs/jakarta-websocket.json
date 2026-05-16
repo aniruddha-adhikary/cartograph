@@ -1,0 +1,104 @@
+[
+  {
+    "name": "jakarta-websocket-server-endpoint",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"ServerEndpoint\") arguments: (annotation_argument_list (string_literal (string_fragment) @path)))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"ServerEndpoint\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @key (#eq? @key \"value\") value: (string_literal (string_fragment) @path))))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {"http_method": "string", "path": "string", "handler": "string", "framework": "string"},
+      "values": {
+        "http_method": "WS",
+        "path": "{{path}}",
+        "handler": "{{class_name}}",
+        "framework": "jakarta-websocket"
+      },
+      "source": "lens:jakarta-websocket",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "jakarta-websocket-server-component",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"ServerEndpoint\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {"name": "string", "kind": "string", "framework": "string"},
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "websocket-server",
+        "framework": "jakarta-websocket"
+      },
+      "source": "lens:jakarta-websocket",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "jakarta-websocket-client-component",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"ClientEndpoint\"))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"ClientEndpoint\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {"name": "string", "kind": "string", "framework": "string"},
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "websocket-client",
+        "framework": "jakarta-websocket"
+      },
+      "source": "lens:jakarta-websocket",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "jakarta-websocket-handler",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers [(annotation name: (identifier) @cls_ann (#match? @cls_ann \"^(ServerEndpoint|ClientEndpoint)$\")) (marker_annotation name: (identifier) @cls_ann (#match? @cls_ann \"^(ServerEndpoint|ClientEndpoint)$\"))]) name: (identifier) @class_name body: (class_body (method_declaration (modifiers [(annotation name: (identifier) @event_ann (#match? @event_ann \"^(OnMessage|OnOpen|OnClose|OnError)$\")) (marker_annotation name: (identifier) @event_ann (#match? @event_ann \"^(OnMessage|OnOpen|OnClose|OnError)$\"))]) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "WebSocketHandler",
+      "schema": {"event": "string", "class_name": "string", "method_name": "string", "framework": "string"},
+      "values": {
+        "event": "{{event_ann}}",
+        "class_name": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "framework": "jakarta-websocket"
+      },
+      "source": "lens:jakarta-websocket",
+      "confidence": "high"
+    }
+  }
+]

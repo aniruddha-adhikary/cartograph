@@ -1,0 +1,180 @@
+[
+  {
+    "name": "mp-reactive-messaging-incoming",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Incoming\") arguments: (annotation_argument_list (string_literal (string_fragment) @channel)))) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "channel": "string",
+        "topic": "string",
+        "topics": "list",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "mp-reactive-messaging",
+        "channel": "{{channel}}",
+        "topic": "{{channel}}",
+        "topics": ["{{channel}}"],
+        "handler": "{{class_name}}.{{method_name}}",
+        "framework": "mp-reactive-messaging"
+      },
+      "source": "lens:microprofile-reactive-messaging",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "mp-reactive-messaging-outgoing",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Outgoing\") arguments: (annotation_argument_list (string_literal (string_fragment) @channel)))) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "channel": "string",
+        "topic": "string",
+        "handler": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "mp-reactive-messaging",
+        "channel": "{{channel}}",
+        "topic": "{{channel}}",
+        "handler": "{{class_name}}.{{method_name}}",
+        "framework": "mp-reactive-messaging",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:microprofile-reactive-messaging",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "mp-reactive-messaging-incoming-channel-binding",
+    "scope": "source",
+    "match": {
+      "files": ["*.properties", "*.yaml", "*.yml"],
+      "strategy": "config-key",
+      "key_pattern": "mp\\.messaging\\.incoming\\.(?P<channel>[\\w.-]+)\\.topic\\s*[:=]\\s*(?P<topic>\\S+)"
+    },
+    "emit": {
+      "label": "ChannelBinding",
+      "schema": {
+        "channel": "string",
+        "topic": "string",
+        "direction": "string",
+        "framework": "string"
+      },
+      "values": {
+        "channel": "{{channel}}",
+        "topic": "{{topic}}",
+        "direction": "incoming",
+        "framework": "mp-reactive-messaging"
+      },
+      "source": "lens:microprofile-reactive-messaging",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "mp-reactive-messaging-outgoing-channel-binding",
+    "scope": "source",
+    "match": {
+      "files": ["*.properties", "*.yaml", "*.yml"],
+      "strategy": "config-key",
+      "key_pattern": "mp\\.messaging\\.outgoing\\.(?P<channel>[\\w.-]+)\\.topic\\s*[:=]\\s*(?P<topic>\\S+)"
+    },
+    "emit": {
+      "label": "ChannelBinding",
+      "schema": {
+        "channel": "string",
+        "topic": "string",
+        "direction": "string",
+        "framework": "string"
+      },
+      "values": {
+        "channel": "{{channel}}",
+        "topic": "{{topic}}",
+        "direction": "outgoing",
+        "framework": "mp-reactive-messaging"
+      },
+      "source": "lens:microprofile-reactive-messaging",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "mp-reactive-messaging-incoming-connector",
+    "scope": "source",
+    "match": {
+      "files": ["*.properties", "*.yaml", "*.yml"],
+      "strategy": "config-key",
+      "key_pattern": "mp\\.messaging\\.incoming\\.(?P<channel>[\\w.-]+)\\.connector\\s*[:=]\\s*(?P<connector>\\S+)"
+    },
+    "emit": {
+      "label": "ChannelBinding",
+      "schema": {
+        "channel": "string",
+        "connector": "string",
+        "direction": "string",
+        "framework": "string"
+      },
+      "values": {
+        "channel": "{{channel}}",
+        "connector": "{{connector}}",
+        "direction": "incoming",
+        "framework": "mp-reactive-messaging"
+      },
+      "source": "lens:microprofile-reactive-messaging",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "mp-reactive-messaging-outgoing-connector",
+    "scope": "source",
+    "match": {
+      "files": ["*.properties", "*.yaml", "*.yml"],
+      "strategy": "config-key",
+      "key_pattern": "mp\\.messaging\\.outgoing\\.(?P<channel>[\\w.-]+)\\.connector\\s*[:=]\\s*(?P<connector>\\S+)"
+    },
+    "emit": {
+      "label": "ChannelBinding",
+      "schema": {
+        "channel": "string",
+        "connector": "string",
+        "direction": "string",
+        "framework": "string"
+      },
+      "values": {
+        "channel": "{{channel}}",
+        "connector": "{{connector}}",
+        "direction": "outgoing",
+        "framework": "mp-reactive-messaging"
+      },
+      "source": "lens:microprofile-reactive-messaging",
+      "confidence": "high"
+    }
+  }
+]

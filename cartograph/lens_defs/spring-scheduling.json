@@ -1,0 +1,139 @@
+[
+  {
+    "name": "spring-scheduling-job",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)Scheduled$\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @method_name) @anchor)) (class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (marker_annotation name: (_) @ann (#match? @ann \"(^|\\\\.)Scheduled$\"))) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "ScheduledJob",
+      "schema": {
+        "class_name": "string",
+        "method_name": "string",
+        "cron": "string",
+        "fixed_delay": "string",
+        "fixed_rate": "string",
+        "initial_delay": "string",
+        "zone": "string",
+        "framework": "string",
+        "args_text": "string"
+      },
+      "values": {
+        "class_name": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "cron": "",
+        "fixed_delay": "",
+        "fixed_rate": "",
+        "initial_delay": "",
+        "zone": "",
+        "framework": "spring-scheduling",
+        "args_text": "{{args_text|}}"
+      },
+      "source": "lens:spring-scheduling",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-scheduling-resolve-cron",
+    "scope": "resolve",
+    "match": {
+      "label": "ScheduledJob",
+      "field": "args_text",
+      "pattern": "cron\\s*=\\s*\"(?P<c>[^\"]+)\""
+    },
+    "set": {
+      "cron": "{{c}}"
+    }
+  },
+  {
+    "name": "spring-scheduling-resolve-fixed-delay-string",
+    "scope": "resolve",
+    "match": {
+      "label": "ScheduledJob",
+      "field": "args_text",
+      "pattern": "fixedDelay(?:String)?\\s*=\\s*\"(?P<d>[^\"]+)\""
+    },
+    "set": {
+      "fixed_delay": "{{d}}"
+    }
+  },
+  {
+    "name": "spring-scheduling-resolve-fixed-delay-num",
+    "scope": "resolve",
+    "match": {
+      "label": "ScheduledJob",
+      "field": "args_text",
+      "pattern": "fixedDelay(?:String)?\\s*=\\s*(?P<d>[0-9_L]+)"
+    },
+    "set": {
+      "fixed_delay": "{{d}}"
+    }
+  },
+  {
+    "name": "spring-scheduling-resolve-fixed-rate-string",
+    "scope": "resolve",
+    "match": {
+      "label": "ScheduledJob",
+      "field": "args_text",
+      "pattern": "fixedRate(?:String)?\\s*=\\s*\"(?P<r>[^\"]+)\""
+    },
+    "set": {
+      "fixed_rate": "{{r}}"
+    }
+  },
+  {
+    "name": "spring-scheduling-resolve-fixed-rate-num",
+    "scope": "resolve",
+    "match": {
+      "label": "ScheduledJob",
+      "field": "args_text",
+      "pattern": "fixedRate(?:String)?\\s*=\\s*(?P<r>[0-9_L]+)"
+    },
+    "set": {
+      "fixed_rate": "{{r}}"
+    }
+  },
+  {
+    "name": "spring-scheduling-resolve-initial-delay-string",
+    "scope": "resolve",
+    "match": {
+      "label": "ScheduledJob",
+      "field": "args_text",
+      "pattern": "initialDelay(?:String)?\\s*=\\s*\"(?P<i>[^\"]+)\""
+    },
+    "set": {
+      "initial_delay": "{{i}}"
+    }
+  },
+  {
+    "name": "spring-scheduling-resolve-initial-delay-num",
+    "scope": "resolve",
+    "match": {
+      "label": "ScheduledJob",
+      "field": "args_text",
+      "pattern": "initialDelay(?:String)?\\s*=\\s*(?P<i>[0-9_L]+)"
+    },
+    "set": {
+      "initial_delay": "{{i}}"
+    }
+  },
+  {
+    "name": "spring-scheduling-resolve-zone",
+    "scope": "resolve",
+    "match": {
+      "label": "ScheduledJob",
+      "field": "args_text",
+      "pattern": "zone\\s*=\\s*\"(?P<z>[^\"]+)\""
+    },
+    "set": {
+      "zone": "{{z}}"
+    }
+  }
+]

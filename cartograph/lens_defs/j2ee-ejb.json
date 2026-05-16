@@ -9,7 +9,7 @@
         "language": "java",
         "extractor": "query",
         "anchor": "anchor",
-        "query": "(class_declaration (modifiers (marker_annotation name: (identifier) @ann (#match? @ann \"^(Stateless|Stateful|Singleton)$\"))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (annotation name: (identifier) @ann (#match? @ann \"^(Stateless|Stateful|Singleton)$\"))) name: (identifier) @class_name) @anchor"
+        "query": "(class_declaration (modifiers (marker_annotation name: (identifier) @ann (#match? @ann \"^(Stateless|Stateful)$\"))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (annotation name: (identifier) @ann (#match? @ann \"^(Stateless|Stateful)$\"))) name: (identifier) @class_name) @anchor"
       }
     },
     "emit": {
@@ -22,6 +22,31 @@
       },
       "source": "lens:j2ee-ejb",
       "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-ejb-singleton",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Singleton\"))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Singleton\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {"name": "string", "kind": "string", "framework": "string"},
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "ejb-singleton",
+        "framework": "j2ee-ejb"
+      },
+      "source": "lens:j2ee-ejb",
+      "confidence": "medium"
     }
   },
   {

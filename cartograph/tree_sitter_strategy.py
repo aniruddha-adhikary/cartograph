@@ -83,7 +83,15 @@ def run_tree_sitter_strategy(
     if extractor == "method-call":
         return _ts_method_call(lens, tree.root_node, rel_path, content, service)
     if extractor == "class-extends-typearg":
-        return _ts_class_extends_typearg(lens, tree.root_node, rel_path, content, service)
+        # Back-compat alias: delegate to the more general class-supertype-typearg
+        # extractor. The original semantics required `extends` (superclass) only;
+        # the generalized form ALSO matches `implements` (super_interfaces).
+        # Because Eventuate-tram lens (the only consumer of the old name) uses
+        # a `superclass` value that never appears as an interface, this widening
+        # is a strict superset and back-compatible in practice.
+        return _ts_class_supertype_typearg(lens, tree.root_node, rel_path, content, service)
+    if extractor == "class-supertype-typearg":
+        return _ts_class_supertype_typearg(lens, tree.root_node, rel_path, content, service)
     raise ValueError(f"unknown tree-sitter extractor: {extractor}")
 
 
@@ -201,6 +209,35 @@ def _ts_method_call(
       arg_index:   int (default 0) — which argument to capture
       capture_as:  str (default "value") — base name for the capture groups
 
+      receiver_type: str (optional) — if set, only match when the call's receiver
+        (the `x` in `x.method(...)`) has a statically-inferable type whose simple
+        name (generics stripped) equals this value. Fails CLOSED: if receiver type
+        cannot be inferred (e.g. chained call `a.b().method(...)`, parameter, lambda
+        capture), the call is SKIPPED. Receiver inference handles:
+          - `identifier` receiver — searches enclosing class for a `field_declaration`
+            of that name, then the enclosing method for a `local_variable_declaration`
+            or formal parameter.
+          - `field_access` of the form `this.x` — falls through to identifier search
+            on `x` against fields.
+          - missing receiver (unqualified call inside a class) — receiver type is
+            the enclosing class's own simple name.
+          - any other receiver shape (chained method_invocation, cast, parenthesized,
+            object_creation, array_access) — skipped (fail-closed).
+        LIMITATION: We do not perform full type inference. Chained fluent APIs like
+        `KStream.filter(...).to("topic")` cannot be matched on receiver_type — the
+        receiver of `.to` is itself a `method_invocation` and no static type is
+        available. Use parent_class_extends instead for those cases.
+
+      parent_class_extends: list[str] (optional) — only match when the call site is
+        lexically inside a `class_declaration` or `interface_declaration` whose
+        `superclass` (simple-name, generics stripped) OR any of its `super_interfaces`
+        (simple-name, generics stripped) is in this list. Calls at file top level
+        or in classes whose supertypes do not match are skipped.
+
+      If BOTH `receiver_type` and `parent_class_extends` are set, BOTH must hold
+      (AND). If NEITHER is set, behavior is unchanged from the original (matches
+      every call by method name).
+
     Emits one node per matching call with captures:
       <capture_as>          — string-literal value (if first arg is a string)
       <capture_as>_const    — qualified identifier text (e.g. "Foo.BAR") if first arg is a field_access
@@ -217,6 +254,10 @@ def _ts_method_call(
         raise ValueError("method-call extractor requires tree_sitter.method_name")
     arg_index = int(ts_config.get("arg_index", 0))
     capture_as = ts_config.get("capture_as", "value")
+    receiver_type = ts_config.get("receiver_type")
+    parent_class_extends = ts_config.get("parent_class_extends")
+    if parent_class_extends is not None:
+        parent_class_extends = set(parent_class_extends)
 
     nodes: list[Node] = []
     edges: list[Edge] = []
@@ -225,6 +266,23 @@ def _ts_method_call(
         name_node = call_node.child_by_field_name("name")
         if name_node is None or name_node.text.decode("utf-8") != target_name:
             continue
+
+        # A1 filter: parent_class_extends — must be inside a class/interface whose
+        # supertype simple-name is in the configured set.
+        if parent_class_extends is not None:
+            enclosing = _enclosing_class_or_interface(call_node)
+            if enclosing is None:
+                continue
+            supertypes = _supertype_simple_names(enclosing)
+            if parent_class_extends.isdisjoint(supertypes):
+                continue
+
+        # A1 filter: receiver_type — must be inferable and equal to configured value.
+        if receiver_type is not None:
+            inferred = _infer_receiver_type(call_node)
+            if inferred is None or inferred != receiver_type:
+                continue
+
         args_node = call_node.child_by_field_name("arguments")
         if args_node is None:
             continue
@@ -239,6 +297,186 @@ def _ts_method_call(
         nodes.append(_emit_node(emit, captures, rel, line_no, service))
 
     return nodes, edges
+
+
+def _strip_generics(name: str) -> str:
+    """Return the simple-name portion of a Java type reference, stripping generics.
+
+    `Foo<Bar>` -> `Foo`; `pkg.Foo` -> `pkg.Foo` (qualified names not split here);
+    whitespace trimmed. Callers that need the unqualified leaf can split on `.`.
+    """
+    idx = name.find("<")
+    if idx >= 0:
+        name = name[:idx]
+    return name.strip()
+
+
+def _supertype_simple_names(class_node: Any) -> set[str]:
+    """Return the set of simple-name supertypes of a class_declaration or
+    interface_declaration node.
+
+    Includes the `superclass` (for class_declaration) and every entry of
+    `super_interfaces` / `extends_interfaces`. Generics are stripped.
+    """
+    out: set[str] = set()
+    for ch in class_node.children:
+        if ch.type in ("superclass", "super_interfaces", "extends_interfaces"):
+            # Descend into the clause to find type_identifier / generic_type / scoped_type_identifier nodes.
+            for tn in _collect_type_names(ch):
+                out.add(tn)
+    return out
+
+
+def _collect_type_names(node: Any) -> list[str]:
+    """Collect simple-name type references inside a supertype clause.
+
+    A `superclass` clause contains either a `type_identifier`, a `generic_type`
+    (which itself contains a `type_identifier`), or a `scoped_type_identifier`
+    (for qualified names like `pkg.Foo`). A `super_interfaces` clause wraps a
+    `type_list` containing the same.
+    """
+    out: list[str] = []
+    stack = [node]
+    while stack:
+        n = stack.pop()
+        if n.type == "type_identifier":
+            out.append(n.text.decode("utf-8"))
+            continue
+        if n.type == "generic_type":
+            # Take just the leading name.
+            for ch in n.children:
+                if ch.type == "type_identifier":
+                    out.append(ch.text.decode("utf-8"))
+                    break
+                if ch.type == "scoped_type_identifier":
+                    # qualified.Name<...> — take final segment.
+                    text = ch.text.decode("utf-8")
+                    out.append(text.rsplit(".", 1)[-1])
+                    break
+            continue
+        if n.type == "scoped_type_identifier":
+            text = n.text.decode("utf-8")
+            out.append(text.rsplit(".", 1)[-1])
+            continue
+        # Descend into containers like type_list.
+        stack.extend(n.children)
+    return out
+
+
+def _enclosing_class_or_interface(node: Any) -> Any:
+    """Walk parents to find the nearest enclosing class_declaration or
+    interface_declaration. Returns None if at file top level."""
+    cur = node.parent
+    while cur is not None:
+        if cur.type in ("class_declaration", "interface_declaration"):
+            return cur
+        cur = cur.parent
+    return None
+
+
+def _enclosing_method(node: Any) -> Any:
+    """Walk parents to find the nearest enclosing method_declaration or
+    constructor_declaration. Returns None if not inside one."""
+    cur = node.parent
+    while cur is not None:
+        if cur.type in ("method_declaration", "constructor_declaration"):
+            return cur
+        cur = cur.parent
+    return None
+
+
+def _infer_receiver_type(call_node: Any) -> str | None:
+    """Try to infer the simple-name static type of the receiver of a
+    method_invocation. Returns None on any uncertainty (fail-closed).
+
+    Supported receiver shapes:
+      - missing object (unqualified call inside class) -> enclosing class name
+      - identifier            -> field lookup, then local variable / parameter lookup
+      - field_access `this.x` -> identifier lookup on `x` (fields only)
+    Other receiver shapes (method_invocation chain, cast, object_creation, etc.)
+    return None.
+    """
+    obj = call_node.child_by_field_name("object")
+    if obj is None:
+        # Unqualified call inside a class — receiver type is the enclosing class.
+        enclosing = _enclosing_class_or_interface(call_node)
+        if enclosing is None:
+            return None
+        name_node = enclosing.child_by_field_name("name")
+        return name_node.text.decode("utf-8") if name_node else None
+
+    # Resolve a `this.x` field-access to a bare identifier `x`.
+    if obj.type == "field_access":
+        # `this.x` shape: object=`this`, field=`x`.
+        inner_obj = obj.child_by_field_name("object")
+        field = obj.child_by_field_name("field")
+        if inner_obj is not None and inner_obj.type == "this" and field is not None:
+            return _lookup_field_type(call_node, field.text.decode("utf-8"))
+        return None
+
+    if obj.type == "identifier":
+        ident = obj.text.decode("utf-8")
+        # Try locals/params first (innermost scope wins), then fields.
+        local = _lookup_local_or_param_type(call_node, ident)
+        if local is not None:
+            return local
+        return _lookup_field_type(call_node, ident)
+
+    # Anything else — chained calls, casts, news, parenthesized — fail closed.
+    return None
+
+
+def _lookup_field_type(node: Any, ident: str) -> str | None:
+    """Find a field_declaration named `ident` in the enclosing class. Returns
+    its declared type's simple name (generics stripped), or None."""
+    enclosing = _enclosing_class_or_interface(node)
+    if enclosing is None:
+        return None
+    body = enclosing.child_by_field_name("body")
+    if body is None:
+        return None
+    for ch in body.children:
+        if ch.type != "field_declaration":
+            continue
+        type_node = ch.child_by_field_name("type")
+        if type_node is None:
+            continue
+        for fc in ch.children:
+            if fc.type == "variable_declarator":
+                name_node = fc.child_by_field_name("name")
+                if name_node is not None and name_node.text.decode("utf-8") == ident:
+                    return _strip_generics(type_node.text.decode("utf-8"))
+    return None
+
+
+def _lookup_local_or_param_type(node: Any, ident: str) -> str | None:
+    """Find a local_variable_declaration or formal_parameter named `ident` in
+    the enclosing method. Returns the declared simple-name type, or None."""
+    method = _enclosing_method(node)
+    if method is None:
+        return None
+    # Formal parameters.
+    params = method.child_by_field_name("parameters")
+    if params is not None:
+        for p in params.children:
+            if p.type in ("formal_parameter", "spread_parameter"):
+                pname = p.child_by_field_name("name")
+                ptype = p.child_by_field_name("type")
+                if pname is not None and ptype is not None and pname.text.decode("utf-8") == ident:
+                    return _strip_generics(ptype.text.decode("utf-8"))
+    # Local variables anywhere in the method body.
+    body = method.child_by_field_name("body")
+    if body is not None:
+        for decl in _find_nodes(body, "local_variable_declaration"):
+            type_node = decl.child_by_field_name("type")
+            if type_node is None:
+                continue
+            for fc in decl.children:
+                if fc.type == "variable_declarator":
+                    name_node = fc.child_by_field_name("name")
+                    if name_node is not None and name_node.text.decode("utf-8") == ident:
+                        return _strip_generics(type_node.text.decode("utf-8"))
+    return None
 
 
 def _capture_argument(arg_node: Any, base: str) -> dict[str, str]:
@@ -267,20 +505,31 @@ def _capture_argument(arg_node: Any, base: str) -> dict[str, str]:
     return captures
 
 
-def _ts_class_extends_typearg(
+def _ts_class_supertype_typearg(
     lens: dict[str, Any],
     root: Any,
     rel: str,
     content: str,
     service: str,
 ) -> tuple[list[Node], list[Edge]]:
-    """Find classes that extend a given generic superclass, capture a type argument.
+    """Find classes that have a given generic supertype (extends OR implements)
+    and capture one of its type arguments.
 
     Lens match.tree_sitter config:
-      superclass:    str (required) — the superclass name to look for (e.g.
-                     "AbstractAggregateDomainEventPublisher")
+      superclass:    str (required) — the supertype name to look for. Despite the
+                     name (kept for back-compat with the legacy
+                     `class-extends-typearg` extractor), this matches BOTH
+                     `extends X<...>` (superclass) AND `implements X<...>`
+                     (super_interfaces). Useful for Quarkus Panache repositories
+                     declared as `class FooRepo implements PanacheRepository<Foo>`.
       typearg_index: int (default 0) — which type argument to capture
       capture_as:    str (default "aggregate") — capture group name
+
+    The original `class-extends-typearg` extractor name is preserved as an alias
+    that delegates here. Existing Eventuate-tram lens uses the legacy name with a
+    `superclass` value (AbstractAggregateDomainEventPublisher) that only ever
+    appears in `extends` position, so widening to also match `implements` is a
+    strict superset and back-compatible.
     """
     from .engine import _emit_node
 
@@ -289,7 +538,7 @@ def _ts_class_extends_typearg(
     ts_config = match.get("tree_sitter", {})
     target_super = ts_config.get("superclass")
     if not target_super:
-        raise ValueError("class-extends-typearg extractor requires tree_sitter.superclass")
+        raise ValueError("class-supertype-typearg extractor requires tree_sitter.superclass")
     typearg_index = int(ts_config.get("typearg_index", 0))
     capture_as = ts_config.get("capture_as", "aggregate")
 
@@ -297,34 +546,33 @@ def _ts_class_extends_typearg(
     edges: list[Edge] = []
 
     for cls_node in _find_nodes(root, "class_declaration"):
-        superclass_node = None
+        # Gather all generic_type nodes from the superclass and super_interfaces
+        # clauses. Each candidate is a (name, type_arguments) pair.
+        candidates: list[tuple[str, Any]] = []
         for ch in cls_node.children:
-            if ch.type == "superclass":
-                superclass_node = ch
+            if ch.type in ("superclass", "super_interfaces"):
+                for gt in _find_generic_types_in_clause(ch):
+                    name = ""
+                    type_args = None
+                    for inner in gt.children:
+                        if inner.type == "type_identifier":
+                            name = inner.text.decode("utf-8")
+                        elif inner.type == "scoped_type_identifier":
+                            name = inner.text.decode("utf-8").rsplit(".", 1)[-1]
+                        elif inner.type == "type_arguments":
+                            type_args = inner
+                    if name and type_args is not None:
+                        candidates.append((name, type_args))
+
+        matched = None
+        for name, type_args in candidates:
+            if name == target_super:
+                matched = type_args
                 break
-        if superclass_node is None:
+        if matched is None:
             continue
 
-        generic = None
-        for ch in superclass_node.children:
-            if ch.type == "generic_type":
-                generic = ch
-                break
-        if generic is None:
-            continue
-
-        # Confirm superclass name matches.
-        super_name = ""
-        type_args = None
-        for ch in generic.children:
-            if ch.type == "type_identifier":
-                super_name = ch.text.decode("utf-8")
-            elif ch.type == "type_arguments":
-                type_args = ch
-        if super_name != target_super or type_args is None:
-            continue
-
-        typeargs = [c for c in type_args.children if c.type not in ("<", ">", ",")]
+        typeargs = [c for c in matched.children if c.type not in ("<", ">", ",")]
         if typearg_index >= len(typeargs):
             continue
         arg = typeargs[typearg_index]
@@ -337,6 +585,25 @@ def _ts_class_extends_typearg(
         nodes.append(_emit_node(emit, captures, rel, line_no, service))
 
     return nodes, edges
+
+
+def _find_generic_types_in_clause(clause: Any) -> list[Any]:
+    """Walk a superclass / super_interfaces clause and collect every generic_type
+    child (the `X<T>` shape). Non-generic supertypes (`extends X`) are ignored
+    since this extractor requires a type argument to capture.
+    """
+    out: list[Any] = []
+    stack = list(clause.children)
+    while stack:
+        n = stack.pop()
+        if n.type == "generic_type":
+            out.append(n)
+            continue
+        # super_interfaces wraps a `type_list`; descend into it but not into
+        # generic_type bodies (we want top-level supertypes only).
+        if n.type == "type_list":
+            stack.extend(n.children)
+    return out
 
 
 def _ts_query(

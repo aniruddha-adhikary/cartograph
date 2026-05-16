@@ -1,0 +1,95 @@
+[
+  {
+    "name": "micronaut-rest-controller",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Controller\") arguments: (annotation_argument_list (string_literal (string_fragment) @base_path)))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Controller\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Service",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string",
+        "base_path": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "micronaut-controller",
+        "framework": "micronaut",
+        "base_path": "{{base_path|}}"
+      },
+      "source": "lens:micronaut-rest",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "micronaut-rest-endpoint",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @cls_ann (#eq? @cls_ann \"Controller\") arguments: (annotation_argument_list (string_literal (string_fragment) @parent_base)))) name: (identifier) @class_name body: (class_body (method_declaration (modifiers (annotation name: (identifier) @http (#match? @http \"^(Get|Post|Put|Delete|Patch|Head|Options)$\") arguments: (annotation_argument_list (string_literal (string_fragment) @method_path)))) name: (identifier) @method_name) @anchor)) (class_declaration (modifiers (annotation name: (identifier) @cls_ann (#eq? @cls_ann \"Controller\") arguments: (annotation_argument_list (string_literal (string_fragment) @parent_base)))) name: (identifier) @class_name body: (class_body (method_declaration (modifiers (marker_annotation name: (identifier) @http (#match? @http \"^(Get|Post|Put|Delete|Patch|Head|Options)$\"))) name: (identifier) @method_name) @anchor)) (class_declaration (modifiers (marker_annotation name: (identifier) @cls_ann (#eq? @cls_ann \"Controller\"))) name: (identifier) @class_name body: (class_body (method_declaration (modifiers (annotation name: (identifier) @http (#match? @http \"^(Get|Post|Put|Delete|Patch|Head|Options)$\") arguments: (annotation_argument_list (string_literal (string_fragment) @method_path)))) name: (identifier) @method_name) @anchor)) (class_declaration (modifiers (marker_annotation name: (identifier) @cls_ann (#eq? @cls_ann \"Controller\"))) name: (identifier) @class_name body: (class_body (method_declaration (modifiers (marker_annotation name: (identifier) @http (#match? @http \"^(Get|Post|Put|Delete|Patch|Head|Options)$\"))) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "Endpoint",
+      "schema": {
+        "http_method": "string",
+        "path": "string",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "http_method": "{{http}}",
+        "path": "/{{parent_base|}}/{{method_path|}}",
+        "handler": "{{class_name}}.{{method_name}}",
+        "framework": "micronaut"
+      },
+      "source": "lens:micronaut-rest",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "micronaut-http-client",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(interface_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Client\") arguments: (annotation_argument_list (string_literal (string_fragment) @base_url)))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string",
+        "base_url": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "micronaut-http-client",
+        "framework": "micronaut",
+        "base_url": "{{base_url}}"
+      },
+      "source": "lens:micronaut-rest",
+      "confidence": "high"
+    }
+  }
+]

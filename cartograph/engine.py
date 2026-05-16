@@ -191,11 +191,19 @@ def _xml_query_strategy(
       select:    str (required) — ElementTree XPath, e.g. ".//servlet-mapping"
       captures:  dict[str, str] — capture_name -> sub-selector. Each sub-selector is:
                    "@attr"          — attribute on the matched element
-                   "."              — text of the matched element itself
+                   "."              — text (and descendant text) of the matched element
                    "child"          — text of first <child> below the match
                    "child/grand"    — text of first <child>/<grand> below the match
                    "child/@attr"    — attribute of first <child>
+                   "^@attr"         — attribute on the immediate parent (A5)
+                   "^^@attr"        — attribute on grandparent (each `^` = one level up)
+                   "^/tag"          — descendant `tag` rooted at the immediate parent
+                   "../tag"         — same as `^/tag`
                  If a capture has no match, it resolves to "".
+
+    Notes on body capture ("." or empty selector): the result now includes all
+    descendant text via `itertext()`, so dynamic SQL fragments like
+    `<select>... <if>...</if> ORDER BY id</select>` are preserved (A6).
     """
     import xml.etree.ElementTree as ET
     nodes: list[Node] = []
@@ -207,28 +215,89 @@ def _xml_query_strategy(
 
     cleaned = re.sub(r"^\s*<\?xml[^?]*\?>", "", content)
     cleaned = re.sub(r'\sxmlns(:[\w-]+)?\s*=\s*"[^"]*"', "", cleaned)
-    try:
-        root = ET.fromstring(cleaned)
-    except ET.ParseError:
+
+    # Per-element line numbers via expat (A6). Build a tree where each element
+    # has a private `_line` attribute pointing at the line of its open tag.
+    root, line_map = _xml_parse_with_lines(cleaned)
+    if root is None:
         return nodes, edges
 
-    line_starts = [0]
-    for i, ch in enumerate(content):
-        if ch == "\n":
-            line_starts.append(i + 1)
+    # Parent map for ancestor-walk selectors (A5).
+    parent_map = {child: parent for parent in root.iter() for child in parent}
 
     for el in root.findall(select):
         captures: dict[str, Any] = {"_tag": el.tag}
         for name, sub in captures_cfg.items():
-            captures[name] = _xml_resolve(el, sub)
-        line_no = _xml_lineno(el, content, line_starts)
+            captures[name] = _xml_resolve(el, sub, parent_map)
+        line_no = line_map.get(id(el), 1)
         nodes.append(_emit_node(emit, captures, rel, line_no, service))
     return nodes, edges
 
 
-def _xml_resolve(el: Any, selector: str) -> str:
+def _xml_parse_with_lines(xml_text: str) -> tuple[Any, dict[int, int]]:
+    """Parse `xml_text` and return (root, {id(element): line_no}).
+
+    Uses ``xml.etree.ElementTree.XMLParser`` (expat-backed in CPython) and
+    queries the underlying expat parser's ``CurrentLineNumber`` on each
+    ``start`` event via ``TreeBuilder``. This avoids any extra dependency.
+
+    Returns (None, {}) if parsing fails.
+    """
+    import xml.etree.ElementTree as ET
+    import xml.parsers.expat as expat
+
+    line_map: dict[int, int] = {}
+    tb = ET.TreeBuilder()
+    parser = expat.ParserCreate()
+
+    def _start(name: str, attrs: dict[str, str]) -> None:
+        el = tb.start(name, attrs)
+        line_map[id(el)] = parser.CurrentLineNumber
+
+    parser.StartElementHandler = _start
+    parser.EndElementHandler = tb.end
+    parser.CharacterDataHandler = tb.data
+    try:
+        parser.Parse(xml_text, True)
+        root = tb.close()
+    except Exception:
+        return None, {}
+    return root, line_map
+
+
+def _xml_resolve(el: Any, selector: str, parent_map: dict[Any, Any] | None = None) -> str:
+    # A5: ancestor-walk prefixes. `^` peels one parent; `../` is equivalent to
+    # one `^`. After peeling, resolve the remainder against the ancestor.
+    if parent_map is not None:
+        current = el
+        s = selector
+        # Handle leading `../` segments.
+        while s.startswith("../"):
+            parent = parent_map.get(current)
+            if parent is None:
+                return ""
+            current = parent
+            s = s[3:]
+        # Handle leading `^` chars. `^@attr` -> parent attr; `^/tag` -> parent's
+        # descendant `tag`; `^^...` -> grandparent; etc.
+        if s.startswith("^"):
+            while s.startswith("^"):
+                parent = parent_map.get(current)
+                if parent is None:
+                    return ""
+                current = parent
+                s = s[1:]
+            if s.startswith("/"):
+                s = s[1:]
+            if not s:
+                # Bare `^` => parent's text.
+                return _node_text(current)
+            return _xml_resolve(current, s, parent_map)
+        if current is not el:
+            return _xml_resolve(current, s, parent_map)
+
     if selector in ("", "."):
-        return (el.text or "").strip()
+        return _node_text(el)
     if selector.startswith("@"):
         return el.get(selector[1:], "") or ""
     parts = selector.split("/")
@@ -238,10 +307,23 @@ def _xml_resolve(el: Any, selector: str) -> str:
         target = el.find(parent_path) if parent_path else el
         return target.get(last[1:], "") if target is not None else ""
     target = el.find(selector)
-    return (target.text or "").strip() if target is not None and target.text else ""
+    if target is None:
+        return ""
+    return _node_text(target)
+
+
+def _node_text(el: Any) -> str:
+    """Return all text content of `el`, including descendants and tail-text
+    between children — preserves MyBatis dynamic SQL bodies. (A6)"""
+    try:
+        return "".join(el.itertext()).strip()
+    except Exception:
+        return (getattr(el, "text", "") or "").strip()
 
 
 def _xml_lineno(el: Any, content: str, line_starts: list[int]) -> int:
+    # Retained for back-compat in case callers import it. Returns line of the
+    # first occurrence of the element's open tag in `content`.
     open_tag = f"<{el.tag}"
     idx = content.find(open_tag)
     if idx >= 0:

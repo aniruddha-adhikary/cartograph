@@ -1,0 +1,130 @@
+[
+  {
+    "name": "micronaut-kafka-listener-component",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"KafkaListener\"))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"KafkaListener\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "micronaut-kafka-listener",
+        "framework": "micronaut-kafka"
+      },
+      "source": "lens:micronaut-kafka",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "micronaut-kafka-client-component",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(interface_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"KafkaClient\"))) name: (identifier) @class_name) @anchor (interface_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"KafkaClient\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "micronaut-kafka-client",
+        "framework": "micronaut-kafka"
+      },
+      "source": "lens:micronaut-kafka",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "micronaut-kafka-consumer-method",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers [(marker_annotation name: (identifier) @cls_ann (#eq? @cls_ann \"KafkaListener\")) (annotation name: (identifier) @cls_ann (#eq? @cls_ann \"KafkaListener\"))]) name: (identifier) @class_name body: (class_body (method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Topic\") arguments: (annotation_argument_list (string_literal (string_fragment) @topic)))) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "kafka",
+        "topic": "{{topic}}",
+        "topics": ["{{topic}}"],
+        "handler": "{{class_name}}.{{method_name}}",
+        "framework": "micronaut-kafka"
+      },
+      "source": "lens:micronaut-kafka",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "micronaut-kafka-producer-method",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(interface_declaration (modifiers [(marker_annotation name: (identifier) @cls_ann (#eq? @cls_ann \"KafkaClient\")) (annotation name: (identifier) @cls_ann (#eq? @cls_ann \"KafkaClient\"))]) name: (identifier) @class_name body: (interface_body (method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Topic\") arguments: (annotation_argument_list (string_literal (string_fragment) @topic)))) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "handler": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "kafka",
+        "topic": "{{topic}}",
+        "handler": "{{class_name}}.{{method_name}}",
+        "framework": "micronaut-kafka",
+        "delivery_edge": "KAFKA_DELIVERS"
+      },
+      "source": "lens:micronaut-kafka",
+      "confidence": "high"
+    }
+  }
+]

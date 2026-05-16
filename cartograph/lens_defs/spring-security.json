@@ -1,0 +1,189 @@
+[
+  {
+    "name": "spring-security-method-rule",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)(PreAuthorize|PostAuthorize|PreFilter|PostFilter|Secured|RolesAllowed|PermitAll|DenyAll)$\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @method_name) @anchor)) (class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (marker_annotation name: (_) @ann (#match? @ann \"(^|\\\\.)(PermitAll|DenyAll)$\"))) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "SecurityRule",
+      "schema": {
+        "kind": "string",
+        "expression": "string",
+        "class_name": "string",
+        "method_name": "string",
+        "framework": "string",
+        "args_text": "string",
+        "level": "string"
+      },
+      "values": {
+        "kind": "{{ann}}",
+        "expression": "",
+        "class_name": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "framework": "spring-security",
+        "args_text": "{{args_text|}}",
+        "level": "method"
+      },
+      "source": "lens:spring-security",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-security-class-rule",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)(PreAuthorize|PostAuthorize|Secured|RolesAllowed)$\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "SecurityRule",
+      "schema": {
+        "kind": "string",
+        "expression": "string",
+        "class_name": "string",
+        "method_name": "string",
+        "framework": "string",
+        "args_text": "string",
+        "level": "string"
+      },
+      "values": {
+        "kind": "{{ann}}",
+        "expression": "",
+        "class_name": "{{class_name}}",
+        "method_name": "",
+        "framework": "spring-security",
+        "args_text": "{{args_text|}}",
+        "level": "class"
+      },
+      "source": "lens:spring-security",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-security-resolve-expression-string",
+    "scope": "resolve",
+    "match": {
+      "label": "SecurityRule",
+      "field": "args_text",
+      "pattern": "\"(?P<e>[^\"]+)\""
+    },
+    "set": {
+      "expression": "{{e}}"
+    }
+  },
+  {
+    "name": "spring-security-resolve-expression-array",
+    "scope": "resolve",
+    "match": {
+      "label": "SecurityRule",
+      "field": "args_text",
+      "pattern": "\\{\\s*(?P<e>[^}]+)\\s*\\}"
+    },
+    "set": {
+      "expression": "{{e}}"
+    }
+  },
+  {
+    "name": "spring-security-method-security-config",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)(EnableMethodSecurity|EnableGlobalMethodSecurity|EnableWebSecurity|EnableReactiveMethodSecurity)$\"))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (marker_annotation name: (_) @ann (#match? @ann \"(^|\\\\.)(EnableMethodSecurity|EnableGlobalMethodSecurity|EnableWebSecurity|EnableReactiveMethodSecurity)$\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "SecurityConfig",
+      "schema": {
+        "class_name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "class_name": "{{class_name}}",
+        "kind": "{{ann}}",
+        "framework": "spring-security"
+      },
+      "source": "lens:spring-security",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-security-filter-chain-bean",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (marker_annotation name: (_) @ann (#match? @ann \"(^|\\\\.)Bean$\"))) type: (type_identifier) @return_type (#eq? @return_type \"SecurityFilterChain\") name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "SecurityConfig",
+      "schema": {
+        "class_name": "string",
+        "method_name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "class_name": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "kind": "filter-chain",
+        "framework": "spring-security"
+      },
+      "source": "lens:spring-security",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-security-legacy-adapter",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name superclass: (superclass (type_identifier) @parent (#eq? @parent \"WebSecurityConfigurerAdapter\"))) @anchor"
+      }
+    },
+    "emit": {
+      "label": "SecurityConfig",
+      "schema": {
+        "class_name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "class_name": "{{class_name}}",
+        "kind": "legacy-adapter",
+        "framework": "spring-security"
+      },
+      "source": "lens:spring-security",
+      "confidence": "high"
+    }
+  }
+]

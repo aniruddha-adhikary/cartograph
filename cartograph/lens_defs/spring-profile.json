@@ -1,0 +1,129 @@
+[
+  {
+    "name": "spring-profile-binding",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)Profile$\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "ProfileBinding",
+      "schema": {
+        "profile": "string",
+        "target_class": "string",
+        "framework": "string",
+        "args_text": "string"
+      },
+      "values": {
+        "profile": "",
+        "target_class": "{{class_name}}",
+        "framework": "spring",
+        "args_text": "{{args_text}}"
+      },
+      "source": "lens:spring-profile",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-profile-binding-resolve-array",
+    "scope": "resolve",
+    "match": {
+      "label": "ProfileBinding",
+      "field": "args_text",
+      "pattern": "\\{\\s*(?P<p>[^}]+)\\s*\\}"
+    },
+    "set": {
+      "profile": "{{p}}"
+    }
+  },
+  {
+    "name": "spring-profile-binding-resolve-string",
+    "scope": "resolve",
+    "match": {
+      "label": "ProfileBinding",
+      "field": "args_text",
+      "pattern": "^\\(\\s*\"(?P<p>[^\"]+)\""
+    },
+    "set": {
+      "profile": "{{p}}"
+    }
+  },
+  {
+    "name": "spring-profile-config-yml",
+    "scope": "source",
+    "match": {
+      "files": ["application-*.yml", "application-*.yaml"],
+      "strategy": "regex",
+      "patterns": [
+        {"regex": "\\A"}
+      ]
+    },
+    "emit": {
+      "label": "ProfileConfig",
+      "schema": {
+        "profile": "string",
+        "path": "string",
+        "framework": "string",
+        "format": "string",
+        "stem": "string"
+      },
+      "values": {
+        "profile": "",
+        "path": "{{_rel_path}}",
+        "framework": "spring",
+        "format": "yaml",
+        "stem": "{{_file_stem}}"
+      },
+      "source": "lens:spring-profile",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-profile-config-properties",
+    "scope": "source",
+    "match": {
+      "files": ["application-*.properties"],
+      "strategy": "regex",
+      "patterns": [
+        {"regex": "\\A"}
+      ]
+    },
+    "emit": {
+      "label": "ProfileConfig",
+      "schema": {
+        "profile": "string",
+        "path": "string",
+        "framework": "string",
+        "format": "string",
+        "stem": "string"
+      },
+      "values": {
+        "profile": "",
+        "path": "{{_rel_path}}",
+        "framework": "spring",
+        "format": "properties",
+        "stem": "{{_file_stem}}"
+      },
+      "source": "lens:spring-profile",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-profile-config-resolve-name",
+    "scope": "resolve",
+    "match": {
+      "label": "ProfileConfig",
+      "field": "stem",
+      "pattern": "^application-(?P<p>.+)$"
+    },
+    "set": {
+      "profile": "{{p}}"
+    }
+  }
+]

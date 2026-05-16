@@ -49,6 +49,52 @@
     }
   },
   {
+    "name": "j2ee-webxml-filter",
+    "scope": "source",
+    "match": {
+      "files": ["web.xml"],
+      "strategy": "xml-query",
+      "select": ".//filter",
+      "captures": {
+        "filter_name": "filter-name",
+        "class_name": "filter-class"
+      }
+    },
+    "emit": {
+      "label": "Filter",
+      "schema": {"name": "string", "class_name": "string", "framework": "string"},
+      "values": {
+        "name": "{{filter_name}}",
+        "class_name": "{{class_name}}",
+        "framework": "j2ee-webxml"
+      },
+      "source": "lens:j2ee-descriptors",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-webxml-listener",
+    "scope": "source",
+    "match": {
+      "files": ["web.xml"],
+      "strategy": "xml-query",
+      "select": ".//listener",
+      "captures": {
+        "class_name": "listener-class"
+      }
+    },
+    "emit": {
+      "label": "Listener",
+      "schema": {"name": "string", "framework": "string"},
+      "values": {
+        "name": "{{class_name}}",
+        "framework": "j2ee-webxml"
+      },
+      "source": "lens:j2ee-descriptors",
+      "confidence": "high"
+    }
+  },
+  {
     "name": "j2ee-webxml-filter-mapping",
     "scope": "source",
     "match": {

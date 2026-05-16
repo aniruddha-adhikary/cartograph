@@ -1,0 +1,247 @@
+[
+  {
+    "name": "j2ee-cdi-inject-field",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @target_class body: (class_body (field_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Inject\"))) type: (_) @injected_type declarator: (variable_declarator name: (identifier) @injected_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "Injection",
+      "schema": {"kind": "string", "target_class": "string", "injected_type": "string", "injected_name": "string", "framework": "string"},
+      "values": {
+        "kind": "inject",
+        "target_class": "{{target_class}}",
+        "injected_type": "{{injected_type}}",
+        "injected_name": "{{injected_name}}",
+        "framework": "j2ee-cdi"
+      },
+      "source": "lens:j2ee-cdi-injection",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-cdi-inject-constructor-param",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @target_class body: (class_body (constructor_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Inject\"))) parameters: (formal_parameters (formal_parameter type: (_) @injected_type name: (identifier) @injected_name) @anchor))))"
+      }
+    },
+    "emit": {
+      "label": "Injection",
+      "schema": {"kind": "string", "target_class": "string", "injected_type": "string", "injected_name": "string", "framework": "string"},
+      "values": {
+        "kind": "inject-constructor",
+        "target_class": "{{target_class}}",
+        "injected_type": "{{injected_type}}",
+        "injected_name": "{{injected_name}}",
+        "framework": "j2ee-cdi"
+      },
+      "source": "lens:j2ee-cdi-injection",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-cdi-inject-setter-param",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @target_class body: (class_body (method_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Inject\"))) parameters: (formal_parameters (formal_parameter type: (_) @injected_type name: (identifier) @injected_name) @anchor))))"
+      }
+    },
+    "emit": {
+      "label": "Injection",
+      "schema": {"kind": "string", "target_class": "string", "injected_type": "string", "injected_name": "string", "framework": "string"},
+      "values": {
+        "kind": "inject-setter",
+        "target_class": "{{target_class}}",
+        "injected_type": "{{injected_type}}",
+        "injected_name": "{{injected_name}}",
+        "framework": "j2ee-cdi"
+      },
+      "source": "lens:j2ee-cdi-injection",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-ejb-inject-field",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @target_class body: (class_body (field_declaration (modifiers [(marker_annotation name: (identifier) @ann (#eq? @ann \"EJB\")) (annotation name: (identifier) @ann (#eq? @ann \"EJB\"))]) type: (_) @injected_type declarator: (variable_declarator name: (identifier) @injected_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "Injection",
+      "schema": {"kind": "string", "target_class": "string", "injected_type": "string", "injected_name": "string", "framework": "string"},
+      "values": {
+        "kind": "ejb",
+        "target_class": "{{target_class}}",
+        "injected_type": "{{injected_type}}",
+        "injected_name": "{{injected_name}}",
+        "framework": "j2ee-ejb"
+      },
+      "source": "lens:j2ee-cdi-injection",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-resource-inject-field",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @target_class body: (class_body (field_declaration (modifiers [(marker_annotation name: (identifier) @ann (#eq? @ann \"Resource\")) (annotation name: (identifier) @ann (#eq? @ann \"Resource\"))]) type: (_) @injected_type declarator: (variable_declarator name: (identifier) @injected_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "Injection",
+      "schema": {"kind": "string", "target_class": "string", "injected_type": "string", "injected_name": "string", "framework": "string"},
+      "values": {
+        "kind": "resource",
+        "target_class": "{{target_class}}",
+        "injected_type": "{{injected_type}}",
+        "injected_name": "{{injected_name}}",
+        "framework": "j2ee-ee"
+      },
+      "source": "lens:j2ee-cdi-injection",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-persistence-context-field",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @target_class body: (class_body (field_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"PersistenceContext\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @uk (#eq? @uk \"unitName\") value: (string_literal (string_fragment) @unit_name))))) type: (_) @injected_type declarator: (variable_declarator name: (identifier) @injected_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "Injection",
+      "schema": {"kind": "string", "target_class": "string", "injected_type": "string", "injected_name": "string", "unit_name": "string", "framework": "string"},
+      "values": {
+        "kind": "persistence-context",
+        "target_class": "{{target_class}}",
+        "injected_type": "{{injected_type}}",
+        "injected_name": "{{injected_name}}",
+        "unit_name": "{{unit_name}}",
+        "framework": "j2ee-jpa"
+      },
+      "source": "lens:j2ee-cdi-injection",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-persistence-context-field-marker",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @target_class body: (class_body (field_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"PersistenceContext\"))) type: (_) @injected_type declarator: (variable_declarator name: (identifier) @injected_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "Injection",
+      "schema": {"kind": "string", "target_class": "string", "injected_type": "string", "injected_name": "string", "framework": "string"},
+      "values": {
+        "kind": "persistence-context",
+        "target_class": "{{target_class}}",
+        "injected_type": "{{injected_type}}",
+        "injected_name": "{{injected_name}}",
+        "framework": "j2ee-jpa"
+      },
+      "source": "lens:j2ee-cdi-injection",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-persistence-unit-field",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @target_class body: (class_body (field_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"PersistenceUnit\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @uk (#eq? @uk \"unitName\") value: (string_literal (string_fragment) @unit_name))))) type: (_) @injected_type declarator: (variable_declarator name: (identifier) @injected_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "Injection",
+      "schema": {"kind": "string", "target_class": "string", "injected_type": "string", "injected_name": "string", "unit_name": "string", "framework": "string"},
+      "values": {
+        "kind": "persistence-unit",
+        "target_class": "{{target_class}}",
+        "injected_type": "{{injected_type}}",
+        "injected_name": "{{injected_name}}",
+        "unit_name": "{{unit_name}}",
+        "framework": "j2ee-jpa"
+      },
+      "source": "lens:j2ee-cdi-injection",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-persistence-unit-field-marker",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @target_class body: (class_body (field_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"PersistenceUnit\"))) type: (_) @injected_type declarator: (variable_declarator name: (identifier) @injected_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "Injection",
+      "schema": {"kind": "string", "target_class": "string", "injected_type": "string", "injected_name": "string", "framework": "string"},
+      "values": {
+        "kind": "persistence-unit",
+        "target_class": "{{target_class}}",
+        "injected_type": "{{injected_type}}",
+        "injected_name": "{{injected_name}}",
+        "framework": "j2ee-jpa"
+      },
+      "source": "lens:j2ee-cdi-injection",
+      "confidence": "high"
+    }
+  }
+]

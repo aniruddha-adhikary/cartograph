@@ -1,0 +1,158 @@
+[
+  {
+    "name": "hibernate-filter-named",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @owner_class body: (class_body (field_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Filter\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @nk (#eq? @nk \"name\") value: (string_literal (string_fragment) @filter_name))))) declarator: (variable_declarator name: (identifier) @field_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "EntityFilter",
+      "schema": {"kind": "string", "owner_class": "string", "field_name": "string", "filter_name": "string", "framework": "string"},
+      "values": {
+        "kind": "filter",
+        "owner_class": "{{owner_class}}",
+        "field_name": "{{field_name}}",
+        "filter_name": "{{filter_name}}",
+        "framework": "hibernate"
+      },
+      "source": "lens:hibernate-relationships",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-filter-class",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Filter\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @nk (#eq? @nk \"name\") value: (string_literal (string_fragment) @filter_name))))) name: (identifier) @owner_class) @anchor"
+      }
+    },
+    "emit": {
+      "label": "EntityFilter",
+      "schema": {"kind": "string", "owner_class": "string", "filter_name": "string", "framework": "string"},
+      "values": {
+        "kind": "filter",
+        "owner_class": "{{owner_class}}",
+        "filter_name": "{{filter_name}}",
+        "framework": "hibernate"
+      },
+      "source": "lens:hibernate-relationships",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-filterdef",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(annotation name: (identifier) @ann (#eq? @ann \"FilterDef\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @nk (#eq? @nk \"name\") value: (string_literal (string_fragment) @filter_name)))) @anchor"
+      }
+    },
+    "emit": {
+      "label": "EntityFilterDef",
+      "schema": {"filter_name": "string", "framework": "string"},
+      "values": {
+        "filter_name": "{{filter_name}}",
+        "framework": "hibernate"
+      },
+      "source": "lens:hibernate-relationships",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-where-class",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Where\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @ck (#eq? @ck \"clause\") value: (string_literal (string_fragment) @clause))))) name: (identifier) @owner_class) @anchor"
+      }
+    },
+    "emit": {
+      "label": "EntityFilter",
+      "schema": {"kind": "string", "owner_class": "string", "clause": "string", "framework": "string"},
+      "values": {
+        "kind": "where",
+        "owner_class": "{{owner_class}}",
+        "clause": "{{clause}}",
+        "framework": "hibernate"
+      },
+      "source": "lens:hibernate-relationships",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-where-field",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @owner_class body: (class_body (field_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Where\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @ck (#eq? @ck \"clause\") value: (string_literal (string_fragment) @clause))))) declarator: (variable_declarator name: (identifier) @field_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "EntityFilter",
+      "schema": {"kind": "string", "owner_class": "string", "field_name": "string", "clause": "string", "framework": "string"},
+      "values": {
+        "kind": "where",
+        "owner_class": "{{owner_class}}",
+        "field_name": "{{field_name}}",
+        "clause": "{{clause}}",
+        "framework": "hibernate"
+      },
+      "source": "lens:hibernate-relationships",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-ondelete",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @owner_class body: (class_body (field_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"OnDelete\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @ak (#eq? @ak \"action\") value: (_) @action)))) declarator: (variable_declarator name: (identifier) @field_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "EntityOnDelete",
+      "schema": {"owner_class": "string", "field_name": "string", "action": "string", "framework": "string"},
+      "values": {
+        "owner_class": "{{owner_class}}",
+        "field_name": "{{field_name}}",
+        "action": "{{action}}",
+        "framework": "hibernate"
+      },
+      "source": "lens:hibernate-relationships",
+      "confidence": "high"
+    }
+  }
+]

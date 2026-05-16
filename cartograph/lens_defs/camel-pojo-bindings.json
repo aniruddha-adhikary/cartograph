@@ -1,0 +1,271 @@
+[
+  {
+    "name": "camel-pojo-consume-method",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)Consume$\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "framework": "string",
+        "handler": "string",
+        "owner_class": "string",
+        "method_name": "string",
+        "args_text": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "camel",
+        "topic": "",
+        "framework": "camel-pojo",
+        "handler": "{{class_name}}.{{method_name}}",
+        "owner_class": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "args_text": "{{args_text|}}"
+      },
+      "source": "lens:camel-pojo-bindings",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "camel-pojo-consume-field",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (field_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)Consume$\") arguments: (annotation_argument_list) @args_text)) declarator: (variable_declarator name: (identifier) @field_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "framework": "string",
+        "handler": "string",
+        "owner_class": "string",
+        "field_name": "string",
+        "args_text": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "camel",
+        "topic": "",
+        "framework": "camel-pojo",
+        "handler": "{{class_name}}.{{field_name}}",
+        "owner_class": "{{class_name}}",
+        "field_name": "{{field_name}}",
+        "args_text": "{{args_text|}}"
+      },
+      "source": "lens:camel-pojo-bindings",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "camel-pojo-produce-method",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)Produce$\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "framework": "string",
+        "owner_class": "string",
+        "method_name": "string",
+        "delivery_edge": "string",
+        "args_text": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "camel",
+        "topic": "",
+        "framework": "camel-pojo",
+        "owner_class": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "delivery_edge": "MESSAGE_DELIVERS",
+        "args_text": "{{args_text|}}"
+      },
+      "source": "lens:camel-pojo-bindings",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "camel-pojo-produce-field",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (field_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)Produce$\") arguments: (annotation_argument_list) @args_text)) declarator: (variable_declarator name: (identifier) @field_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "framework": "string",
+        "owner_class": "string",
+        "field_name": "string",
+        "delivery_edge": "string",
+        "args_text": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "camel",
+        "topic": "",
+        "framework": "camel-pojo",
+        "owner_class": "{{class_name}}",
+        "field_name": "{{field_name}}",
+        "delivery_edge": "MESSAGE_DELIVERS",
+        "args_text": "{{args_text|}}"
+      },
+      "source": "lens:camel-pojo-bindings",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "camel-pojo-endpoint-inject-field",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (field_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)EndpointInject$\") arguments: (annotation_argument_list) @args_text)) declarator: (variable_declarator name: (identifier) @field_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "EndpointReference",
+      "schema": {
+        "kind": "string",
+        "target_class": "string",
+        "field_name": "string",
+        "uri": "string",
+        "framework": "string",
+        "args_text": "string"
+      },
+      "values": {
+        "kind": "camel-endpoint-inject",
+        "target_class": "{{class_name}}",
+        "field_name": "{{field_name}}",
+        "uri": "",
+        "framework": "camel-pojo",
+        "args_text": "{{args_text|}}"
+      },
+      "source": "lens:camel-pojo-bindings",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "camel-pojo-resolve-uri-named",
+    "scope": "resolve",
+    "match": {
+      "label": "MessageConsumer",
+      "where": {"framework": "camel-pojo"},
+      "field": "args_text",
+      "pattern": "(?:uri|value)\\s*=\\s*\"(?P<topic>[^\"]+)\""
+    },
+    "set": {
+      "topic": "{{topic}}"
+    }
+  },
+  {
+    "name": "camel-pojo-resolve-uri-positional-consumer",
+    "scope": "resolve",
+    "match": {
+      "label": "MessageConsumer",
+      "where": {"framework": "camel-pojo"},
+      "field": "args_text",
+      "pattern": "^\\(\\s*\"(?P<topic>[^\"]+)\"\\s*\\)$"
+    },
+    "set": {
+      "topic": "{{topic}}"
+    }
+  },
+  {
+    "name": "camel-pojo-resolve-uri-named-producer",
+    "scope": "resolve",
+    "match": {
+      "label": "MessageProducer",
+      "where": {"framework": "camel-pojo"},
+      "field": "args_text",
+      "pattern": "(?:uri|value)\\s*=\\s*\"(?P<topic>[^\"]+)\""
+    },
+    "set": {
+      "topic": "{{topic}}"
+    }
+  },
+  {
+    "name": "camel-pojo-resolve-uri-positional-producer",
+    "scope": "resolve",
+    "match": {
+      "label": "MessageProducer",
+      "where": {"framework": "camel-pojo"},
+      "field": "args_text",
+      "pattern": "^\\(\\s*\"(?P<topic>[^\"]+)\"\\s*\\)$"
+    },
+    "set": {
+      "topic": "{{topic}}"
+    }
+  },
+  {
+    "name": "camel-pojo-resolve-uri-named-endpointref",
+    "scope": "resolve",
+    "match": {
+      "label": "EndpointReference",
+      "where": {"framework": "camel-pojo"},
+      "field": "args_text",
+      "pattern": "(?:uri|value)\\s*=\\s*\"(?P<uri>[^\"]+)\""
+    },
+    "set": {
+      "uri": "{{uri}}"
+    }
+  },
+  {
+    "name": "camel-pojo-resolve-uri-positional-endpointref",
+    "scope": "resolve",
+    "match": {
+      "label": "EndpointReference",
+      "where": {"framework": "camel-pojo"},
+      "field": "args_text",
+      "pattern": "^\\(\\s*\"(?P<uri>[^\"]+)\"\\s*\\)$"
+    },
+    "set": {
+      "uri": "{{uri}}"
+    }
+  }
+]

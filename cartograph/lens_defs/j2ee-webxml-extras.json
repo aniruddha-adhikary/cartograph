@@ -1,0 +1,127 @@
+[
+  {
+    "name": "j2ee-webxml-security-constraint",
+    "scope": "source",
+    "match": {
+      "files": ["web.xml"],
+      "strategy": "xml-query",
+      "select": ".//security-constraint",
+      "captures": {
+        "web_resource_name": "web-resource-collection/web-resource-name",
+        "url_pattern": "web-resource-collection/url-pattern",
+        "http_method": "web-resource-collection/http-method",
+        "role_name": "auth-constraint/role-name"
+      }
+    },
+    "emit": {
+      "label": "SecurityConstraint",
+      "schema": {
+        "web_resource_name": "string", "url_pattern": "string", "http_method": "string",
+        "role_name": "string", "framework": "string"
+      },
+      "values": {
+        "web_resource_name": "{{web_resource_name}}",
+        "url_pattern": "{{url_pattern}}",
+        "http_method": "{{http_method}}",
+        "role_name": "{{role_name}}",
+        "framework": "j2ee-webxml"
+      },
+      "source": "lens:j2ee-webxml-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-webxml-context-param",
+    "scope": "source",
+    "match": {
+      "files": ["web.xml"],
+      "strategy": "xml-query",
+      "select": ".//context-param",
+      "captures": {
+        "name": "param-name",
+        "value": "param-value"
+      }
+    },
+    "emit": {
+      "label": "ContextParam",
+      "schema": {"name": "string", "value": "string", "framework": "string"},
+      "values": {
+        "name": "{{name}}",
+        "value": "{{value}}",
+        "framework": "j2ee-webxml"
+      },
+      "source": "lens:j2ee-webxml-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-webxml-welcome-file",
+    "scope": "source",
+    "match": {
+      "files": ["web.xml"],
+      "strategy": "xml-query",
+      "select": ".//welcome-file-list/welcome-file",
+      "captures": {
+        "path": "."
+      }
+    },
+    "emit": {
+      "label": "WelcomeFile",
+      "schema": {"path": "string", "framework": "string"},
+      "values": {
+        "path": "{{path}}",
+        "framework": "j2ee-webxml"
+      },
+      "source": "lens:j2ee-webxml-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-webxml-error-page",
+    "scope": "source",
+    "match": {
+      "files": ["web.xml"],
+      "strategy": "xml-query",
+      "select": ".//error-page",
+      "captures": {
+        "location": "location",
+        "error_code": "error-code",
+        "exception_type": "exception-type"
+      }
+    },
+    "emit": {
+      "label": "ErrorPage",
+      "schema": {"location": "string", "error_code": "string", "exception_type": "string", "framework": "string"},
+      "values": {
+        "location": "{{location}}",
+        "error_code": "{{error_code}}",
+        "exception_type": "{{exception_type}}",
+        "framework": "j2ee-webxml"
+      },
+      "source": "lens:j2ee-webxml-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-webxml-session-config",
+    "scope": "source",
+    "match": {
+      "files": ["web.xml"],
+      "strategy": "xml-query",
+      "select": ".//session-config",
+      "captures": {
+        "timeout": "session-timeout"
+      }
+    },
+    "emit": {
+      "label": "SessionConfig",
+      "schema": {"timeout": "string", "framework": "string"},
+      "values": {
+        "timeout": "{{timeout}}",
+        "framework": "j2ee-webxml"
+      },
+      "source": "lens:j2ee-webxml-extras",
+      "confidence": "high"
+    }
+  }
+]

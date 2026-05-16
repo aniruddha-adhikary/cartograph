@@ -2,6 +2,7 @@
   "meta": {
     "version": 2,
     "workspace": "<workspace>",
+    "java_constants": {},
     "unresolved": [],
     "services": [
       "inspections-api",
@@ -10,44 +11,438 @@
     ],
     "node_count": 20,
     "edge_count": 8,
-    "lens_count": 33,
+    "lens_count": 298,
     "schema": {
       "node_labels": {
-        "MessageProducer": {
-          "message_role": "string",
-          "bus": "string",
-          "topic": "string",
-          "aggregate_type": "string",
-          "publisher_class": "string",
+        "HttpCall": {
           "framework": "string",
-          "delivery_edge": "string",
-          "channel": "string",
-          "channel_const": "string"
+          "protocol": "string",
+          "http_method": "string",
+          "host_var": "string",
+          "gql_body": "string",
+          "url": "string",
+          "path": "string",
+          "feign_args": "string"
         },
         "MessageConsumer": {
           "message_role": "string",
           "bus": "string",
           "topic": "string",
+          "framework": "string",
+          "handler": "string",
+          "owner_class": "string",
+          "method_name": "string",
+          "args_text": "string",
+          "field_name": "string",
+          "topic_text": "string",
+          "transport": "string",
           "topics": "list",
           "aggregate_type": "string",
           "aggregate_const": "string",
-          "framework": "string",
           "channel": "string",
-          "channel_const": "string"
+          "channel_const": "string",
+          "destination_const": "string",
+          "activation_config_text": "string",
+          "topic_const": "string",
+          "kind": "string",
+          "queue_const": "string"
+        },
+        "MessageProducer": {
+          "message_role": "string",
+          "bus": "string",
+          "topic": "string",
+          "framework": "string",
+          "owner_class": "string",
+          "method_name": "string",
+          "delivery_edge": "string",
+          "args_text": "string",
+          "field_name": "string",
+          "topic_text": "string",
+          "transport": "string",
+          "aggregate_type": "string",
+          "publisher_class": "string",
+          "channel": "string",
+          "channel_const": "string",
+          "destination_const": "string",
+          "topic_const": "string",
+          "handler": "string",
+          "exchange_const": "string"
+        },
+        "EndpointReference": {
+          "kind": "string",
+          "target_class": "string",
+          "field_name": "string",
+          "uri": "string",
+          "framework": "string",
+          "args_text": "string"
+        },
+        "Component": {
+          "name": "string",
+          "kind": "string",
+          "framework": "string",
+          "scope": "string",
+          "el_name": "string",
+          "method_name": "string",
+          "field_name": "string",
+          "class_name": "string",
+          "raw_args": "string",
+          "converter_id": "string",
+          "for_class": "string",
+          "validator_id": "string",
+          "base_url": "string",
+          "base_class": "string",
+          "entity_type": "string",
+          "base_interface": "string",
+          "base_repository": "string"
         },
         "Endpoint": {
           "http_method": "string",
           "path": "string",
           "handler": "string",
+          "framework": "string",
+          "_path_raw": "string",
+          "raw_method_args": "string",
+          "soap_operation": "string",
+          "operation": "string",
+          "protocol": "string",
+          "router": "string"
+        },
+        "EntityBehavior": {
+          "kind": "string",
+          "owner_class": "string",
           "framework": "string"
         },
-        "HttpCall": {
-          "url": "string",
-          "path": "string",
-          "http_method": "string",
+        "EntityCache": {
+          "strategy": "string",
+          "region": "string",
+          "owner_class": "string",
           "framework": "string",
-          "host_var": "string",
-          "feign_args": "string"
+          "args_text": "string"
+        },
+        "EntityConverter": {
+          "converter_class": "string",
+          "owner_class": "string",
+          "applies_to_field": "string",
+          "args_text": "string",
+          "framework": "string"
+        },
+        "EntityField": {
+          "kind": "string",
+          "value": "string",
+          "owner_class": "string",
+          "field_name": "string",
+          "args_text": "string",
+          "framework": "string",
+          "target_type": "string"
+        },
+        "EntityInheritance": {
+          "strategy": "string",
+          "discriminator_column": "string",
+          "discriminator_value": "string",
+          "owner_class": "string",
+          "args_text": "string",
+          "framework": "string"
+        },
+        "EntityFilter": {
+          "kind": "string",
+          "name": "string",
+          "condition": "string",
+          "clause": "string",
+          "owner_class": "string",
+          "args_text": "string",
+          "framework": "string",
+          "field_name": "string",
+          "filter_name": "string"
+        },
+        "EntityOnDelete": {
+          "action": "string",
+          "owner_class": "string",
+          "field_name": "string",
+          "args_text": "string",
+          "framework": "string"
+        },
+        "DatabaseQuery": {
+          "query_name": "string",
+          "query": "string",
+          "kind": "string",
+          "framework": "string",
+          "owner_class": "string",
+          "result_type": "string",
+          "class_name": "string",
+          "method_name": "string",
+          "args_text": "string",
+          "count_query": "string",
+          "native_query": "string",
+          "operation": "string",
+          "collection": "string",
+          "query_id": "string"
+        },
+        "EntityFilterDef": {
+          "filter_name": "string",
+          "framework": "string"
+        },
+        "EventConsumer": {
+          "event_type": "string",
+          "handler": "string",
+          "param_name": "string",
+          "kind": "string",
+          "bus": "string",
+          "framework": "string",
+          "delivery_edge": "string"
+        },
+        "EventProducer": {
+          "event_type": "string",
+          "owner_class": "string",
+          "field_name": "string",
+          "bus": "string",
+          "framework": "string",
+          "delivery_edge": "string"
+        },
+        "EventFire": {
+          "payload_text": "string",
+          "payload": "string",
+          "payload_class": "string",
+          "bus": "string",
+          "framework": "string"
+        },
+        "Injection": {
+          "kind": "string",
+          "target_class": "string",
+          "injected_type": "string",
+          "injected_name": "string",
+          "framework": "string",
+          "unit_name": "string"
+        },
+        "CdiQualifier": {
+          "name": "string",
+          "framework": "string"
+        },
+        "Servlet": {
+          "name": "string",
+          "class_name": "string",
+          "framework": "string"
+        },
+        "Filter": {
+          "name": "string",
+          "class_name": "string",
+          "framework": "string",
+          "url_pattern": "string"
+        },
+        "Listener": {
+          "name": "string",
+          "framework": "string"
+        },
+        "EarModule": {
+          "module_type": "string",
+          "archive": "string",
+          "context_root": "string",
+          "framework": "string"
+        },
+        "PersistenceUnit": {
+          "name": "string",
+          "transaction_type": "string",
+          "data_source": "string",
+          "provider": "string",
+          "framework": "string"
+        },
+        "Transaction": {
+          "level": "string",
+          "attribute": "string",
+          "management_type": "string",
+          "owner_class": "string",
+          "method_name": "string",
+          "args_text": "string",
+          "framework": "string",
+          "class_name": "string",
+          "propagation": "string",
+          "rollback_for": "string",
+          "read_only": "string",
+          "isolation": "string",
+          "timeout": "string"
+        },
+        "ScheduledJob": {
+          "cron": "string",
+          "second": "string",
+          "minute": "string",
+          "hour": "string",
+          "day_of_month": "string",
+          "month": "string",
+          "day_of_week": "string",
+          "year": "string",
+          "owner_class": "string",
+          "method_name": "string",
+          "args_text": "string",
+          "framework": "string",
+          "class_name": "string",
+          "fixed_delay": "string",
+          "fixed_rate": "string",
+          "initial_delay": "string",
+          "zone": "string"
+        },
+        "EjbAsync": {
+          "level": "string",
+          "owner_class": "string",
+          "method_name": "string",
+          "framework": "string"
+        },
+        "EjbLock": {
+          "type": "string",
+          "owner_class": "string",
+          "method_name": "string",
+          "args_text": "string",
+          "framework": "string"
+        },
+        "SecurityRule": {
+          "kind": "string",
+          "roles": "string",
+          "level": "string",
+          "owner_class": "string",
+          "method_name": "string",
+          "framework": "string",
+          "expression": "string",
+          "class_name": "string",
+          "args_text": "string"
+        },
+        "LifecycleHook": {
+          "kind": "string",
+          "owner_class": "string",
+          "method_name": "string",
+          "framework": "string"
+        },
+        "EjbInterface": {
+          "name": "string",
+          "scope": "string",
+          "framework": "string"
+        },
+        "EndpointParam": {
+          "kind": "string",
+          "name": "string",
+          "type": "string",
+          "parameter_name": "string",
+          "owner_class": "string",
+          "owner_method": "string",
+          "framework": "string"
+        },
+        "EndpointParamDefault": {
+          "value": "string",
+          "parameter_name": "string",
+          "owner_class": "string",
+          "owner_method": "string",
+          "framework": "string"
+        },
+        "Service": {
+          "name": "string",
+          "kind": "string",
+          "framework": "string",
+          "base_path": "string",
+          "endpoint_interface": "string",
+          "service_name": "string",
+          "port_name": "string",
+          "raw_args": "string",
+          "client_name": "string",
+          "wsdl_location": "string",
+          "file": "string"
+        },
+        "MessageDestination": {
+          "name": "string",
+          "bus": "string",
+          "framework": "string",
+          "kind": "string"
+        },
+        "EntityRelation": {
+          "kind": "string",
+          "owner_class": "string",
+          "target_type": "string",
+          "field_name": "string",
+          "framework": "string",
+          "annotation_text": "string"
+        },
+        "EntityJoin": {
+          "kind": "string",
+          "owner_class": "string",
+          "target_type": "string",
+          "field_name": "string",
+          "column": "string",
+          "framework": "string",
+          "table": "string"
+        },
+        "Entity": {
+          "name": "string",
+          "framework": "string",
+          "kind": "string"
+        },
+        "DatabaseTable": {
+          "table": "string",
+          "class_name": "string",
+          "framework": "string"
+        },
+        "PersistenceUnitClass": {
+          "persistence_unit_name": "string",
+          "class_name": "string",
+          "framework": "string"
+        },
+        "PersistenceProperty": {
+          "persistence_unit_name": "string",
+          "name": "string",
+          "value": "string",
+          "framework": "string"
+        },
+        "PersistenceUnitOption": {
+          "persistence_unit_name": "string",
+          "kind": "string",
+          "value": "string",
+          "framework": "string"
+        },
+        "SecurityConstraint": {
+          "web_resource_name": "string",
+          "url_pattern": "string",
+          "http_method": "string",
+          "role_name": "string",
+          "framework": "string"
+        },
+        "ContextParam": {
+          "name": "string",
+          "value": "string",
+          "framework": "string"
+        },
+        "WelcomeFile": {
+          "path": "string",
+          "framework": "string"
+        },
+        "ErrorPage": {
+          "location": "string",
+          "error_code": "string",
+          "exception_type": "string",
+          "framework": "string"
+        },
+        "SessionConfig": {
+          "timeout": "string",
+          "framework": "string"
+        },
+        "WebSocketHandler": {
+          "event": "string",
+          "class_name": "string",
+          "method_name": "string",
+          "framework": "string"
+        },
+        "WsdlDocument": {
+          "name": "string",
+          "service_name": "string",
+          "framework": "string"
+        },
+        "WsdlPort": {
+          "name": "string",
+          "binding": "string",
+          "framework": "string"
+        },
+        "JsfNavigation": {
+          "from_view_id": "string",
+          "to_view_id": "string",
+          "framework": "string"
+        },
+        "JsfPage": {
+          "name": "string",
+          "framework": "string"
         },
         "KafkaProducer": {
           "message_role": "string",
@@ -60,34 +455,87 @@
           "topic": "string",
           "topics": "list"
         },
-        "Component": {
-          "name": "string",
-          "kind": "string"
+        "ChannelBinding": {
+          "channel": "string",
+          "topic": "string",
+          "direction": "string",
+          "framework": "string",
+          "connector": "string"
+        },
+        "ConfigBinding": {
+          "key": "string",
+          "field_name": "string",
+          "class_name": "string",
+          "framework": "string"
+        },
+        "Aspect": {
+          "class_name": "string",
+          "framework": "string"
+        },
+        "AopAdvice": {
+          "kind": "string",
+          "expression": "string",
+          "class_name": "string",
+          "method_name": "string",
+          "framework": "string",
+          "args_text": "string"
+        },
+        "CacheOperation": {
+          "kind": "string",
+          "cache": "string",
+          "class_name": "string",
+          "method_name": "string",
+          "key": "string",
+          "condition": "string",
+          "framework": "string",
+          "args_text": "string"
+        },
+        "StreamFunction": {
+          "kind": "string",
+          "bean_name": "string",
+          "framework": "string"
+        },
+        "StreamBinding": {
+          "binding_name": "string",
+          "destination": "string",
+          "framework": "string",
+          "group": "string"
         },
         "ConfigProperty": {
           "key": "string",
           "value": "string"
         },
-        "DatabaseQuery": {
-          "operation": "string",
-          "collection": "string",
+        "EntityGraph": {
+          "class_name": "string",
+          "method_name": "string",
           "framework": "string",
-          "query": "string",
-          "query_id": "string"
+          "args_text": "string",
+          "attribute_paths": "string",
+          "graph_name": "string"
         },
-        "Service": {
+        "ProfileBinding": {
+          "profile": "string",
+          "target_class": "string",
+          "framework": "string",
+          "args_text": "string"
+        },
+        "ProfileConfig": {
+          "profile": "string",
+          "path": "string",
+          "framework": "string",
+          "format": "string",
+          "stem": "string"
+        },
+        "SecurityConfig": {
+          "class_name": "string",
           "kind": "string",
           "framework": "string",
-          "name": "string"
+          "method_name": "string"
         },
         "Action": {
           "name": "string",
           "class_name": "string",
           "method": "string"
-        },
-        "Servlet": {
-          "path": "string",
-          "class_name": "string"
         }
       },
       "edge_types": {}
@@ -344,7 +792,7 @@
       "file": "src/app/PermitButton.tsx",
       "line": 3,
       "source": "lens:react-component",
-      "confidence": "high",
+      "confidence": "medium",
       "name": "PermitButton",
       "kind": "react-component"
     }

@@ -1,0 +1,100 @@
+[
+  {
+    "name": "spring-aop-aspect",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (marker_annotation name: (_) @ann (#match? @ann \"(^|\\\\.)Aspect$\"))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)Aspect$\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Aspect",
+      "schema": {
+        "class_name": "string",
+        "framework": "string"
+      },
+      "values": {
+        "class_name": "{{class_name}}",
+        "framework": "spring-aop"
+      },
+      "source": "lens:spring-aop",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-aop-advice",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)(Pointcut|Before|After|Around|AfterReturning|AfterThrowing)$\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @method_name) @anchor)) (class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (marker_annotation name: (_) @ann (#match? @ann \"(^|\\\\.)(Pointcut|Before|After|Around|AfterReturning|AfterThrowing)$\"))) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "AopAdvice",
+      "schema": {
+        "kind": "string",
+        "expression": "string",
+        "class_name": "string",
+        "method_name": "string",
+        "framework": "string",
+        "args_text": "string"
+      },
+      "values": {
+        "kind": "{{ann}}",
+        "expression": "",
+        "class_name": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "framework": "spring-aop",
+        "args_text": "{{args_text|}}"
+      },
+      "source": "lens:spring-aop",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-aop-resolve-expression-pointcut",
+    "scope": "resolve",
+    "match": {
+      "label": "AopAdvice",
+      "field": "args_text",
+      "pattern": "pointcut\\s*=\\s*\"(?P<e>[^\"]+)\""
+    },
+    "set": {
+      "expression": "{{e}}"
+    }
+  },
+  {
+    "name": "spring-aop-resolve-expression-value",
+    "scope": "resolve",
+    "match": {
+      "label": "AopAdvice",
+      "field": "args_text",
+      "pattern": "value\\s*=\\s*\"(?P<e>[^\"]+)\""
+    },
+    "set": {
+      "expression": "{{e}}"
+    }
+  },
+  {
+    "name": "spring-aop-resolve-expression-bare",
+    "scope": "resolve",
+    "match": {
+      "label": "AopAdvice",
+      "field": "args_text",
+      "pattern": "^\\(\\s*\"(?P<e>(?:[^\"\\\\]|\\\\.)+)\""
+    },
+    "set": {
+      "expression": "{{e}}"
+    }
+  }
+]

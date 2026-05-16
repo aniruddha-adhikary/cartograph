@@ -1,0 +1,229 @@
+[
+  {
+    "name": "spring-data-jpa-repository",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(interface_declaration name: (identifier) @class_name (extends_interfaces (type_list (generic_type (type_identifier) @base (#match? @base \"^(JpaRepository|CrudRepository|PagingAndSortingRepository|ReactiveCrudRepository|MongoRepository|JpaSpecificationExecutor|QuerydslPredicateExecutor)$\"))))) @anchor (interface_declaration name: (identifier) @class_name (extends_interfaces (type_list (type_identifier) @base (#match? @base \"^(JpaRepository|CrudRepository|PagingAndSortingRepository|ReactiveCrudRepository|MongoRepository|JpaSpecificationExecutor|QuerydslPredicateExecutor)$\")))) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string",
+        "base_repository": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "spring-data-repository",
+        "framework": "spring-data-jpa",
+        "base_repository": "{{base}}"
+      },
+      "source": "lens:spring-data-jpa",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-data-jpa-query",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(interface_declaration name: (identifier) @class_name body: (interface_body (method_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)Query$\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "query_name": "string",
+        "query": "string",
+        "kind": "string",
+        "framework": "string",
+        "class_name": "string",
+        "method_name": "string",
+        "args_text": "string",
+        "count_query": "string",
+        "native_query": "string"
+      },
+      "values": {
+        "query_name": "{{class_name}}.{{method_name}}",
+        "query": "",
+        "kind": "jpql",
+        "framework": "spring-data-jpa",
+        "class_name": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "args_text": "{{args_text}}",
+        "count_query": "",
+        "native_query": ""
+      },
+      "source": "lens:spring-data-jpa",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "spring-data-jpa-query-pairs-resolve-value",
+    "scope": "resolve",
+    "match": {
+      "label": "DatabaseQuery",
+      "field": "args_text",
+      "pattern": "value\\s*=\\s*\"(?P<v>[^\"]+)\""
+    },
+    "set": {
+      "query": "{{v}}"
+    }
+  },
+  {
+    "name": "spring-data-jpa-query-bare-resolve",
+    "scope": "resolve",
+    "match": {
+      "label": "DatabaseQuery",
+      "field": "args_text",
+      "pattern": "^\\(\\s*\"(?P<v>[^\"]+)\"\\s*\\)$"
+    },
+    "set": {
+      "query": "{{v}}"
+    }
+  },
+  {
+    "name": "spring-data-jpa-query-pairs-resolve-count",
+    "scope": "resolve",
+    "match": {
+      "label": "DatabaseQuery",
+      "field": "args_text",
+      "pattern": "countQuery\\s*=\\s*\"(?P<cq>[^\"]+)\""
+    },
+    "set": {
+      "count_query": "{{cq}}"
+    }
+  },
+  {
+    "name": "spring-data-jpa-query-pairs-resolve-native",
+    "scope": "resolve",
+    "match": {
+      "label": "DatabaseQuery",
+      "field": "args_text",
+      "pattern": "nativeQuery\\s*=\\s*(?P<nq>true|false)"
+    },
+    "set": {
+      "native_query": "{{nq}}",
+      "kind": "sql"
+    }
+  },
+  {
+    "name": "spring-data-jpa-derived-query",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(interface_declaration name: (identifier) @class_name body: (interface_body (method_declaration name: (identifier) @method_name (#match? @method_name \"^(findBy|findAllBy|findFirstBy|findTopBy|findOneBy|countBy|existsBy|deleteBy|removeBy|streamBy|readBy|getBy|queryBy|searchBy)\")) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {
+        "query_name": "string",
+        "query": "string",
+        "kind": "string",
+        "framework": "string",
+        "class_name": "string",
+        "method_name": "string"
+      },
+      "values": {
+        "query_name": "{{class_name}}.{{method_name}}",
+        "query": "{{method_name}}",
+        "kind": "derived",
+        "framework": "spring-data-jpa",
+        "class_name": "{{class_name}}",
+        "method_name": "{{method_name}}"
+      },
+      "source": "lens:spring-data-jpa",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "spring-data-jpa-entity-graph",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(interface_declaration name: (identifier) @class_name body: (interface_body (method_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)EntityGraph$\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "EntityGraph",
+      "schema": {
+        "class_name": "string",
+        "method_name": "string",
+        "framework": "string",
+        "args_text": "string",
+        "attribute_paths": "string",
+        "graph_name": "string"
+      },
+      "values": {
+        "class_name": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "framework": "spring-data-jpa",
+        "args_text": "{{args_text}}",
+        "attribute_paths": "",
+        "graph_name": ""
+      },
+      "source": "lens:spring-data-jpa",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-data-jpa-entity-graph-resolve-attrs-array",
+    "scope": "resolve",
+    "match": {
+      "label": "EntityGraph",
+      "field": "args_text",
+      "pattern": "attributePaths\\s*=\\s*\\{\\s*(?P<ap>[^}]+)\\s*\\}"
+    },
+    "set": {
+      "attribute_paths": "{{ap}}"
+    }
+  },
+  {
+    "name": "spring-data-jpa-entity-graph-resolve-attrs-single",
+    "scope": "resolve",
+    "match": {
+      "label": "EntityGraph",
+      "field": "args_text",
+      "pattern": "attributePaths\\s*=\\s*\"(?P<ap>[^\"]+)\""
+    },
+    "set": {
+      "attribute_paths": "{{ap}}"
+    }
+  },
+  {
+    "name": "spring-data-jpa-entity-graph-resolve-name",
+    "scope": "resolve",
+    "match": {
+      "label": "EntityGraph",
+      "field": "args_text",
+      "pattern": "value\\s*=\\s*\"(?P<gn>[^\"]+)\""
+    },
+    "set": {
+      "graph_name": "{{gn}}"
+    }
+  }
+]

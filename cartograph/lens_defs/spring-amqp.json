@@ -1,0 +1,211 @@
+[
+  {
+    "name": "spring-amqp-rabbit-listener-literal",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"RabbitListener\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @qkey (#match? @qkey \"^queues$\") value: (string_literal (string_fragment) @queue))))) name: (identifier) @method_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "rabbitmq",
+        "topic": "{{queue}}",
+        "topics": ["{{queue}}"],
+        "handler": "{{method_name}}",
+        "framework": "spring-amqp"
+      },
+      "source": "lens:spring-amqp",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-amqp-rabbit-listener-const",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"RabbitListener\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @qkey (#match? @qkey \"^queues$\") value: [(identifier) @queue_const (field_access) @queue_const])))) name: (identifier) @method_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "queue_const": "string",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "rabbitmq",
+        "topic": "{{queue_const}}",
+        "topics": ["{{queue_const}}"],
+        "queue_const": "{{queue_const}}",
+        "handler": "{{method_name}}",
+        "framework": "spring-amqp"
+      },
+      "source": "lens:spring-amqp",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "spring-amqp-rabbit-listener-array",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"RabbitListener\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @qkey (#match? @qkey \"^queues$\") value: (element_value_array_initializer (string_literal (string_fragment) @queue)))))) name: (identifier) @method_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "rabbitmq",
+        "topic": "{{queue}}",
+        "topics": ["{{queue}}"],
+        "handler": "{{method_name}}",
+        "framework": "spring-amqp"
+      },
+      "source": "lens:spring-amqp",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-amqp-rabbit-listener-queues-to-declare",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"RabbitListener\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @qkey (#match? @qkey \"^queuesToDeclare$\") value: (annotation name: (identifier) @qann (#eq? @qann \"Queue\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @nkey (#eq? @nkey \"name\") value: (string_literal (string_fragment) @queue)))))))) name: (identifier) @method_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "rabbitmq",
+        "topic": "{{queue}}",
+        "topics": ["{{queue}}"],
+        "handler": "{{method_name}}",
+        "framework": "spring-amqp"
+      },
+      "source": "lens:spring-amqp",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-amqp-rabbit-template-convert-and-send",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "convertAndSend",
+        "arg_index": 0,
+        "capture_as": "exchange"
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "exchange_const": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "rabbitmq",
+        "topic": "{{exchange|exchange_const|exchange_class|}}",
+        "exchange_const": "{{exchange_const}}",
+        "framework": "spring-amqp",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:spring-amqp",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "spring-amqp-queue-bean",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Bean\"))) type: (type_identifier) @ret (#match? @ret \"^(Queue|Exchange|Binding|TopicExchange|DirectExchange|FanoutExchange|HeadersExchange)$\") name: (identifier) @bean_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "MessageDestination",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "bus": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{bean_name}}",
+        "kind": "{{ret}}",
+        "bus": "rabbitmq",
+        "framework": "spring-amqp"
+      },
+      "source": "lens:spring-amqp",
+      "confidence": "medium"
+    }
+  }
+]

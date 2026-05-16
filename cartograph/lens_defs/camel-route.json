@@ -1,0 +1,127 @@
+[
+  {
+    "name": "camel-route-builder",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name superclass: (superclass (type_identifier) @super) (#eq? @super \"RouteBuilder\")) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "camel-route-builder",
+        "framework": "camel"
+      },
+      "source": "lens:camel-route",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "camel-route-from",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "from",
+        "arg_index": 0,
+        "capture_as": "uri"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topic_text": "string",
+        "framework": "string",
+        "transport": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "camel",
+        "topic": "{{uri|uri_const|uri_class}}",
+        "topic_text": "{{uri_text}}",
+        "framework": "camel"
+      },
+      "source": "lens:camel-route",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "camel-route-to",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "to",
+        "arg_index": 0,
+        "capture_as": "uri"
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topic_text": "string",
+        "framework": "string",
+        "transport": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "camel",
+        "topic": "{{uri|uri_const|uri_class}}",
+        "topic_text": "{{uri_text}}",
+        "framework": "camel",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:camel-route",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "camel-resolve-transport-consumer",
+    "scope": "resolve",
+    "match": {
+      "label": "MessageConsumer",
+      "field": "topic",
+      "pattern": "^(?P<transport>[a-zA-Z][a-zA-Z0-9_+-]*):"
+    },
+    "set": {
+      "transport": "{{transport}}"
+    }
+  },
+  {
+    "name": "camel-resolve-transport-producer",
+    "scope": "resolve",
+    "match": {
+      "label": "MessageProducer",
+      "field": "topic",
+      "pattern": "^(?P<transport>[a-zA-Z][a-zA-Z0-9_+-]*):"
+    },
+    "set": {
+      "transport": "{{transport}}"
+    }
+  }
+]

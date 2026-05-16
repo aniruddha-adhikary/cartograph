@@ -1,0 +1,301 @@
+[
+  {
+    "name": "spring-cloud-stream-functional-bean",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Bean\"))) type: (generic_type (type_identifier) @kind (#match? @kind \"^(Supplier|Function|Consumer)$\")) name: (identifier) @bean_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "StreamFunction",
+      "schema": {
+        "kind": "string",
+        "bean_name": "string",
+        "framework": "string"
+      },
+      "values": {
+        "kind": "{{kind}}",
+        "bean_name": "{{bean_name}}",
+        "framework": "spring-cloud-stream"
+      },
+      "source": "lens:spring-cloud-stream",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-cloud-stream-binding-destination",
+    "scope": "source",
+    "match": {
+      "files": ["*.properties", "*.yaml", "*.yml"],
+      "strategy": "config-key",
+      "key_pattern": "spring\\.cloud\\.stream\\.bindings\\.(?P<binding_name>[\\w.-]+)\\.destination\\s*[:=]\\s*(?P<destination>\\S+)"
+    },
+    "emit": {
+      "label": "StreamBinding",
+      "schema": {
+        "binding_name": "string",
+        "destination": "string",
+        "framework": "string"
+      },
+      "values": {
+        "binding_name": "{{binding_name}}",
+        "destination": "{{destination}}",
+        "framework": "spring-cloud-stream"
+      },
+      "source": "lens:spring-cloud-stream",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-cloud-stream-binding-group",
+    "scope": "source",
+    "match": {
+      "files": ["*.properties", "*.yaml", "*.yml"],
+      "strategy": "config-key",
+      "key_pattern": "spring\\.cloud\\.stream\\.bindings\\.(?P<binding_name>[\\w.-]+)\\.group\\s*[:=]\\s*(?P<group>\\S+)"
+    },
+    "emit": {
+      "label": "StreamBinding",
+      "schema": {
+        "binding_name": "string",
+        "group": "string",
+        "framework": "string"
+      },
+      "values": {
+        "binding_name": "{{binding_name}}",
+        "group": "{{group}}",
+        "framework": "spring-cloud-stream"
+      },
+      "source": "lens:spring-cloud-stream",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-cloud-stream-stream-listener",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"StreamListener\") arguments: (annotation_argument_list (string_literal (string_fragment) @channel)))) name: (identifier) @method_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "MessageConsumer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "topics": "list",
+        "channel": "string",
+        "handler": "string",
+        "framework": "string"
+      },
+      "values": {
+        "message_role": "consumer",
+        "bus": "spring-cloud-stream",
+        "topic": "{{channel}}",
+        "topics": ["{{channel}}"],
+        "channel": "{{channel}}",
+        "handler": "{{method_name}}",
+        "framework": "spring-cloud-stream"
+      },
+      "source": "lens:spring-cloud-stream",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-cloud-stream-send-to",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"SendTo\") arguments: (annotation_argument_list (string_literal (string_fragment) @channel)))) name: (identifier) @method_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "channel": "string",
+        "handler": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "spring-cloud-stream",
+        "topic": "{{channel}}",
+        "channel": "{{channel}}",
+        "handler": "{{method_name}}",
+        "framework": "spring-cloud-stream",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:spring-cloud-stream",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "spring-kafka-send-to",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_declaration (modifiers (annotation name: (identifier) @kl_name (#eq? @kl_name \"KafkaListener\")) (annotation name: (identifier) @st_name (#eq? @st_name \"SendTo\") arguments: (annotation_argument_list (string_literal (string_fragment) @channel)))) name: (identifier) @method_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "channel": "string",
+        "handler": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "kafka",
+        "topic": "{{channel}}",
+        "channel": "{{channel}}",
+        "handler": "{{method_name}}",
+        "framework": "spring-kafka",
+        "delivery_edge": "KAFKA_DELIVERS"
+      },
+      "source": "lens:spring-kafka-send-to",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-kafka-send-to-reversed",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_declaration (modifiers (annotation name: (identifier) @st_name (#eq? @st_name \"SendTo\") arguments: (annotation_argument_list (string_literal (string_fragment) @channel))) (annotation name: (identifier) @kl_name (#eq? @kl_name \"KafkaListener\"))) name: (identifier) @method_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "channel": "string",
+        "handler": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "kafka",
+        "topic": "{{channel}}",
+        "channel": "{{channel}}",
+        "handler": "{{method_name}}",
+        "framework": "spring-kafka",
+        "delivery_edge": "KAFKA_DELIVERS"
+      },
+      "source": "lens:spring-kafka-send-to",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-amqp-send-to",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_declaration (modifiers (annotation name: (identifier) @rl_name (#eq? @rl_name \"RabbitListener\")) (annotation name: (identifier) @st_name (#eq? @st_name \"SendTo\") arguments: (annotation_argument_list (string_literal (string_fragment) @channel)))) name: (identifier) @method_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "channel": "string",
+        "handler": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "rabbitmq",
+        "topic": "{{channel}}",
+        "channel": "{{channel}}",
+        "handler": "{{method_name}}",
+        "framework": "spring-amqp",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:spring-amqp-send-to",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-amqp-send-to-reversed",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(method_declaration (modifiers (annotation name: (identifier) @st_name (#eq? @st_name \"SendTo\") arguments: (annotation_argument_list (string_literal (string_fragment) @channel))) (annotation name: (identifier) @rl_name (#eq? @rl_name \"RabbitListener\"))) name: (identifier) @method_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "channel": "string",
+        "handler": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "rabbitmq",
+        "topic": "{{channel}}",
+        "channel": "{{channel}}",
+        "handler": "{{method_name}}",
+        "framework": "spring-amqp",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:spring-amqp-send-to",
+      "confidence": "high"
+    }
+  }
+]

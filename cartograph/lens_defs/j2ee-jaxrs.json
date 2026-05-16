@@ -66,15 +66,46 @@
     },
     "emit": {
       "label": "Endpoint",
-      "schema": {"http_method": "string", "path": "string", "handler": "string", "framework": "string"},
+      "schema": {"http_method": "string", "path": "string", "handler": "string", "framework": "string", "_path_raw": "string"},
       "values": {
         "http_method": "{{http}}",
-        "path": "/{{parent_path|}}/{{method_path|}}",
+        "path": "",
+        "_path_raw": "/{{parent_path|}}/{{method_path|}}",
         "handler": "{{class_name}}.{{method_name}}",
         "framework": "j2ee-jaxrs"
       },
       "source": "lens:j2ee-jaxrs",
       "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-jaxrs-path-normalize-multi",
+    "scope": "resolve",
+    "match": {
+      "label": "Endpoint",
+      "where": {"framework": "j2ee-jaxrs"},
+      "from": "_path_raw",
+      "patterns": [
+        {"regex": "^/*(?P<a>[^/]+)/+(?P<b>[^?]+?)/*$"}
+      ]
+    },
+    "set": {
+      "path": "/{{a}}/{{b}}"
+    }
+  },
+  {
+    "name": "j2ee-jaxrs-path-normalize-single",
+    "scope": "resolve",
+    "match": {
+      "label": "Endpoint",
+      "where": {"framework": "j2ee-jaxrs"},
+      "from": "_path_raw",
+      "patterns": [
+        {"regex": "^/*(?P<a>[^?]+?)/*$"}
+      ]
+    },
+    "set": {
+      "path": "/{{a}}"
     }
   }
 ]

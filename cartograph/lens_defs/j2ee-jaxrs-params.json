@@ -1,0 +1,96 @@
+[
+  {
+    "name": "j2ee-jaxrs-param-string-arg",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration name: (identifier) @method_name parameters: (formal_parameters (formal_parameter (modifiers (annotation name: (identifier) @ann (#match? @ann \"^(QueryParam|PathParam|HeaderParam|CookieParam|MatrixParam|FormParam)$\") arguments: (annotation_argument_list (string_literal (string_fragment) @arg)))) type: (_) @param_type name: (identifier) @parameter_name) @anchor))))"
+      }
+    },
+    "emit": {
+      "label": "EndpointParam",
+      "schema": {
+        "kind": "string", "name": "string", "type": "string", "parameter_name": "string",
+        "owner_class": "string", "owner_method": "string", "framework": "string"
+      },
+      "values": {
+        "kind": "{{ann}}",
+        "name": "{{arg}}",
+        "type": "{{param_type}}",
+        "parameter_name": "{{parameter_name}}",
+        "owner_class": "{{class_name}}",
+        "owner_method": "{{method_name}}",
+        "framework": "j2ee-jaxrs"
+      },
+      "source": "lens:j2ee-jaxrs-params",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-jaxrs-bean-param",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration name: (identifier) @method_name parameters: (formal_parameters (formal_parameter (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"BeanParam\"))) type: (_) @param_type name: (identifier) @parameter_name) @anchor))))"
+      }
+    },
+    "emit": {
+      "label": "EndpointParam",
+      "schema": {
+        "kind": "string", "name": "string", "type": "string", "parameter_name": "string",
+        "owner_class": "string", "owner_method": "string", "framework": "string"
+      },
+      "values": {
+        "kind": "bean",
+        "name": "",
+        "type": "{{param_type}}",
+        "parameter_name": "{{parameter_name}}",
+        "owner_class": "{{class_name}}",
+        "owner_method": "{{method_name}}",
+        "framework": "j2ee-jaxrs"
+      },
+      "source": "lens:j2ee-jaxrs-params",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-jaxrs-default-value",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration name: (identifier) @method_name parameters: (formal_parameters (formal_parameter (modifiers (annotation name: (identifier) @ann (#eq? @ann \"DefaultValue\") arguments: (annotation_argument_list (string_literal (string_fragment) @value)))) name: (identifier) @parameter_name) @anchor))))"
+      }
+    },
+    "emit": {
+      "label": "EndpointParamDefault",
+      "schema": {
+        "value": "string", "parameter_name": "string",
+        "owner_class": "string", "owner_method": "string", "framework": "string"
+      },
+      "values": {
+        "value": "{{value}}",
+        "parameter_name": "{{parameter_name}}",
+        "owner_class": "{{class_name}}",
+        "owner_method": "{{method_name}}",
+        "framework": "j2ee-jaxrs"
+      },
+      "source": "lens:j2ee-jaxrs-params",
+      "confidence": "high"
+    }
+  }
+]

@@ -1,0 +1,260 @@
+[
+  {
+    "name": "mybatis-mapper-interface",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(interface_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Mapper\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {"name": "string", "kind": "string", "framework": "string"},
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "mybatis-mapper",
+        "framework": "mybatis"
+      },
+      "source": "lens:mybatis-mapper",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "mybatis-mapper-select",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(interface_declaration name: (identifier) @class_name body: (interface_body (method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Select\") arguments: (annotation_argument_list (string_literal (string_fragment) @sql)))) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {"query_name": "string", "query": "string", "kind": "string", "framework": "string", "owner_class": "string"},
+      "values": {
+        "query_name": "{{class_name}}.{{method_name}}",
+        "query": "{{sql}}",
+        "kind": "select",
+        "framework": "mybatis",
+        "owner_class": "{{class_name}}"
+      },
+      "source": "lens:mybatis-mapper",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "mybatis-mapper-insert",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(interface_declaration name: (identifier) @class_name body: (interface_body (method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Insert\") arguments: (annotation_argument_list (string_literal (string_fragment) @sql)))) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {"query_name": "string", "query": "string", "kind": "string", "framework": "string", "owner_class": "string"},
+      "values": {
+        "query_name": "{{class_name}}.{{method_name}}",
+        "query": "{{sql}}",
+        "kind": "insert",
+        "framework": "mybatis",
+        "owner_class": "{{class_name}}"
+      },
+      "source": "lens:mybatis-mapper",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "mybatis-mapper-update",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(interface_declaration name: (identifier) @class_name body: (interface_body (method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Update\") arguments: (annotation_argument_list (string_literal (string_fragment) @sql)))) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {"query_name": "string", "query": "string", "kind": "string", "framework": "string", "owner_class": "string"},
+      "values": {
+        "query_name": "{{class_name}}.{{method_name}}",
+        "query": "{{sql}}",
+        "kind": "update",
+        "framework": "mybatis",
+        "owner_class": "{{class_name}}"
+      },
+      "source": "lens:mybatis-mapper",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "mybatis-mapper-delete",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(interface_declaration name: (identifier) @class_name body: (interface_body (method_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Delete\") arguments: (annotation_argument_list (string_literal (string_fragment) @sql)))) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {"query_name": "string", "query": "string", "kind": "string", "framework": "string", "owner_class": "string"},
+      "values": {
+        "query_name": "{{class_name}}.{{method_name}}",
+        "query": "{{sql}}",
+        "kind": "delete",
+        "framework": "mybatis",
+        "owner_class": "{{class_name}}"
+      },
+      "source": "lens:mybatis-mapper",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "mybatis-xml-mapper-namespace",
+    "scope": "source",
+    "match": {
+      "files": ["*Mapper.xml"],
+      "strategy": "xml-query",
+      "select": ".",
+      "captures": {
+        "namespace": "@namespace"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {"name": "string", "kind": "string", "framework": "string"},
+      "values": {
+        "name": "{{namespace}}",
+        "kind": "mybatis-xml-mapper",
+        "framework": "mybatis-xml"
+      },
+      "source": "lens:mybatis-mapper",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "mybatis-xml-select",
+    "scope": "source",
+    "match": {
+      "files": ["*Mapper.xml"],
+      "strategy": "xml-query",
+      "select": "./select",
+      "captures": {
+        "id": "@id",
+        "result_type": "@resultType",
+        "query": "."
+      }
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {"query_name": "string", "query": "string", "kind": "string", "framework": "string", "result_type": "string"},
+      "values": {
+        "query_name": "{{id}}",
+        "query": "{{query}}",
+        "kind": "select",
+        "framework": "mybatis-xml",
+        "result_type": "{{result_type}}"
+      },
+      "source": "lens:mybatis-mapper",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "mybatis-xml-insert",
+    "scope": "source",
+    "match": {
+      "files": ["*Mapper.xml"],
+      "strategy": "xml-query",
+      "select": "./insert",
+      "captures": {
+        "id": "@id",
+        "query": "."
+      }
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {"query_name": "string", "query": "string", "kind": "string", "framework": "string"},
+      "values": {
+        "query_name": "{{id}}",
+        "query": "{{query}}",
+        "kind": "insert",
+        "framework": "mybatis-xml"
+      },
+      "source": "lens:mybatis-mapper",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "mybatis-xml-update",
+    "scope": "source",
+    "match": {
+      "files": ["*Mapper.xml"],
+      "strategy": "xml-query",
+      "select": "./update",
+      "captures": {
+        "id": "@id",
+        "query": "."
+      }
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {"query_name": "string", "query": "string", "kind": "string", "framework": "string"},
+      "values": {
+        "query_name": "{{id}}",
+        "query": "{{query}}",
+        "kind": "update",
+        "framework": "mybatis-xml"
+      },
+      "source": "lens:mybatis-mapper",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "mybatis-xml-delete",
+    "scope": "source",
+    "match": {
+      "files": ["*Mapper.xml"],
+      "strategy": "xml-query",
+      "select": "./delete",
+      "captures": {
+        "id": "@id",
+        "query": "."
+      }
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {"query_name": "string", "query": "string", "kind": "string", "framework": "string"},
+      "values": {
+        "query_name": "{{id}}",
+        "query": "{{query}}",
+        "kind": "delete",
+        "framework": "mybatis-xml"
+      },
+      "source": "lens:mybatis-mapper",
+      "confidence": "high"
+    }
+  }
+]

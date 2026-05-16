@@ -55,16 +55,42 @@
         "language": "java",
         "extractor": "query",
         "anchor": "anchor",
-        "query": "(annotation name: (identifier) @ann (#eq? @ann \"NamedQuery\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @nk (#eq? @nk \"name\") value: (string_literal (string_fragment) @query_name)) (element_value_pair key: (identifier) @qk (#eq? @qk \"query\") value: (string_literal (string_fragment) @jpql)))) @anchor"
+        "query": "(annotation name: (identifier) @ann (#eq? @ann \"NamedQuery\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @nk (#eq? @nk \"name\") value: (string_literal (string_fragment) @query_name)) (element_value_pair key: (identifier) @qk (#eq? @qk \"query\") value: (string_literal (string_fragment) @jpql)))) @anchor (annotation name: (identifier) @ann2 (#eq? @ann2 \"NamedQuery\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @nk2 (#eq? @nk2 \"name\") value: (field_access) @query_name_const) (element_value_pair key: (identifier) @qk2 (#eq? @qk2 \"query\") value: (string_literal (string_fragment) @jpql)))) @anchor"
       }
     },
     "emit": {
       "label": "DatabaseQuery",
       "schema": {"query_name": "string", "query": "string", "kind": "string", "framework": "string"},
       "values": {
-        "query_name": "{{query_name}}",
+        "query_name": "{{query_name|query_name_const|}}",
         "query": "{{jpql}}",
         "kind": "jpql",
+        "framework": "j2ee-jpa"
+      },
+      "source": "lens:j2ee-jpa",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "j2ee-jpa-namednativequery",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(annotation name: (identifier) @ann (#eq? @ann \"NamedNativeQuery\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @nk (#eq? @nk \"name\") value: (string_literal (string_fragment) @query_name)) (element_value_pair key: (identifier) @qk (#eq? @qk \"query\") value: (string_literal (string_fragment) @sql)))) @anchor (annotation name: (identifier) @ann2 (#eq? @ann2 \"NamedNativeQuery\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @nk2 (#eq? @nk2 \"name\") value: (field_access) @query_name_const) (element_value_pair key: (identifier) @qk2 (#eq? @qk2 \"query\") value: (string_literal (string_fragment) @sql)))) @anchor"
+      }
+    },
+    "emit": {
+      "label": "DatabaseQuery",
+      "schema": {"query_name": "string", "query": "string", "kind": "string", "framework": "string"},
+      "values": {
+        "query_name": "{{query_name|query_name_const|}}",
+        "query": "{{sql}}",
+        "kind": "native-sql",
         "framework": "j2ee-jpa"
       },
       "source": "lens:j2ee-jpa",

@@ -1,0 +1,160 @@
+[
+  {
+    "name": "spring-transaction-method",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)Transactional$\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @method_name) @anchor)) (class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (marker_annotation name: (_) @ann (#match? @ann \"(^|\\\\.)Transactional$\"))) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "Transaction",
+      "schema": {
+        "class_name": "string",
+        "method_name": "string",
+        "propagation": "string",
+        "rollback_for": "string",
+        "read_only": "string",
+        "isolation": "string",
+        "timeout": "string",
+        "framework": "string",
+        "args_text": "string",
+        "level": "string"
+      },
+      "values": {
+        "class_name": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "propagation": "",
+        "rollback_for": "",
+        "read_only": "",
+        "isolation": "",
+        "timeout": "",
+        "framework": "spring-tx",
+        "args_text": "{{args_text|}}",
+        "level": "method"
+      },
+      "source": "lens:spring-transaction",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-transaction-class",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)Transactional$\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @class_name) @anchor (class_declaration (modifiers (marker_annotation name: (_) @ann (#match? @ann \"(^|\\\\.)Transactional$\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Transaction",
+      "schema": {
+        "class_name": "string",
+        "method_name": "string",
+        "propagation": "string",
+        "rollback_for": "string",
+        "read_only": "string",
+        "isolation": "string",
+        "timeout": "string",
+        "framework": "string",
+        "args_text": "string",
+        "level": "string"
+      },
+      "values": {
+        "class_name": "{{class_name}}",
+        "method_name": "",
+        "propagation": "",
+        "rollback_for": "",
+        "read_only": "",
+        "isolation": "",
+        "timeout": "",
+        "framework": "spring-tx",
+        "args_text": "{{args_text|}}",
+        "level": "class"
+      },
+      "source": "lens:spring-transaction",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-transaction-resolve-propagation",
+    "scope": "resolve",
+    "match": {
+      "label": "Transaction",
+      "field": "args_text",
+      "pattern": "propagation\\s*=\\s*(?:Propagation\\.)?(?P<p>[A-Z_]+)"
+    },
+    "set": {
+      "propagation": "{{p}}"
+    }
+  },
+  {
+    "name": "spring-transaction-resolve-readonly",
+    "scope": "resolve",
+    "match": {
+      "label": "Transaction",
+      "field": "args_text",
+      "pattern": "readOnly\\s*=\\s*(?P<r>true|false)"
+    },
+    "set": {
+      "read_only": "{{r}}"
+    }
+  },
+  {
+    "name": "spring-transaction-resolve-rollback-array",
+    "scope": "resolve",
+    "match": {
+      "label": "Transaction",
+      "field": "args_text",
+      "pattern": "rollbackFor\\s*=\\s*\\{\\s*(?P<rf>[^}]+)\\s*\\}"
+    },
+    "set": {
+      "rollback_for": "{{rf}}"
+    }
+  },
+  {
+    "name": "spring-transaction-resolve-rollback-single",
+    "scope": "resolve",
+    "match": {
+      "label": "Transaction",
+      "field": "args_text",
+      "pattern": "rollbackFor\\s*=\\s*(?P<rf>[^,)]+)"
+    },
+    "set": {
+      "rollback_for": "{{rf}}"
+    }
+  },
+  {
+    "name": "spring-transaction-resolve-isolation",
+    "scope": "resolve",
+    "match": {
+      "label": "Transaction",
+      "field": "args_text",
+      "pattern": "isolation\\s*=\\s*(?:Isolation\\.)?(?P<iso>[A-Z_]+)"
+    },
+    "set": {
+      "isolation": "{{iso}}"
+    }
+  },
+  {
+    "name": "spring-transaction-resolve-timeout",
+    "scope": "resolve",
+    "match": {
+      "label": "Transaction",
+      "field": "args_text",
+      "pattern": "timeout\\s*=\\s*(?P<t>\\d+)"
+    },
+    "set": {
+      "timeout": "{{t}}"
+    }
+  }
+]

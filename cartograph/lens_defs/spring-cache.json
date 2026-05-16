@@ -1,0 +1,125 @@
+[
+  {
+    "name": "spring-cache-operation",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (method_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)(Cacheable|CacheEvict|CachePut|Caching)$\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @method_name) @anchor)) (interface_declaration name: (identifier) @class_name body: (interface_body (method_declaration (modifiers (annotation name: (_) @ann (#match? @ann \"(^|\\\\.)(Cacheable|CacheEvict|CachePut|Caching)$\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @method_name) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "CacheOperation",
+      "schema": {
+        "kind": "string",
+        "cache": "string",
+        "class_name": "string",
+        "method_name": "string",
+        "key": "string",
+        "condition": "string",
+        "framework": "string",
+        "args_text": "string"
+      },
+      "values": {
+        "kind": "{{ann}}",
+        "cache": "",
+        "class_name": "{{class_name}}",
+        "method_name": "{{method_name}}",
+        "key": "",
+        "condition": "",
+        "framework": "spring-cache",
+        "args_text": "{{args_text}}"
+      },
+      "source": "lens:spring-cache",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "spring-cache-resolve-cachenames-array",
+    "scope": "resolve",
+    "match": {
+      "label": "CacheOperation",
+      "field": "args_text",
+      "pattern": "cacheNames\\s*=\\s*\\{\\s*(?P<c>[^}]+)\\s*\\}"
+    },
+    "set": {
+      "cache": "{{c}}"
+    }
+  },
+  {
+    "name": "spring-cache-resolve-cachenames-single",
+    "scope": "resolve",
+    "match": {
+      "label": "CacheOperation",
+      "field": "args_text",
+      "pattern": "cacheNames\\s*=\\s*(?P<c>[^,)]+)"
+    },
+    "set": {
+      "cache": "{{c}}"
+    }
+  },
+  {
+    "name": "spring-cache-resolve-value-array",
+    "scope": "resolve",
+    "match": {
+      "label": "CacheOperation",
+      "field": "args_text",
+      "pattern": "value\\s*=\\s*\\{\\s*(?P<c>[^}]+)\\s*\\}"
+    },
+    "set": {
+      "cache": "{{c}}"
+    }
+  },
+  {
+    "name": "spring-cache-resolve-value-single",
+    "scope": "resolve",
+    "match": {
+      "label": "CacheOperation",
+      "field": "args_text",
+      "pattern": "value\\s*=\\s*(?P<c>[^,)]+)"
+    },
+    "set": {
+      "cache": "{{c}}"
+    }
+  },
+  {
+    "name": "spring-cache-resolve-bare",
+    "scope": "resolve",
+    "match": {
+      "label": "CacheOperation",
+      "field": "args_text",
+      "pattern": "^\\(\\s*\"(?P<c>[^\"]+)\""
+    },
+    "set": {
+      "cache": "{{c}}"
+    }
+  },
+  {
+    "name": "spring-cache-resolve-key",
+    "scope": "resolve",
+    "match": {
+      "label": "CacheOperation",
+      "field": "args_text",
+      "pattern": "key\\s*=\\s*\"(?P<k>[^\"]+)\""
+    },
+    "set": {
+      "key": "{{k}}"
+    }
+  },
+  {
+    "name": "spring-cache-resolve-condition",
+    "scope": "resolve",
+    "match": {
+      "label": "CacheOperation",
+      "field": "args_text",
+      "pattern": "condition\\s*=\\s*\"(?P<co>[^\"]+)\""
+    },
+    "set": {
+      "condition": "{{co}}"
+    }
+  }
+]

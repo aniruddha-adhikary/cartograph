@@ -1,0 +1,485 @@
+[
+  {
+    "name": "hibernate-entity-behavior-marker",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (marker_annotation name: (identifier) @ann (#match? @ann \"^(DynamicInsert|DynamicUpdate|Immutable)$\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "EntityBehavior",
+      "schema": {"kind": "string", "owner_class": "string", "framework": "string"},
+      "values": {
+        "kind": "{{ann}}",
+        "owner_class": "{{class_name}}",
+        "framework": "hibernate"
+      },
+      "source": "lens:hibernate-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-entity-cache",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Cache\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "EntityCache",
+      "schema": {"strategy": "string", "region": "string", "owner_class": "string", "framework": "string", "args_text": "string"},
+      "values": {
+        "strategy": "",
+        "region": "",
+        "owner_class": "{{class_name}}",
+        "framework": "hibernate",
+        "args_text": "{{args_text|}}"
+      },
+      "source": "lens:hibernate-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-entity-cache-resolve",
+    "scope": "resolve",
+    "match": {
+      "label": "EntityCache",
+      "where": {"framework": "hibernate"},
+      "from": "args_text",
+      "patterns": [
+        {"regex": "usage\\s*=\\s*(?:[\\w.]*\\.)?(?P<strategy>[A-Z_]+)"},
+        {"regex": "region\\s*=\\s*\"(?P<region>[^\"]+)\""}
+      ]
+    },
+    "set": {
+      "strategy": "{{strategy}}",
+      "region": "{{region}}"
+    }
+  },
+  {
+    "name": "hibernate-converter-class",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"Converter\"))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Converter\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "EntityConverter",
+      "schema": {"converter_class": "string", "owner_class": "string", "applies_to_field": "string", "args_text": "string", "framework": "string"},
+      "values": {
+        "converter_class": "{{class_name}}",
+        "owner_class": "{{class_name}}",
+        "applies_to_field": "",
+        "args_text": "{{args_text|}}",
+        "framework": "hibernate"
+      },
+      "source": "lens:hibernate-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-convert-field",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (field_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Convert\") arguments: (annotation_argument_list) @args_text)) declarator: (variable_declarator name: (identifier) @field_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "EntityConverter",
+      "schema": {"converter_class": "string", "owner_class": "string", "applies_to_field": "string", "args_text": "string", "framework": "string"},
+      "values": {
+        "converter_class": "",
+        "owner_class": "{{class_name}}",
+        "applies_to_field": "{{field_name}}",
+        "args_text": "{{args_text|}}",
+        "framework": "hibernate"
+      },
+      "source": "lens:hibernate-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-convert-field-resolve",
+    "scope": "resolve",
+    "match": {
+      "label": "EntityConverter",
+      "where": {"framework": "hibernate"},
+      "from": "args_text",
+      "patterns": [
+        {"regex": "converter\\s*=\\s*(?P<converter_class>[\\w.]+)\\s*\\.class"}
+      ]
+    },
+    "set": {
+      "converter_class": "{{converter_class}}"
+    }
+  },
+  {
+    "name": "hibernate-generated-field",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (field_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Generated\") arguments: (annotation_argument_list) @args_text)) declarator: (variable_declarator name: (identifier) @field_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "EntityField",
+      "schema": {"kind": "string", "value": "string", "owner_class": "string", "field_name": "string", "args_text": "string", "framework": "string"},
+      "values": {
+        "kind": "generated",
+        "value": "",
+        "owner_class": "{{class_name}}",
+        "field_name": "{{field_name}}",
+        "args_text": "{{args_text|}}",
+        "framework": "hibernate"
+      },
+      "source": "lens:hibernate-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-generated-field-resolve",
+    "scope": "resolve",
+    "match": {
+      "label": "EntityField",
+      "where": {"framework": "hibernate", "kind": "generated"},
+      "from": "args_text",
+      "patterns": [
+        {"regex": "(?:value\\s*=\\s*)?(?:[\\w.]*\\.)?(?P<value>[A-Z_]+)"}
+      ]
+    },
+    "set": {
+      "value": "{{value}}"
+    }
+  },
+  {
+    "name": "hibernate-inheritance",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Inheritance\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "EntityInheritance",
+      "schema": {"strategy": "string", "discriminator_column": "string", "discriminator_value": "string", "owner_class": "string", "args_text": "string", "framework": "string"},
+      "values": {
+        "strategy": "",
+        "discriminator_column": "",
+        "discriminator_value": "",
+        "owner_class": "{{class_name}}",
+        "args_text": "{{args_text|}}",
+        "framework": "hibernate"
+      },
+      "source": "lens:hibernate-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-inheritance-resolve",
+    "scope": "resolve",
+    "match": {
+      "label": "EntityInheritance",
+      "where": {"framework": "hibernate"},
+      "from": "args_text",
+      "patterns": [
+        {"regex": "strategy\\s*=\\s*(?:[\\w.]*\\.)?(?P<strategy>[A-Z_]+)"}
+      ]
+    },
+    "set": {
+      "strategy": "{{strategy}}"
+    }
+  },
+  {
+    "name": "hibernate-discriminator-column",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"DiscriminatorColumn\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "EntityInheritance",
+      "schema": {"strategy": "string", "discriminator_column": "string", "discriminator_value": "string", "owner_class": "string", "args_text": "string", "framework": "string"},
+      "values": {
+        "strategy": "",
+        "discriminator_column": "",
+        "discriminator_value": "",
+        "owner_class": "{{class_name}}",
+        "args_text": "{{args_text|}}",
+        "framework": "hibernate"
+      },
+      "source": "lens:hibernate-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-discriminator-column-resolve",
+    "scope": "resolve",
+    "match": {
+      "label": "EntityInheritance",
+      "where": {"framework": "hibernate"},
+      "from": "args_text",
+      "patterns": [
+        {"regex": "name\\s*=\\s*\"(?P<discriminator_column>[^\"]+)\""}
+      ]
+    },
+    "set": {
+      "discriminator_column": "{{discriminator_column}}"
+    }
+  },
+  {
+    "name": "hibernate-discriminator-value",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"DiscriminatorValue\") arguments: (annotation_argument_list (string_literal (string_fragment) @disc_value)))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "EntityInheritance",
+      "schema": {"strategy": "string", "discriminator_column": "string", "discriminator_value": "string", "owner_class": "string", "framework": "string"},
+      "values": {
+        "strategy": "",
+        "discriminator_column": "",
+        "discriminator_value": "{{disc_value}}",
+        "owner_class": "{{class_name}}",
+        "framework": "hibernate"
+      },
+      "source": "lens:hibernate-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-filter-class",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#match? @ann \"^(Filter|FilterDef)$\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "EntityFilter",
+      "schema": {"kind": "string", "name": "string", "condition": "string", "clause": "string", "owner_class": "string", "args_text": "string", "framework": "string"},
+      "values": {
+        "kind": "{{ann}}",
+        "name": "",
+        "condition": "",
+        "clause": "",
+        "owner_class": "{{class_name}}",
+        "args_text": "{{args_text|}}",
+        "framework": "hibernate"
+      },
+      "source": "lens:hibernate-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-filter-resolve",
+    "scope": "resolve",
+    "match": {
+      "label": "EntityFilter",
+      "where": {"framework": "hibernate"},
+      "from": "args_text",
+      "patterns": [
+        {"regex": "name\\s*=\\s*\"(?P<name>[^\"]+)\""},
+        {"regex": "(?:condition|defaultCondition)\\s*=\\s*\"(?P<condition>[^\"]+)\""}
+      ]
+    },
+    "set": {
+      "name": "{{name}}",
+      "condition": "{{condition}}"
+    }
+  },
+  {
+    "name": "hibernate-where-class",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Where\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "EntityFilter",
+      "schema": {"kind": "string", "name": "string", "condition": "string", "clause": "string", "owner_class": "string", "args_text": "string", "framework": "string"},
+      "values": {
+        "kind": "where",
+        "name": "",
+        "condition": "",
+        "clause": "",
+        "owner_class": "{{class_name}}",
+        "args_text": "{{args_text|}}",
+        "framework": "hibernate"
+      },
+      "source": "lens:hibernate-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-where-field",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (field_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"Where\") arguments: (annotation_argument_list) @args_text)) declarator: (variable_declarator name: (identifier) @field_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "EntityFilter",
+      "schema": {"kind": "string", "name": "string", "condition": "string", "clause": "string", "owner_class": "string", "field_name": "string", "args_text": "string", "framework": "string"},
+      "values": {
+        "kind": "where",
+        "name": "",
+        "condition": "",
+        "clause": "",
+        "owner_class": "{{class_name}}",
+        "field_name": "{{field_name}}",
+        "args_text": "{{args_text|}}",
+        "framework": "hibernate"
+      },
+      "source": "lens:hibernate-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-where-resolve",
+    "scope": "resolve",
+    "match": {
+      "label": "EntityFilter",
+      "where": {"framework": "hibernate", "kind": "where"},
+      "from": "args_text",
+      "patterns": [
+        {"regex": "clause\\s*=\\s*\"(?P<clause>[^\"]+)\""}
+      ]
+    },
+    "set": {
+      "clause": "{{clause}}"
+    }
+  },
+  {
+    "name": "hibernate-on-delete-class",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"OnDelete\") arguments: (annotation_argument_list) @args_text)) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "EntityOnDelete",
+      "schema": {"action": "string", "owner_class": "string", "field_name": "string", "args_text": "string", "framework": "string"},
+      "values": {
+        "action": "",
+        "owner_class": "{{class_name}}",
+        "field_name": "",
+        "args_text": "{{args_text|}}",
+        "framework": "hibernate"
+      },
+      "source": "lens:hibernate-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-on-delete-field",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (field_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"OnDelete\") arguments: (annotation_argument_list) @args_text)) declarator: (variable_declarator name: (identifier) @field_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "EntityOnDelete",
+      "schema": {"action": "string", "owner_class": "string", "field_name": "string", "args_text": "string", "framework": "string"},
+      "values": {
+        "action": "",
+        "owner_class": "{{class_name}}",
+        "field_name": "{{field_name}}",
+        "args_text": "{{args_text|}}",
+        "framework": "hibernate"
+      },
+      "source": "lens:hibernate-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "hibernate-on-delete-resolve",
+    "scope": "resolve",
+    "match": {
+      "label": "EntityOnDelete",
+      "where": {"framework": "hibernate"},
+      "from": "args_text",
+      "patterns": [
+        {"regex": "action\\s*=\\s*(?:[\\w.]*\\.)?(?P<action>[A-Z_]+)"}
+      ]
+    },
+    "set": {
+      "action": "{{action}}"
+    }
+  }
+]

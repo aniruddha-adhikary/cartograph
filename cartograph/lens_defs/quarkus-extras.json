@@ -1,0 +1,184 @@
+[
+  {
+    "name": "quarkus-main",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"QuarkusMain\"))) name: (identifier) @class_name) @anchor (class_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"QuarkusMain\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "quarkus-main",
+        "framework": "quarkus"
+      },
+      "source": "lens:quarkus-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "quarkus-rest-client-interface",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(interface_declaration (modifiers (marker_annotation name: (identifier) @ann (#eq? @ann \"RegisterRestClient\"))) name: (identifier) @class_name) @anchor (interface_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"RegisterRestClient\"))) name: (identifier) @class_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "quarkus-rest-client",
+        "framework": "quarkus"
+      },
+      "source": "lens:quarkus-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "quarkus-config-property-field",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name body: (class_body (field_declaration (modifiers (annotation name: (identifier) @ann (#eq? @ann \"ConfigProperty\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @key (#eq? @key \"name\") value: (string_literal (string_fragment) @config_key))))) declarator: (variable_declarator name: (identifier) @field_name)) @anchor))"
+      }
+    },
+    "emit": {
+      "label": "ConfigBinding",
+      "schema": {
+        "key": "string",
+        "field_name": "string",
+        "class_name": "string",
+        "framework": "string"
+      },
+      "values": {
+        "key": "{{config_key}}",
+        "field_name": "{{field_name}}",
+        "class_name": "{{class_name}}",
+        "framework": "quarkus"
+      },
+      "source": "lens:quarkus-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "quarkus-config-property-parameter",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(formal_parameter (modifiers (annotation name: (identifier) @ann (#eq? @ann \"ConfigProperty\") arguments: (annotation_argument_list (element_value_pair key: (identifier) @key (#eq? @key \"name\") value: (string_literal (string_fragment) @config_key))))) name: (identifier) @field_name) @anchor"
+      }
+    },
+    "emit": {
+      "label": "ConfigBinding",
+      "schema": {
+        "key": "string",
+        "field_name": "string",
+        "framework": "string"
+      },
+      "values": {
+        "key": "{{config_key}}",
+        "field_name": "{{field_name}}",
+        "framework": "quarkus"
+      },
+      "source": "lens:quarkus-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "quarkus-panache-entity",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name (superclass (type_identifier) @super (#match? @super \"^(PanacheEntity|PanacheEntityBase)$\"))) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string",
+        "base_class": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "panache-entity",
+        "framework": "quarkus",
+        "base_class": "{{super}}"
+      },
+      "source": "lens:quarkus-extras",
+      "confidence": "high"
+    }
+  },
+  {
+    "name": "quarkus-panache-repository",
+    "scope": "source",
+    "match": {
+      "files": ["*.java"],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "query",
+        "anchor": "anchor",
+        "query": "(class_declaration name: (identifier) @class_name (super_interfaces (type_list (generic_type (type_identifier) @iface (#match? @iface \"^(PanacheRepository|PanacheRepositoryBase)$\") (type_arguments (type_identifier) @entity))))) @anchor"
+      }
+    },
+    "emit": {
+      "label": "Component",
+      "schema": {
+        "name": "string",
+        "kind": "string",
+        "framework": "string",
+        "entity_type": "string",
+        "base_interface": "string"
+      },
+      "values": {
+        "name": "{{class_name}}",
+        "kind": "panache-repository",
+        "framework": "quarkus",
+        "entity_type": "{{entity}}",
+        "base_interface": "{{iface}}"
+      },
+      "source": "lens:quarkus-extras",
+      "confidence": "high"
+    }
+  }
+]
