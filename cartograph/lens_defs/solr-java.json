@@ -40,11 +40,23 @@
       "files": [
         "*.java"
       ],
-      "strategy": "token-line",
-      "tokens": [
-        ".add("
-      ],
-      "extract": "\\.add\\(\\s*\"(?P<collection>[\\w.-]+)\"\\s*,"
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "add",
+        "arg_index": 0,
+        "capture_as": "collection",
+        "receiver_types": [
+          "SolrClient",
+          "HttpSolrClient",
+          "Http2SolrClient",
+          "CloudSolrClient",
+          "CloudHttp2SolrClient",
+          "ConcurrentUpdateSolrClient",
+          "LBHttpSolrClient"
+        ]
+      }
     },
     "emit": {
       "label": "DatabaseQuery",

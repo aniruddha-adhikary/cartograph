@@ -198,3 +198,41 @@ def test_both_filters_must_hold() -> None:
     nodes, _ = run_source_lens(lens, "Multi.java", content, service="svc")
     topics = [n.get("topic") for n in nodes]
     assert topics == ["both-hold"]
+
+
+# ----- receiver_types (plural) support -----
+
+
+def test_receiver_types_plural_accepts_multiple() -> None:
+    """The Java method-call extractor accepts a `receiver_types` list, matching
+    when the inferred receiver type is in the set. Mirrors the JS path."""
+    lens = _to_lens()
+    # Override the single-type filter with a plural list.
+    lens["match"]["tree_sitter"]["receiver_types"] = ["KStream", "FooBuilder"]
+    content = """public class Mixed {
+        public void run(KStream<String,String> stream, FooBuilder fb, BarThing bar) {
+            stream.to("kafka-out");
+            fb.to("foo-out");
+            bar.to("bar-out");
+        }
+    }"""
+    nodes, _ = run_source_lens(lens, "Mixed.java", content, service="svc")
+    topics = sorted(n.get("topic") for n in nodes)
+    assert topics == ["foo-out", "kafka-out"], (
+        "receiver_types should accept KStream and FooBuilder but not BarThing"
+    )
+
+
+def test_receiver_types_plural_fails_closed_on_unresolved() -> None:
+    """If the receiver type cannot be inferred (chained call), the lens must
+    not fire even when `receiver_types` would otherwise allow it."""
+    lens = _to_lens()
+    lens["match"]["tree_sitter"]["receiver_types"] = ["KStream"]
+    content = """public class Chained {
+        public KStream<String,String> source() { return null; }
+        public void run() {
+            source().to("chained-target");  // receiver is a method_invocation
+        }
+    }"""
+    nodes, _ = run_source_lens(lens, "Chained.java", content, service="svc")
+    assert nodes == [], "Chained receiver must fail closed"

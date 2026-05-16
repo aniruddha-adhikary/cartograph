@@ -13,7 +13,10 @@
       "tokens": [
         ".publish("
       ],
-      "extract": "\\.publish\\s*\\(\\s*['\"`](?P<exchange>[^'\"`]+)['\"`]\\s*,\\s*['\"`](?P<routing_key>[^'\"`]*)['\"`]"
+      "extract": "\\.publish\\s*\\(\\s*['\"`](?P<exchange>[^'\"`]+)['\"`]\\s*,\\s*['\"`](?P<routing_key>[^'\"`]*)['\"`]",
+      "import_gate": [
+        "amqplib"
+      ]
     },
     "emit": {
       "label": "MessageProducer",
@@ -53,7 +56,10 @@
       "tokens": [
         ".sendToQueue("
       ],
-      "extract": "\\.sendToQueue\\s*\\(\\s*['\"`](?P<queue>[^'\"`]+)['\"`]"
+      "extract": "\\.sendToQueue\\s*\\(\\s*['\"`](?P<queue>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "amqplib"
+      ]
     },
     "emit": {
       "label": "MessageProducer",
@@ -91,7 +97,10 @@
       "tokens": [
         ".consume("
       ],
-      "extract": "\\.consume\\s*\\(\\s*['\"`](?P<queue>[^'\"`]+)['\"`]"
+      "extract": "\\.consume\\s*\\(\\s*['\"`](?P<queue>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "amqplib"
+      ]
     },
     "emit": {
       "label": "MessageConsumer",
@@ -131,7 +140,10 @@
       "tokens": [
         ".assertQueue("
       ],
-      "extract": "\\.assertQueue\\s*\\(\\s*['\"`](?P<queue>[^'\"`]+)['\"`]"
+      "extract": "\\.assertQueue\\s*\\(\\s*['\"`](?P<queue>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "amqplib"
+      ]
     },
     "emit": {
       "label": "MessageDestination",
@@ -167,7 +179,10 @@
       "tokens": [
         ".assertExchange("
       ],
-      "extract": "\\.assertExchange\\s*\\(\\s*['\"`](?P<exchange>[^'\"`]+)['\"`]"
+      "extract": "\\.assertExchange\\s*\\(\\s*['\"`](?P<exchange>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "amqplib"
+      ]
     },
     "emit": {
       "label": "MessageDestination",

@@ -6,19 +6,20 @@
       "files": [
         "*.java"
       ],
-      "strategy": "token-line",
-      "tokens": [
-        "jedis.publish(",
-        "Jedis.publish(",
-        "redisCommands.publish(",
-        "RedisCommands.publish(",
-        "redisAsyncCommands.publish(",
-        "redisReactiveCommands.publish(",
-        "sync.publish(",
-        "async.publish(",
-        "reactive.publish("
-      ],
-      "extract": "\\.publish\\(\\s*\"(?P<channel>[^\"]+)\""
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "publish",
+        "arg_index": 0,
+        "capture_as": "channel",
+        "receiver_types": [
+          "Jedis",
+          "RedisCommands",
+          "RedisAsyncCommands",
+          "RedisReactiveCommands"
+        ]
+      }
     },
     "emit": {
       "label": "MessageProducer",
@@ -49,12 +50,15 @@
       "files": [
         "*.java"
       ],
-      "strategy": "token-line",
-      "tokens": [
-        "jedis.subscribe(",
-        "Jedis.subscribe("
-      ],
-      "extract": "\\.subscribe\\([^,]+,\\s*\"(?P<channel>[^\"]+)\""
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "subscribe",
+        "arg_index": 1,
+        "capture_as": "channel",
+        "receiver_type": "Jedis"
+      }
     },
     "emit": {
       "label": "MessageConsumer",

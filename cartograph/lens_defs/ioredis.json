@@ -13,7 +13,10 @@
       "tokens": [
         ".publish("
       ],
-      "extract": "\\.publish\\s*\\(\\s*['\"`](?P<channel>[^'\"`]+)['\"`]"
+      "extract": "\\.publish\\s*\\(\\s*['\"`](?P<channel>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "ioredis"
+      ]
     },
     "emit": {
       "label": "MessageProducer",
@@ -51,7 +54,10 @@
       "tokens": [
         ".subscribe("
       ],
-      "extract": "\\.subscribe\\s*\\(\\s*['\"`](?P<channel>[^'\"`]+)['\"`]"
+      "extract": "\\.subscribe\\s*\\(\\s*['\"`](?P<channel>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "ioredis"
+      ]
     },
     "emit": {
       "label": "MessageConsumer",
@@ -91,7 +97,10 @@
       "tokens": [
         ".xadd("
       ],
-      "extract": "\\.xadd\\s*\\(\\s*['\"`](?P<stream>[^'\"`]+)['\"`]"
+      "extract": "\\.xadd\\s*\\(\\s*['\"`](?P<stream>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "ioredis"
+      ]
     },
     "emit": {
       "label": "MessageProducer",
@@ -130,7 +139,10 @@
         ".xread(",
         ".xreadgroup("
       ],
-      "extract": "['\"`](?P<stream>[A-Za-z_][\\w:.-]*)['\"`]"
+      "extract": "['\"`](?P<stream>[A-Za-z_][\\w:.-]*)['\"`]",
+      "import_gate": [
+        "ioredis"
+      ]
     },
     "emit": {
       "label": "MessageConsumer",

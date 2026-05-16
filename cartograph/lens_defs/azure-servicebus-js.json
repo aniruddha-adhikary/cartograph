@@ -13,7 +13,11 @@
       "tokens": [
         ".createSender("
       ],
-      "extract": "\\.createSender\\s*\\(\\s*['\"`](?P<destination>[^'\"`]+)['\"`]"
+      "extract": "\\.createSender\\s*\\(\\s*['\"`](?P<destination>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "@azure/service-bus",
+        "azure/service-bus"
+      ]
     },
     "emit": {
       "label": "MessageProducer",
@@ -51,7 +55,11 @@
       "tokens": [
         ".sendMessages("
       ],
-      "extract": "(?P<sentinel>sendMessages)"
+      "extract": "(?P<sentinel>sendMessages)",
+      "import_gate": [
+        "@azure/service-bus",
+        "azure/service-bus"
+      ]
     },
     "emit": {
       "label": "MessageProducer",
@@ -85,7 +93,11 @@
       "tokens": [
         ".createReceiver("
       ],
-      "extract": "\\.createReceiver\\s*\\(\\s*['\"`](?P<destination>[^'\"`]+)['\"`]"
+      "extract": "\\.createReceiver\\s*\\(\\s*['\"`](?P<destination>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "@azure/service-bus",
+        "azure/service-bus"
+      ]
     },
     "emit": {
       "label": "MessageConsumer",
@@ -126,7 +138,11 @@
         "receiver.subscribe(",
         ".subscribe("
       ],
-      "extract": "(?P<sentinel>processMessage|processError)"
+      "extract": "(?P<sentinel>processMessage|processError)",
+      "import_gate": [
+        "@azure/service-bus",
+        "azure/service-bus"
+      ]
     },
     "emit": {
       "label": "MessageConsumer",

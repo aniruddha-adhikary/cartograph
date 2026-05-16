@@ -6,11 +6,19 @@
       "files": [
         "*.java"
       ],
-      "strategy": "token-line",
-      "tokens": [
-        ".createQueue("
-      ],
-      "extract": "\\.createQueue\\(\\s*\"(?P<queue>[^\"]+)\""
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "createQueue",
+        "arg_index": 0,
+        "capture_as": "queue",
+        "receiver_types": [
+          "Session",
+          "ActiveMQSession",
+          "QueueSession"
+        ]
+      }
     },
     "emit": {
       "label": "MessageDestination",
@@ -39,11 +47,19 @@
       "files": [
         "*.java"
       ],
-      "strategy": "token-line",
-      "tokens": [
-        ".createTopic("
-      ],
-      "extract": "\\.createTopic\\(\\s*\"(?P<topic>[^\"]+)\""
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "createTopic",
+        "arg_index": 0,
+        "capture_as": "topic",
+        "receiver_types": [
+          "Session",
+          "ActiveMQSession",
+          "TopicSession"
+        ]
+      }
     },
     "emit": {
       "label": "MessageDestination",

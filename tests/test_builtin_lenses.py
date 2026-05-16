@@ -93,7 +93,12 @@ def test_builtin_spring_config_lens_extracts_app_name() -> None:
 def test_builtin_kafka_producer_lens_extracts_topic() -> None:
     lenses = load_builtin_lenses()
     lens = next(l for l in lenses if l["name"] == "spring-kafka-producer")
-    content = 'kafkaTemplate.send("order-events", payload);'
+    content = """class OrderService {
+    private KafkaTemplate<String, String> kafkaTemplate;
+    void publish(String payload) {
+        kafkaTemplate.send("order-events", payload);
+    }
+}"""
     nodes, edges = run_source_lens(lens, "OrderService.java", content, service="orders")
     assert len(nodes) == 1
     assert nodes[0].get("topic") == "order-events"

@@ -258,7 +258,14 @@ def _ts_method_call(
         raise ValueError("method-call extractor requires tree_sitter.method_name")
     arg_index = int(ts_config.get("arg_index", 0))
     capture_as = ts_config.get("capture_as", "value")
-    receiver_type = ts_config.get("receiver_type")
+    # receiver_type accepts either a single string (legacy) or, via the
+    # plural `receiver_types`, a list of accepted simple-name types. Both forms
+    # are unioned into a set; if neither is present the filter is disabled.
+    accepted_receiver_types: set[str] | None = None
+    if ts_config.get("receiver_types"):
+        accepted_receiver_types = set(ts_config["receiver_types"])
+    elif ts_config.get("receiver_type"):
+        accepted_receiver_types = {ts_config["receiver_type"]}
     parent_class_extends = ts_config.get("parent_class_extends")
     if parent_class_extends is not None:
         parent_class_extends = set(parent_class_extends)
@@ -281,10 +288,11 @@ def _ts_method_call(
             if parent_class_extends.isdisjoint(supertypes):
                 continue
 
-        # A1 filter: receiver_type — must be inferable and equal to configured value.
-        if receiver_type is not None:
+        # A1 filter: receiver_type — must be inferable and equal to one of the
+        # configured values. Fail-closed on unresolvable receivers.
+        if accepted_receiver_types is not None:
             inferred = _infer_receiver_type(call_node)
-            if inferred is None or inferred != receiver_type:
+            if inferred is None or inferred not in accepted_receiver_types:
                 continue
 
         args_node = call_node.child_by_field_name("arguments")

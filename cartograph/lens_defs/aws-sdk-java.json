@@ -6,9 +6,51 @@
       "files": [
         "*.java"
       ],
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "sendMessage",
+        "arg_index": 0,
+        "capture_as": "queue_url",
+        "receiver_types": [
+          "SqsClient",
+          "AmazonSQS",
+          "AmazonSQSAsync"
+        ]
+      }
+    },
+    "emit": {
+      "label": "MessageProducer",
+      "schema": {
+        "message_role": "string",
+        "bus": "string",
+        "topic": "string",
+        "queue_url": "string",
+        "framework": "string",
+        "delivery_edge": "string"
+      },
+      "values": {
+        "message_role": "producer",
+        "bus": "aws-sqs",
+        "topic": "{{queue_url}}",
+        "queue_url": "{{queue_url}}",
+        "framework": "aws-sdk-java",
+        "delivery_edge": "MESSAGE_DELIVERS"
+      },
+      "source": "lens:aws-sdk-java",
+      "confidence": "medium"
+    }
+  },
+  {
+    "name": "aws-sdk-java-sqs-send-batch",
+    "scope": "source",
+    "match": {
+      "files": [
+        "*.java"
+      ],
       "strategy": "token-line",
       "tokens": [
-        ".sendMessage(",
         ".sendMessageBatch("
       ],
       "extract": "queueUrl\\s*[(=]\\s*\"(?P<queue_url>[^\"]+)\""
@@ -80,11 +122,19 @@
       "files": [
         "*.java"
       ],
-      "strategy": "token-line",
-      "tokens": [
-        ".publish("
-      ],
-      "extract": "topicArn\\s*[(=]\\s*\"(?P<topic_arn>[^\"]+)\""
+      "strategy": "tree-sitter",
+      "tree_sitter": {
+        "language": "java",
+        "extractor": "method-call",
+        "method_name": "publish",
+        "arg_index": 0,
+        "capture_as": "topic_arn",
+        "receiver_types": [
+          "SnsClient",
+          "AmazonSNS",
+          "AmazonSNSAsync"
+        ]
+      }
     },
     "emit": {
       "label": "MessageProducer",

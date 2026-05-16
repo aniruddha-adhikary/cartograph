@@ -13,7 +13,10 @@
       "tokens": [
         ".publish("
       ],
-      "extract": "\\.publish\\s*\\(\\s*['\"`](?P<topic>[^'\"`]+)['\"`]"
+      "extract": "\\.publish\\s*\\(\\s*['\"`](?P<topic>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "mqtt"
+      ]
     },
     "emit": {
       "label": "MessageProducer",
@@ -49,7 +52,10 @@
       "tokens": [
         ".subscribe("
       ],
-      "extract": "\\.subscribe\\s*\\(\\s*['\"`](?P<topic>[^'\"`]+)['\"`]"
+      "extract": "\\.subscribe\\s*\\(\\s*['\"`](?P<topic>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "mqtt"
+      ]
     },
     "emit": {
       "label": "MessageConsumer",
@@ -87,7 +93,10 @@
       "tokens": [
         "mqtt.connect("
       ],
-      "extract": "mqtt\\.connect\\s*\\(\\s*['\"`](?P<broker>mqtts?://[^'\"`]+)['\"`]"
+      "extract": "mqtt\\.connect\\s*\\(\\s*['\"`](?P<broker>mqtts?://[^'\"`]+)['\"`]",
+      "import_gate": [
+        "mqtt"
+      ]
     },
     "emit": {
       "label": "Component",

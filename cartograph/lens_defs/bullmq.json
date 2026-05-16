@@ -13,7 +13,10 @@
       "tokens": [
         "new Queue("
       ],
-      "extract": "new\\s+Queue\\s*\\(\\s*['\"`](?P<queue>[^'\"`]+)['\"`]"
+      "extract": "new\\s+Queue\\s*\\(\\s*['\"`](?P<queue>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "bullmq"
+      ]
     },
     "emit": {
       "label": "MessageDestination",
@@ -49,7 +52,10 @@
       "tokens": [
         ".add("
       ],
-      "extract": "\\.add\\s*\\(\\s*['\"`](?P<job_type>[^'\"`]+)['\"`]"
+      "extract": "\\.add\\s*\\(\\s*['\"`](?P<job_type>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "bullmq"
+      ]
     },
     "emit": {
       "label": "MessageProducer",
@@ -87,7 +93,10 @@
       "tokens": [
         "new Worker("
       ],
-      "extract": "new\\s+Worker\\s*\\(\\s*['\"`](?P<queue>[^'\"`]+)['\"`]"
+      "extract": "new\\s+Worker\\s*\\(\\s*['\"`](?P<queue>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "bullmq"
+      ]
     },
     "emit": {
       "label": "MessageConsumer",
@@ -127,7 +136,10 @@
       "tokens": [
         "agenda.define("
       ],
-      "extract": "agenda\\.define\\s*\\(\\s*['\"`](?P<job_name>[^'\"`]+)['\"`]"
+      "extract": "agenda\\.define\\s*\\(\\s*['\"`](?P<job_name>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "bullmq"
+      ]
     },
     "emit": {
       "label": "ScheduledJob",
@@ -160,7 +172,10 @@
         "cron.schedule(",
         "nodeCron.schedule("
       ],
-      "extract": "\\.schedule\\s*\\(\\s*['\"`](?P<cron>[^'\"`]+)['\"`]"
+      "extract": "\\.schedule\\s*\\(\\s*['\"`](?P<cron>[^'\"`]+)['\"`]",
+      "import_gate": [
+        "bullmq"
+      ]
     },
     "emit": {
       "label": "ScheduledJob",
